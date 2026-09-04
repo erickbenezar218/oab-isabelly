@@ -2,6 +2,8 @@
 
 App PWA de estudos para a reta final da prova da OAB (06/09/2026).
 
+**Repositório:** https://github.com/erickbenezar218/oab-isabelly
+
 ## O que tem aqui
 
 - **660 questões** de 8 exames (43º via markdown local + 7 extraídos do [Prova da Ordem](https://www.provadaordem.com.br))
