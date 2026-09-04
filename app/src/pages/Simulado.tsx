@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { SimuladoHistoricoLista, SimuladoRevisaoDetalhe } from '../components/SimuladoRevisao'
 import { useApp } from '../context/AppContext'
 import { formatTempo } from '../hooks/useAppData'
 import {
@@ -10,7 +11,7 @@ import {
   type SimuladoResult,
 } from '../types'
 
-type Fase = 'setup' | 'prova' | 'resultado'
+type Fase = 'setup' | 'prova' | 'resultado' | 'historico'
 
 export default function Simulado() {
   const { questoes, progress, loading, registrarResposta, saveSimulado, toggleSalvarRevisao } = useApp()
@@ -24,6 +25,7 @@ export default function Simulado() {
   const [tempoQuestao, setTempoQuestao] = useState(0)
   const [inicioProva, setInicioProva] = useState(0)
   const [resultado, setResultado] = useState<SimuladoResult | null>(null)
+  const [historicoSelecionado, setHistoricoSelecionado] = useState<SimuladoResult | null>(null)
 
   const exames = useMemo(() => {
     const map = new Map<string, Questao[]>()
@@ -71,6 +73,7 @@ export default function Simulado() {
       tempoUsadoSeg: SIMULADO_TEMPO_TOTAL - tempoGlobal,
       finalizadoEm: Date.now(),
       respostas: { ...respostas },
+      questaoIds: provaQuestoes.map((q) => q.id),
     }
     saveSimulado(result)
     setResultado(result)
@@ -138,15 +141,13 @@ export default function Simulado() {
           </select>
         </label>
 
-        {progress.simulados.length > 0 && (
-          <div className="rounded-xl bg-surface-800 p-4">
-            <p className="text-xs text-purple-300/60">Último simulado</p>
-            <p className="font-semibold text-white">
-              {progress.simulados[0].acertos}/{progress.simulados[0].total} —{' '}
-              {progress.simulados[0].acertos >= NOTA_APROVACAO ? '✅ APROVADA!' : 'Continue! 💪'}
-            </p>
-          </div>
-        )}
+        <SimuladoHistoricoLista
+          simulados={progress.simulados}
+          onAbrir={(s) => {
+            setHistoricoSelecionado(s)
+            setFase('historico')
+          }}
+        />
 
         <button
           type="button"
@@ -160,37 +161,34 @@ export default function Simulado() {
     )
   }
 
+  if (fase === 'historico' && historicoSelecionado) {
+    return (
+      <SimuladoRevisaoDetalhe
+        sim={historicoSelecionado}
+        questoes={questoes}
+        salvosRevisao={progress.salvosRevisao}
+        toggleSalvarRevisao={toggleSalvarRevisao}
+        onVoltar={() => {
+          setHistoricoSelecionado(null)
+          setFase('setup')
+        }}
+      />
+    )
+  }
+
   if (fase === 'resultado' && resultado) {
-    const aprovada = resultado.acertos >= NOTA_APROVACAO
     return (
       <div className="space-y-4">
-        <section className={`rounded-2xl p-6 text-center ${aprovada ? 'bg-green-900/30' : 'bg-surface-800'}`}>
-          <p className="text-4xl">{aprovada ? '🎉' : '💪'}</p>
-          <h2 className="mt-2 text-2xl font-bold text-white">
-            {resultado.acertos}/{resultado.total}
-          </h2>
-          <p className={`mt-1 text-lg font-semibold ${aprovada ? 'text-green-400' : 'text-yellow-400'}`}>
-            {aprovada ? 'APROVADA! Parabéns, Isabelly!' : `Faltam ${NOTA_APROVACAO - resultado.acertos} acertos para aprovação`}
-          </p>
-          <p className="mt-2 text-sm text-purple-200/60">Tempo: {formatTempo(resultado.tempoUsadoSeg)}</p>
-        </section>
-
-        <div className="max-h-[50vh] space-y-2 overflow-y-auto">
-          {provaQuestoes.map((q) => {
-            const sel = resultado.respostas[q.id]
-            const ok = sel === q.resposta_correta
-            return (
-              <div key={q.id} className={`rounded-xl p-3 text-sm ${ok ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
-                <p className="font-medium text-white">
-                  Q{q.numero} — {ok ? '✅' : '❌'} Gabarito: {q.resposta_correta}
-                  {sel ? ` · Sua: ${sel}` : ' · Não respondida'}
-                </p>
-                <p className="mt-1 line-clamp-2 text-xs text-purple-200/60">{q.enunciado}</p>
-              </div>
-            )
-          })}
-        </div>
-
+        <SimuladoRevisaoDetalhe
+          sim={resultado}
+          questoes={questoes}
+          salvosRevisao={progress.salvosRevisao}
+          toggleSalvarRevisao={toggleSalvarRevisao}
+          onVoltar={() => {
+            setResultado(null)
+            setFase('setup')
+          }}
+        />
         <button
           type="button"
           onClick={() => {

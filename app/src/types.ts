@@ -43,6 +43,8 @@ export interface SimuladoResult {
   tempoUsadoSeg: number
   finalizadoEm: number
   respostas: Record<string, string>
+  /** IDs das 80 questões na ordem da prova */
+  questaoIds?: string[]
 }
 
 export interface UserProgress {

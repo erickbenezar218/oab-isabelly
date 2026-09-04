@@ -124,6 +124,7 @@ export default function Desempenho() {
           {progress.simulados.length > 0 && (
             <section className="rounded-2xl bg-surface-800 p-4">
               <h3 className="font-semibold text-white">Histórico de Simulados</h3>
+              <p className="mt-1 text-xs text-purple-300/60">Revise erros na aba Simulado</p>
               <div className="mt-3 space-y-2">
                 {progress.simulados.slice(0, 5).map((s) => (
                   <div key={s.id} className="flex justify-between rounded-lg bg-surface-700 px-3 py-2 text-sm">
