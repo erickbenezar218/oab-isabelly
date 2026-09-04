@@ -209,7 +209,7 @@ export default function Simulado() {
 
   return (
     <div className="space-y-3">
-      <div className="sticky top-14 z-30 space-y-2 rounded-xl bg-surface-800/95 p-3 backdrop-blur">
+      <div className="sticky top-0 z-30 space-y-2 rounded-xl bg-surface-800/95 p-3 backdrop-blur">
         <div className="flex justify-between text-xs">
           <span className="text-purple-300">⏱ Global: {formatTempo(tempoGlobal)}</span>
           <span className={tempoQuestaoCor}>Questão: {formatTempo(tempoQuestao)}</span>

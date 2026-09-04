@@ -14,7 +14,21 @@ export default function Flashcards() {
   const [mostrarGabarito, setMostrarGabarito] = useState(false)
   const [swipeClass, setSwipeClass] = useState('')
   const [selected, setSelected] = useState<string | null>(null)
-  const touchStart = useRef<number | null>(null)
+  const touchStart = useRef<{ x: number; y: number } | null>(null)
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart.current === null || !mostrarGabarito) return
+    const dx = e.changedTouches[0].clientX - touchStart.current.x
+    const dy = e.changedTouches[0].clientY - touchStart.current.y
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 80) {
+      responder(dx > 0)
+    }
+    touchStart.current = null
+  }
 
   const materias = useMemo(() => [...new Set(questoes.map((q) => q.materia))].sort(), [questoes])
   const exames = useMemo(() => [...new Set(questoes.map((q) => q.exame))].sort(), [questoes])
@@ -60,19 +74,6 @@ export default function Flashcards() {
     updateStreak(acertou)
     if (acertou && progress.flashcardStreak + 1 >= 5) fireConfetti()
     avancar(acertou ? 'right' : 'left')
-  }
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStart.current = e.touches[0].clientX
-  }
-
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStart.current === null || !mostrarGabarito) return
-    const diff = e.changedTouches[0].clientX - touchStart.current
-    if (Math.abs(diff) > 80) {
-      responder(diff > 0)
-    }
-    touchStart.current = null
   }
 
   if (loading) return <Loading />

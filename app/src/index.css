@@ -20,17 +20,32 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-html,
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
 body,
 #root {
-  min-height: 100dvh;
+  height: 100%;
 }
 
 body {
   font-family: var(--font-sans);
   background: var(--color-surface-900);
   color: #f3e8ff;
+  overflow: hidden;
   overscroll-behavior: none;
+}
+
+#root {
+  isolation: isolate;
+}
+
+.app-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
 }
 
 .card-swipe {
@@ -62,6 +77,10 @@ body {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+.safe-top {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+
 .safe-bottom {
-  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
 }
