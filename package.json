@@ -1,11 +1,21 @@
 {
   "name": "oab-isabelly",
   "private": true,
+  "workspaces": [
+    "app"
+  ],
   "scripts": {
-    "build": "cd app && npm ci && npm run build",
+    "build": "npm run build --workspace=app",
     "deploy": "npm run build && wrangler deploy"
   },
   "devDependencies": {
     "wrangler": "^4.129.0"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "workerd": true
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

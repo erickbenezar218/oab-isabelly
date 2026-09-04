@@ -49,7 +49,9 @@ No dashboard: **Workers & Pages** → projeto → Settings → Build:
 | Build command | `npm run build` |
 | Deploy command | `npx wrangler deploy` |
 
-O `wrangler.jsonc` aponta para `app/dist` (build do Vite), com fallback SPA para o React Router.
+Usa **npm workspaces** (um único `npm ci` na raiz). O `allowScripts` no `package.json` libera esbuild/workerd. Node **22+** (`.node-version`).
+
+Se falhar por scripts bloqueados, rode localmente `npm approve-scripts esbuild workerd` e commite o `package.json` atualizado.
 
 ## Deploy (Vercel / Netlify)
 
