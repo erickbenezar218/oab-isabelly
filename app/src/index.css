@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --color-brand-50: #fdf4ff;
+  --color-brand-100: #fae8ff;
+  --color-brand-200: #f5d0fe;
+  --color-brand-300: #f0abfc;
+  --color-brand-400: #e879f9;
+  --color-brand-500: #d946ef;
+  --color-brand-600: #c026d3;
+  --color-brand-700: #a21caf;
+  --color-surface-900: #0f0a14;
+  --color-surface-800: #1a1025;
+  --color-surface-700: #251535;
+  --color-surface-600: #352045;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  min-height: 100dvh;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-surface-900);
+  color: #f3e8ff;
+  overscroll-behavior: none;
+}
+
+.card-swipe {
+  touch-action: pan-y;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.card-swipe.swipe-left {
+  transform: translateX(-120%) rotate(-12deg);
+  opacity: 0;
+}
+
+.card-swipe.swipe-right {
+  transform: translateX(120%) rotate(12deg);
+  opacity: 0;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(217, 70, 239, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px 4px rgba(217, 70, 239, 0.2);
+  }
+}
+
+.glow-pulse {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
