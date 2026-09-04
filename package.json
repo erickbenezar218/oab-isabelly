@@ -1,0 +1,11 @@
+{
+  "name": "oab-isabelly",
+  "private": true,
+  "scripts": {
+    "build": "cd app && npm ci && npm run build",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.129.0"
+  }
+}

@@ -40,6 +40,17 @@ docker compose up --build -d
 
 App em: http://localhost:8080
 
+## Deploy Cloudflare Workers (static)
+
+No dashboard: **Workers & Pages** → projeto → Settings → Build:
+
+| Campo | Valor |
+|-------|--------|
+| Build command | `npm run build` |
+| Deploy command | `npx wrangler deploy` |
+
+O `wrangler.jsonc` aponta para `app/dist` (build do Vite), com fallback SPA para o React Router.
+
 ## Deploy (Vercel / Netlify)
 
 - **Root directory:** `app`
