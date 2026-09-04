@@ -6,7 +6,7 @@ App PWA de estudos para a reta final da prova da OAB (06/09/2026).
 
 ## O que tem aqui
 
-- **660 questões** de 8 exames (43º via markdown local + 7 extraídos do [Prova da Ordem](https://www.provadaordem.com.br))
+- **1120 questões** de 14 exames (2019–2025; 43º via markdown local + 13 extraídos do [Prova da Ordem](https://www.provadaordem.com.br))
 - **Flashcards** estilo active recall (swipe / botões)
 - **Simulado realista** — 80 questões, 5h, cronômetro por questão, calculadora de ritmo
 - **Painel de desempenho** por matéria + cards customizados
@@ -59,7 +59,8 @@ App em: http://localhost:8080
 
 ## Notas
 
-- 39º Exame indisponível no site (em cadastramento) — não incluído
+- 39º Exame e XXVIII Exame indisponíveis no site (em cadastramento) — não incluídos
+- OAB 2010.3 removido do banco (prova muito antiga)
 - 43º Exame extraído do markdown local (`questoes_oab_43_gabarito.md`)
 - App personalizado para **Isabelly** — single-user, sem multi-tenant
 

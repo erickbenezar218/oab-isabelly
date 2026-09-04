@@ -36,11 +36,34 @@ OAB_MATERIAS_80 = [
 
 EXAMS = [
     {
-        "slug": "39",
-        "exame": "39º Exame",
-        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/39o-exame-oab-2023-3/",
-        "skip_scrape": True,
-        "note": "Prova ainda em cadastramento no site",
+        "slug": "28",
+        "exame": "XXVIII Exame",
+        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/xxviii-exame-oab-2019-1/",
+    },
+    {
+        "slug": "29",
+        "exame": "XXIX Exame",
+        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/xxix-exame-oab-2019-2/",
+    },
+    {
+        "slug": "30",
+        "exame": "XXX Exame",
+        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/xxx-exame-oab-2019-3/",
+    },
+    {
+        "slug": "31",
+        "exame": "XXXI Exame",
+        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/xxxi-exame-oab-2020-1/",
+    },
+    {
+        "slug": "32",
+        "exame": "XXXII Exame",
+        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/xxxii-exame-oab-2021-1/",
+    },
+    {
+        "slug": "33",
+        "exame": "XXXIII Exame",
+        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/xxxiii-exame-oab-2021-2/",
     },
     {
         "slug": "34",
@@ -58,24 +81,34 @@ EXAMS = [
         "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/36-exame-oab-2022-3/",
     },
     {
-        "slug": "32",
-        "exame": "XXXII Exame",
-        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/xxxii-exame-oab-2021-1/",
+        "slug": "37",
+        "exame": "37º Exame",
+        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/37-exame-oab-2023-1/",
     },
     {
-        "slug": "33",
-        "exame": "XXXIII Exame",
-        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/xxxiii-exame-oab-2021-2/",
+        "slug": "38",
+        "exame": "38º Exame",
+        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/38-exame-oab-2023-2/",
     },
     {
-        "slug": "31",
-        "exame": "XXXI Exame",
-        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/xxxi-exame-oab-2020-1/",
+        "slug": "39",
+        "exame": "39º Exame",
+        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/39o-exame-oab-2023-3/",
     },
     {
-        "slug": "2010",
-        "exame": "OAB 2010.3",
-        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/oab-br-2010-3/",
+        "slug": "40",
+        "exame": "40º Exame",
+        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/40-exame-oab-2024-1/",
+    },
+    {
+        "slug": "41",
+        "exame": "41º Exame",
+        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/41-exame-oab-2024-2/",
+    },
+    {
+        "slug": "42",
+        "exame": "42º Exame",
+        "url": "https://www.provadaordem.com.br/banco-de-provas-1a-fase/42-exame-oab-2024-3/",
     },
 ]
 
@@ -251,15 +284,17 @@ def main() -> None:
 
         browser.close()
 
+    examenes_ok = sorted({q["exame"] for q in all_questions})
+    notas = ["43º Exame extraído do markdown local", "OAB 2010.3 excluído do banco"]
+    if "39º Exame" not in examenes_ok:
+        notas.append("39º Exame indisponível ou em cadastramento no site")
+
     meta = {
         "total_questoes": len(all_questions),
-        "examenes": sorted({q["exame"] for q in all_questions}),
+        "examenes": examenes_ok,
         "materias": sorted({q["materia"] for q in all_questions}),
         "gerado_em": time.strftime("%Y-%m-%dT%H:%M:%S"),
-        "notas": [
-            "39º Exame indisponível no site (em cadastramento)",
-            "43º Exame extraído do markdown local",
-        ],
+        "notas": notas,
     }
 
     output = {"meta": meta, "questoes": all_questions}
