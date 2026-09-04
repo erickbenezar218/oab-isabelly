@@ -1,12 +1,9 @@
-import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { diasParaProva } from '../hooks/useAppData'
 
 export default function Dashboard() {
-  const { questoes, progress, loading, meta, exportProgress, importProgress } = useApp()
-  const fileRef = useRef<HTMLInputElement>(null)
-  const [backupMsg, setBackupMsg] = useState<string | null>(null)
+  const { questoes, progress, loading, meta } = useApp()
   const dias = diasParaProva()
 
   const totalRespondidas = progress.respostas.length
@@ -79,45 +76,6 @@ export default function Dashboard() {
           🔥 Sequência de {progress.flashcardStreak} acertos nos flashcards!
         </p>
       )}
-
-      <section className="rounded-2xl bg-surface-800 p-4">
-        <h2 className="font-semibold text-white">Backup dos dados 💾</h2>
-        <p className="mt-1 text-xs leading-relaxed text-purple-300/60">
-          O progresso fica salvo <strong className="text-purple-200">só neste navegador</strong>. Para trocar de celular,
-          navegador ou iPad, exporte aqui e importe no outro aparelho.
-        </p>
-        <div className="mt-3 flex gap-2">
-          <button
-            type="button"
-            onClick={exportProgress}
-            className="flex-1 rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white"
-          >
-            Exportar backup
-          </button>
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            className="flex-1 rounded-xl bg-surface-700 py-2.5 text-sm font-semibold text-purple-100"
-          >
-            Importar backup
-          </button>
-        </div>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="application/json,.json"
-          className="hidden"
-          onChange={async (e) => {
-            const file = e.target.files?.[0]
-            if (!file) return
-            const ok = await importProgress(file)
-            setBackupMsg(ok === 'ok' ? '✅ Backup restaurado com sucesso!' : '❌ Arquivo inválido.')
-            e.target.value = ''
-            setTimeout(() => setBackupMsg(null), 4000)
-          }}
-        />
-        {backupMsg && <p className="mt-2 text-center text-xs text-brand-200">{backupMsg}</p>}
-      </section>
     </div>
   )
 }

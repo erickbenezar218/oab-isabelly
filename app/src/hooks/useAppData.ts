@@ -87,53 +87,6 @@ export function useProgress() {
     [setProgress],
   )
 
-  const exportProgress = useCallback(() => {
-    const payload = {
-      version: 1,
-      app: 'oab-isabelly',
-      exportedAt: new Date().toISOString(),
-      progress,
-    }
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `oab-isabelly-backup-${new Date().toISOString().slice(0, 10)}.json`
-    a.click()
-    URL.revokeObjectURL(url)
-  }, [progress])
-
-  const importProgress = useCallback(
-    (file: File): Promise<'ok' | 'invalid'> =>
-      new Promise((resolve) => {
-        const reader = new FileReader()
-        reader.onload = () => {
-          try {
-            const raw = JSON.parse(String(reader.result))
-            const data = raw.progress ?? raw
-            const merged: UserProgress = {
-              ...defaultProgress(),
-              ...data,
-              respostas: Array.isArray(data.respostas) ? data.respostas : [],
-              salvosRevisao: Array.isArray(data.salvosRevisao) ? data.salvosRevisao : [],
-              customCards: Array.isArray(data.customCards) ? data.customCards : [],
-              simulados: Array.isArray(data.simulados) ? data.simulados : [],
-              flashcardStreak: Number(data.flashcardStreak) || 0,
-              flashcardLastDate: String(data.flashcardLastDate ?? ''),
-            }
-            setProgressState(merged)
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(merged))
-            resolve('ok')
-          } catch {
-            resolve('invalid')
-          }
-        }
-        reader.onerror = () => resolve('invalid')
-        reader.readAsText(file)
-      }),
-    [],
-  )
-
   return {
     progress,
     registrarResposta,
@@ -142,8 +95,6 @@ export function useProgress() {
     removeCustomCard,
     updateStreak,
     saveSimulado,
-    exportProgress,
-    importProgress,
   }
 }
 
