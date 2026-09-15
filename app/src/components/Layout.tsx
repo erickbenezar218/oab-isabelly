@@ -17,7 +17,7 @@ export default function Layout() {
       <header className="shrink-0 border-b border-brand-700/20 bg-surface-900/95 backdrop-blur-md safe-top">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3 md:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            <img src="/logo.svg" alt="" className="h-9 w-9 shrink-0" />
+            <img src="/logo-icon.svg" alt="" className="h-9 w-9 shrink-0 rounded-xl" />
             <div className="min-w-0">
               <p className="text-xs font-medium text-brand-300">SimulaOrdem ⚖️</p>
               <h1 className="truncate text-sm font-bold text-white md:text-base">Olá, {user?.name?.split(' ')[0] ?? 'estudante'}!</h1>

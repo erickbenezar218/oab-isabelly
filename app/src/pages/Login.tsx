@@ -66,9 +66,8 @@ export default function Login() {
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-surface-900 px-4 py-8">
-      <img src="/logo.svg" alt="SimulaOrdem" className="mb-6 h-16 w-16" />
-      <h1 className="text-2xl font-bold text-white">SimulaOrdem</h1>
-      <p className="mt-1 text-center text-sm text-purple-300/70">Simulados reais para a 1ª fase da OAB</p>
+      <img src="/logo.svg" alt="SimulaOrdem" className="mb-8 h-14 w-auto max-w-[280px]" />
+      <p className="text-center text-sm text-purple-300/70">Simulados reais para a 1ª fase da OAB</p>
 
       <form onSubmit={submit} className="mt-8 w-full max-w-sm space-y-3 rounded-2xl bg-surface-800 p-5">
         <div className="flex gap-2">
