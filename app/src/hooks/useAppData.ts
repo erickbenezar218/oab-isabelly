@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useAuth } from '../context/AuthContext'
+import { apiGetProgress, apiSaveProgress } from '../lib/api'
 import { defaultProgress, STORAGE_KEY, type UserProgress } from '../types'
 
-function loadProgress(): UserProgress {
+function loadLocalProgress(): UserProgress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return defaultProgress()
@@ -12,17 +14,41 @@ function loadProgress(): UserProgress {
 }
 
 export function useProgress() {
-  const [progress, setProgressState] = useState<UserProgress>(loadProgress)
+  const { token, setLimits } = useAuth()
+  const [progress, setProgressState] = useState<UserProgress>(loadLocalProgress)
+  const [syncing, setSyncing] = useState(false)
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    if (!token) {
+      setProgressState(loadLocalProgress())
+      return
+    }
+    setSyncing(true)
+    apiGetProgress(token)
+      .then(({ progress: remote, limits }) => {
+        setProgressState({ ...defaultProgress(), ...remote } as UserProgress)
+        setLimits(limits)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(remote))
+      })
+      .catch(() => setProgressState(loadLocalProgress()))
+      .finally(() => setSyncing(false))
+  }, [token, setLimits])
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
-  }, [progress])
+    if (!token) return
+    if (saveTimer.current) clearTimeout(saveTimer.current)
+    saveTimer.current = setTimeout(() => {
+      apiSaveProgress(token, progress as unknown as Record<string, unknown>).catch(() => {})
+    }, 800)
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current)
+    }
+  }, [progress, token])
 
   const setProgress = useCallback((updater: (prev: UserProgress) => UserProgress) => {
-    setProgressState((prev) => {
-      const next = updater(prev)
-      return next
-    })
+    setProgressState((prev) => updater(prev))
   }, [])
 
   const registrarResposta = useCallback(
@@ -41,9 +67,7 @@ export function useProgress() {
         const exists = prev.salvosRevisao.includes(questaoId)
         return {
           ...prev,
-          salvosRevisao: exists
-            ? prev.salvosRevisao.filter((id) => id !== questaoId)
-            : [...prev.salvosRevisao, questaoId],
+          salvosRevisao: exists ? prev.salvosRevisao.filter((id) => id !== questaoId) : [...prev.salvosRevisao, questaoId],
         }
       })
     },
@@ -59,10 +83,7 @@ export function useProgress() {
 
   const removeCustomCard = useCallback(
     (id: string) => {
-      setProgress((prev) => ({
-        ...prev,
-        customCards: prev.customCards.filter((c) => c.id !== id),
-      }))
+      setProgress((prev) => ({ ...prev, customCards: prev.customCards.filter((c) => c.id !== id) }))
     },
     [setProgress],
   )
@@ -89,6 +110,7 @@ export function useProgress() {
 
   return {
     progress,
+    syncing,
     registrarResposta,
     toggleSalvarRevisao,
     addCustomCard,

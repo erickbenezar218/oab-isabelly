@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { SimuladoHistoricoLista, SimuladoRevisaoDetalhe } from '../components/SimuladoRevisao'
+import { useAuth } from '../context/AuthContext'
 import { useApp } from '../context/AppContext'
 import { formatTempo } from '../hooks/useAppData'
+import { apiSimuladoStart } from '../lib/api'
 import {
   NOTA_APROVACAO,
   SIMULADO_TEMPO_TOTAL,
@@ -14,8 +17,10 @@ import {
 type Fase = 'setup' | 'prova' | 'resultado' | 'historico'
 
 export default function Simulado() {
+  const { token, limits } = useAuth()
   const { questoes, progress, loading, registrarResposta, saveSimulado, toggleSalvarRevisao } = useApp()
   const [fase, setFase] = useState<Fase>('setup')
+  const [limiteMsg, setLimiteMsg] = useState('')
   const [exameSelecionado, setExameSelecionado] = useState('')
   const [provaQuestoes, setProvaQuestoes] = useState<Questao[]>([])
   const [indice, setIndice] = useState(0)
@@ -36,7 +41,14 @@ export default function Simulado() {
     return [...map.entries()].filter(([, qs]) => qs.length >= SIMULADO_TOTAL)
   }, [questoes])
 
-  const iniciar = () => {
+  const iniciar = async () => {
+    setLimiteMsg('')
+    try {
+      if (token) await apiSimuladoStart(token)
+    } catch (e) {
+      setLimiteMsg(e instanceof Error ? e.message : 'Limite do plano atingido.')
+      return
+    }
     const pool = questoes.filter((q) => q.exame === exameSelecionado).sort((a, b) => a.numero - b.numero)
     const selecionadas = pool.slice(0, SIMULADO_TOTAL)
     setProvaQuestoes(selecionadas)
@@ -141,6 +153,24 @@ export default function Simulado() {
           </select>
         </label>
 
+        {limits && limits.plan === 'free' && (
+          <p className="rounded-xl bg-surface-800 px-3 py-2 text-xs text-purple-300/70">
+            Plano grátis: {limits.simuladosRestantesMes ?? 0} simulado(s) restante(s) este mês.{' '}
+            <Link to="/planos" className="text-brand-300 underline">
+              Ver Pro
+            </Link>
+          </p>
+        )}
+
+        {limiteMsg && (
+          <p className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-300">
+            {limiteMsg}{' '}
+            <Link to="/planos" className="underline">
+              Assinar Pro
+            </Link>
+          </p>
+        )}
+
         <SimuladoHistoricoLista
           simulados={progress.simulados}
           onAbrir={(s) => {
@@ -149,10 +179,19 @@ export default function Simulado() {
           }}
         />
 
+        {!limits?.historicoCompleto && progress.simulados.length > 0 && (
+          <p className="text-center text-xs text-purple-400/50">
+            Histórico completo disponível no plano Pro.{' '}
+            <Link to="/planos" className="text-brand-300 underline">
+              Upgrade
+            </Link>
+          </p>
+        )}
+
         <button
           type="button"
           disabled={!exameSelecionado}
-          onClick={iniciar}
+          onClick={() => void iniciar()}
           className="w-full rounded-xl bg-brand-600 py-4 font-bold text-white disabled:opacity-40"
         >
           Iniciar Simulado 📝

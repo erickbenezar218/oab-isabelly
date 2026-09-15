@@ -84,3 +84,28 @@ body {
 .safe-bottom {
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
 }
+
+.legal-content h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f0abfc;
+  margin-bottom: 0.5rem;
+}
+
+.legal-content section {
+  display: block;
+}
+
+.legal-content ul {
+  margin: 0.5rem 0 0 1.25rem;
+  list-style: disc;
+}
+
+.legal-content li {
+  margin-bottom: 0.35rem;
+}
+
+.legal-content a {
+  color: #e879f9;
+  text-decoration: underline;
+}

@@ -9,11 +9,11 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['favicon.svg', 'logo.svg'],
       manifest: {
-        name: 'OAB da Isabelly',
-        short_name: 'OAB Isabelly',
-        description: 'App de estudos para a prova da OAB — Isabelly ⚖️',
+        name: 'SimulaOrdem',
+        short_name: 'SimulaOrdem',
+        description: 'Simulados reais para a 1ª fase da OAB',
         theme_color: '#1a1025',
         background_color: '#0f0a14',
         display: 'standalone',
@@ -43,6 +43,10 @@ export default defineConfig({
       },
     }),
   ],
-  server: { host: true, port: 5173 },
+  server: {
+    host: true,
+    port: 5173,
+    proxy: { '/api': { target: 'http://localhost:3001', changeOrigin: true, rewrite: (p) => p.replace(/^\/api/, '') } },
+  },
   preview: { host: true, port: 4173 },
 })

@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const links = [
   { to: '/', label: 'Início', icon: '🏠' },
@@ -8,17 +9,31 @@ const links = [
 ]
 
 export default function Layout() {
+  const { user, limits, logout } = useAuth()
+  const isPro = limits?.plan === 'pro' || user?.plan === 'pro'
+
   return (
     <div className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-surface-900">
       <header className="shrink-0 border-b border-brand-700/20 bg-surface-900/95 backdrop-blur-md safe-top">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3 md:px-6">
-          <div className="min-w-0 pr-3">
-            <p className="text-xs font-medium text-brand-300">OAB da Isabelly ⚖️</p>
-            <h1 className="truncate text-sm font-bold text-white md:text-base">
-              Bora gabaritar essa OAB, Isabelly!
-            </h1>
+          <div className="flex min-w-0 items-center gap-3">
+            <img src="/logo.svg" alt="" className="h-9 w-9 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-brand-300">SimulaOrdem ⚖️</p>
+              <h1 className="truncate text-sm font-bold text-white md:text-base">Olá, {user?.name?.split(' ')[0] ?? 'estudante'}!</h1>
+            </div>
           </div>
-          <span className="shrink-0 text-2xl">⚖️</span>
+          <div className="flex shrink-0 items-center gap-2">
+            <NavLink
+              to="/planos"
+              className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${isPro ? 'bg-green-500/20 text-green-300' : 'bg-surface-700 text-purple-200'}`}
+            >
+              {isPro ? 'PRO' : 'FREE'}
+            </NavLink>
+            <button type="button" onClick={logout} className="text-lg opacity-60" title="Sair">
+              ⎋
+            </button>
+          </div>
         </div>
       </header>
 

@@ -56,7 +56,7 @@ export interface UserProgress {
   simulados: SimuladoResult[]
 }
 
-export const STORAGE_KEY = 'oab-isabelly-progress-v1'
+export const STORAGE_KEY = 'simulaordem-progress-v1'
 export const EXAM_DATE = new Date('2026-09-06T08:00:00')
 export const SIMULADO_TOTAL = 80
 export const SIMULADO_TEMPO_TOTAL = 5 * 60 * 60

@@ -1,6 +1,38 @@
 services:
-  oab-isabelly:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: simulaordem
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-simulaordem}
+      POSTGRES_DB: simulaordem
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U simulaordem']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: ./api
+    environment:
+      DATABASE_URL: postgresql://simulaordem:${POSTGRES_PASSWORD:-simulaordem}@db:5432/simulaordem
+      JWT_SECRET: ${JWT_SECRET:-troque-isso-no-coolify}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
     build: .
     ports:
-      - "8080:80"
+      - '8080:80'
+    depends_on:
+      - api
     restart: unless-stopped
+
+volumes:
+  pgdata:

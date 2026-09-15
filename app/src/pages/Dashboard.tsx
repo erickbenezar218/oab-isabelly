@@ -22,11 +22,11 @@ export default function Dashboard() {
   return (
     <div className="space-y-5">
       <section className="glow-pulse rounded-2xl bg-gradient-to-br from-brand-700/40 to-surface-700 p-5">
-        <p className="text-sm text-brand-200">Contagem regressiva</p>
+        <p className="text-sm text-brand-200">Reta final OAB</p>
         <p className="mt-1 text-3xl font-extrabold text-white">
           {dias === 0 ? 'É HOJE! 🎯' : `Faltam ${dias} dias`}
         </p>
-        <p className="mt-1 text-sm text-purple-200/80">para o dia 06/09/2026!</p>
+        <p className="mt-1 text-sm text-purple-200/80">para a 1ª fase — 06/09/2026</p>
       </section>
 
       <section className="grid grid-cols-3 gap-3">

@@ -1,80 +1,55 @@
-# OAB da Isabelly ⚖️
+# SimulaOrdem ⚖️
 
-App PWA de estudos para a reta final da prova da OAB (06/09/2026).
+Plataforma SaaS de simulados para a 1ª fase da OAB — flashcards, simulado real (80q / 5h) e estatísticas.
 
 **Repositório:** https://github.com/erickbenezar218/oab-isabelly
 
-## O que tem aqui
+## Planos
 
-- **1120 questões** de 14 exames (2019–2025; 43º via markdown local + 13 extraídos do [Prova da Ordem](https://www.provadaordem.com.br))
-- **Flashcards** estilo active recall (swipe / botões)
-- **Simulado realista** — 80 questões, 5h, cronômetro por questão, calculadora de ritmo
-- **Painel de desempenho** por matéria + cards customizados
-- **PWA** instalável no celular
-- Progresso salvo em **LocalStorage**
+| Plano | Preço | Inclui |
+|-------|-------|--------|
+| Grátis | R$ 0 | Flashcards ilimitados, 1 simulado/mês, último histórico |
+| Pro | R$ 24,90/mês | Simulados ilimitados, histórico completo, revisão de erros |
+| Reta Final | R$ 59,90 / 3 meses | Tudo do Pro |
+
+Pagamento via **Asaas** (integração fase 2).
+
+## Stack
+
+- **Frontend:** React + Vite + PWA + Tailwind
+- **API:** Fastify + PostgreSQL + JWT
+- **Deploy:** Docker Compose (Coolify)
 
 ## Desenvolvimento local
 
 ```bash
-# Instalar dependências do app
-cd app && npm install && npm run dev
+# Subir Postgres + API + Web
+cp .env.example .env
+docker compose up --build
 
-# Re-executar scraping (opcional)
-pip install -r scripts/requirements.txt
-playwright install chromium
-python3 scripts/scrape_oab.py
-cp banco_oab.json app/public/banco_oab.json
+# Ou separado:
+cd api && npm install && npm run dev   # :3001
+cd app && npm install && npm run dev   # :5173 (proxy /api)
 ```
 
-App em: http://localhost:5173
+- App: http://localhost:8080 (Docker) ou http://localhost:5173 (dev)
+- API health: http://localhost:3001/health
 
-## Build & Docker
+## Variáveis de ambiente
 
-```bash
-# Build de produção
-cd app && npm run build
-
-# Docker (na raiz do repo)
-docker compose up --build -d
-```
-
-App em: http://localhost:8080
-
-## Deploy Cloudflare Workers (static)
-
-No dashboard: **Workers & Pages** → projeto → Settings → Build:
-
-| Campo | Valor |
-|-------|--------|
-| Build command | `npm run build` |
-| Deploy command | `npx wrangler deploy` |
-
-Usa **npm workspaces** (um único `npm ci` na raiz). O `allowScripts` no `package.json` libera esbuild/workerd. Node **22+** (`.node-version`).
-
-Se falhar por scripts bloqueados, rode localmente `npm approve-scripts esbuild workerd` e commite o `package.json` atualizado.
-
-## Deploy (Vercel / Netlify)
-
-- **Root directory:** `app`
-- **Build command:** `npm run build`
-- **Output directory:** `dist`
-- Copie `banco_oab.json` para `app/public/` antes do deploy (já incluído no repo)
+Ver `.env.example`. No Coolify, configure `JWT_SECRET`, `POSTGRES_PASSWORD` e `CORS_ORIGIN`.
 
 ## Estrutura
 
 ```
-├── app/                 # React + Vite PWA
-├── scripts/scrape_oab.py
-├── banco_oab.json       # Banco consolidado
-├── Dockerfile
-└── docker-compose.yml
+├── app/           # Frontend React
+├── api/           # Backend Fastify + Postgres
+├── banco_oab.json # 1120 questões
+├── docker-compose.yml
+└── Dockerfile
 ```
 
-## Notas
+## Operador
 
-- 39º Exame e XXVIII Exame indisponíveis no site (em cadastramento) — não incluídos
-- OAB 2010.3 removido do banco (prova muito antiga)
-- 43º Exame extraído do markdown local (`questoes_oab_43_gabarito.md`)
-- App personalizado para **Isabelly** — single-user, sem multi-tenant
-
-Feito com 💜 para gabaritar essa OAB!
+R E BENEZAR DE SOUZA LTDA — CNPJ 37.409.487/0001-70  
+Suporte: suporte@simulaordem.com.br (Zoho Mail)
