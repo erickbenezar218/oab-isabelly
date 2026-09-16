@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { IconSparkles } from './icons'
+import TutorMarkdown from './TutorMarkdown'
 import { useAuth } from '../context/AuthContext'
 import {
   apiTutorChat,
@@ -21,6 +22,23 @@ function toPayload(q: Questao): TutorQuestaoPayload {
     alternativas: q.alternativas,
     resposta_correta: q.resposta_correta,
   }
+}
+
+function MessageBubble({ message }: { message: TutorMessage }) {
+  const isAssistant = message.role === 'assistant'
+  return (
+    <div
+      className={`rounded-xl px-4 py-3 ${
+        isAssistant ? 'border border-brand-100 bg-white' : 'bg-surface-700'
+      }`}
+    >
+      {isAssistant ? (
+        <TutorMarkdown content={message.content} />
+      ) : (
+        <p className="text-sm leading-relaxed text-ink">{message.content}</p>
+      )}
+    </div>
+  )
 }
 
 export default function TutorPanel({
@@ -45,6 +63,7 @@ export default function TutorPanel({
   const chatEndRef = useRef<HTMLDivElement>(null)
 
   const canChat = limits?.tutorChat ?? user?.plan === 'pro'
+  const acertou = respostaUsuario === questao.resposta_correta
 
   useEffect(() => {
     setExplanation(null)
@@ -130,8 +149,14 @@ export default function TutorPanel({
 
   if (!loaded) {
     return (
-      <div className="card rounded-2xl p-4">
-        <div className="flex items-center gap-2 text-sm text-muted">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-brand-100 bg-brand-50 px-4 py-3">
+          <p className="flex items-center gap-2 text-sm font-semibold text-brand-700">
+            <IconSparkles size={16} />
+            Professor IA
+          </p>
+        </div>
+        <div className="flex items-center gap-2 p-4 text-sm text-muted">
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
           Carregando IA...
         </div>
@@ -141,115 +166,124 @@ export default function TutorPanel({
 
   if (!token) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-brand-50 p-4">
-        <p className="flex items-center gap-2 text-sm font-medium text-brand-700">
-          <IconSparkles size={16} />
-          Professor IA
-        </p>
-        <p className="mt-1 text-xs text-muted">Entre na conta para ver explicações geradas por IA.</p>
-        <Link to="/login" className="mt-3 inline-block text-xs font-semibold text-brand-600 underline">
-          Fazer login
-        </Link>
+      <div className="overflow-hidden rounded-2xl border border-brand-200 bg-brand-50 shadow-sm">
+        <div className="px-4 py-3">
+          <p className="flex items-center gap-2 text-sm font-semibold text-brand-700">
+            <IconSparkles size={16} />
+            Professor IA
+          </p>
+          <p className="mt-1 text-xs text-muted">Entre na conta para ver explicações geradas por IA.</p>
+          <Link to="/login" className="mt-3 inline-block text-xs font-semibold text-brand-600 underline">
+            Fazer login
+          </Link>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="flex items-center justify-between gap-2">
-        <p className="flex items-center gap-2 text-sm font-semibold text-ink">
-          <IconSparkles size={16} className="text-brand-600" />
-          Professor IA
-        </p>
-        {canChat && explanation && (
-          <span className="text-[10px] text-muted">{remaining} perguntas restantes</span>
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-3 border-b border-brand-100 bg-gradient-to-r from-brand-50 to-white px-4 py-3">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white shadow-sm">
+            <IconSparkles size={18} />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-ink">Professor IA</p>
+            <p className="text-[11px] text-muted">{questao.materia}</p>
+          </div>
+        </div>
+        {respostaUsuario && (
+          <span
+            className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold ${
+              acertou ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }`}
+          >
+            {acertou ? 'Acertou' : `Errou · gabarito ${questao.resposta_correta}`}
+          </span>
         )}
       </div>
 
-      {!explanation ? (
-        <>
-          <p className="mt-2 text-xs text-muted">
-            {explaining
-              ? 'Analisando a questão e montando o gabarito comentado…'
-              : 'Gabarito comentado por IA — explicação automática após responder.'}
-            {limits?.iaExplicacoesDia != null && (
-              <span className="mt-1 block text-muted-light">
-                Plano grátis: até {limits.iaExplicacoesDia} explicações novas/dia.
-              </span>
-            )}
-          </p>
-          {!explaining && (
-            <button
-              type="button"
-              onClick={() => void explain()}
-              className="mt-3 w-full rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
-            >
-              Ver explicação IA
-            </button>
-          )}
-          {explaining && (
-            <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-brand-50 py-3 text-sm text-brand-700">
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
-              IA analisando...
-            </div>
-          )}
-        </>
-      ) : (
-        <>
-          <div className="mt-3 max-h-64 space-y-3 overflow-y-auto pr-1">
-            {messages.map((m, i) => (
-              <div
-                key={`${m.createdAt}-${i}`}
-                className={`rounded-xl px-3 py-2.5 text-sm leading-relaxed ${
-                  m.role === 'assistant' ? 'bg-brand-50 text-ink' : 'bg-surface-700 text-ink'
-                }`}
-              >
-                {m.role === 'assistant' && (
-                  <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-brand-500">Professor IA</p>
-                )}
-                <p className="whitespace-pre-wrap">{m.content}</p>
-              </div>
-            ))}
-            {loading && (
-              <div className="flex items-center gap-2 text-xs text-muted">
-                <span className="h-3 w-3 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
-                IA pensando...
-              </div>
-            )}
-            <div ref={chatEndRef} />
-          </div>
-
-          {canChat && remaining > 0 ? (
-            <form onSubmit={send} className="mt-3 flex gap-2">
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Tire sua dúvida sobre esta questão..."
-                disabled={loading}
-                className="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-brand-400"
-              />
-              <button
-                type="submit"
-                disabled={loading || !input.trim()}
-                className="shrink-0 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-40"
-              >
-                Enviar
-              </button>
-            </form>
-          ) : !canChat ? (
-            <p className="mt-3 text-center text-xs text-muted">
-              Chat ilimitado no{' '}
-              <Link to="/planos" className="font-semibold text-brand-600 underline">
-                plano Pro
-              </Link>
+      <div className="p-4">
+        {!explanation ? (
+          <>
+            <p className="text-sm text-muted">
+              {explaining
+                ? 'Analisando a questão e montando o gabarito comentado…'
+                : 'Gabarito comentado por IA — explicação automática após responder.'}
             </p>
-          ) : (
-            <p className="mt-3 text-center text-xs text-muted">Limite de perguntas nesta questão atingido.</p>
-          )}
-        </>
-      )}
+            {limits?.iaExplicacoesDia != null && (
+              <p className="mt-1 text-xs text-muted-light">
+                Plano grátis: até {limits.iaExplicacoesDia} explicações novas/dia.
+              </p>
+            )}
+            {!explaining ? (
+              <button
+                type="button"
+                onClick={() => void explain()}
+                className="btn-primary mt-4 w-full py-2.5 text-sm"
+              >
+                Ver explicação IA
+              </button>
+            ) : (
+              <div className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-brand-50 py-4 text-sm font-medium text-brand-700">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+                IA analisando...
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="space-y-3">
+              {messages.map((m, i) => (
+                <MessageBubble key={`${m.createdAt}-${i}`} message={m} />
+              ))}
+              {loading && (
+                <div className="flex items-center gap-2 rounded-xl bg-brand-50 px-4 py-3 text-xs text-muted">
+                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+                  IA pensando...
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
 
-      {error && <p className="mt-2 text-center text-xs text-red-600">{error}</p>}
+            {canChat && remaining > 0 ? (
+              <form onSubmit={send} className="mt-4 flex gap-2 border-t border-slate-100 pt-4">
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Tire sua dúvida sobre esta questão..."
+                  disabled={loading}
+                  className="input-field min-w-0 flex-1 py-2.5 text-sm"
+                />
+                <button
+                  type="submit"
+                  disabled={loading || !input.trim()}
+                  className="btn-primary shrink-0 px-4 py-2.5 text-sm disabled:opacity-40"
+                >
+                  Enviar
+                </button>
+              </form>
+            ) : !canChat ? (
+              <p className="mt-4 border-t border-slate-100 pt-4 text-center text-xs text-muted">
+                Chat ilimitado no{' '}
+                <Link to="/planos" className="font-semibold text-brand-600 underline">
+                  plano Pro
+                </Link>
+              </p>
+            ) : (
+              <p className="mt-4 border-t border-slate-100 pt-4 text-center text-xs text-muted">
+                Limite de perguntas nesta questão atingido.
+              </p>
+            )}
+          </>
+        )}
+
+        {error && (
+          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-center text-xs text-red-700">{error}</p>
+        )}
+      </div>
     </div>
   )
 }
