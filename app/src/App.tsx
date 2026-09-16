@@ -12,6 +12,7 @@ import Pecas from './pages/Pecas'
 import Revisao from './pages/Revisao'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
+import ResetPassword from './pages/ResetPassword'
 import Checkout from './pages/Checkout'
 import Planos from './pages/Planos'
 import PlanosSucesso from './pages/PlanosSucesso'
@@ -28,6 +29,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/redefinir-senha" element={<ResetPassword />} />
             <Route path="/planos" element={<Planos />} />
             <Route path="/planos/checkout" element={<Checkout />} />
             <Route path="/planos/sucesso" element={<PlanosSucesso />} />

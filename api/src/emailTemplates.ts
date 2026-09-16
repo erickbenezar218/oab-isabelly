@@ -24,11 +24,12 @@ function logoUrl() {
   return `${appUrl()}/logo.svg`
 }
 
-function btn(href: string, label: string, variant: 'primary' | 'secondary' = 'primary') {
+function btn(href: string, label: string, variant: 'primary' | 'secondary' = 'primary', newTab = false) {
   const bg = variant === 'primary' ? C.primary : C.card
   const color = variant === 'primary' ? '#FFFFFF' : C.primary
   const border = variant === 'primary' ? 'none' : `1px solid ${C.border}`
-  return `<a href="${href}" style="display:inline-block;margin-top:20px;padding:12px 28px;background:${bg};color:${color};border:${border};border-radius:12px;font-size:14px;font-weight:600;text-decoration:none">${label}</a>`
+  const target = newTab ? ' target="_blank" rel="noopener noreferrer"' : ''
+  return `<a href="${href}"${target} style="display:inline-block;margin-top:20px;padding:12px 28px;background:${bg};color:${color};border:${border};border-radius:12px;font-size:14px;font-weight:600;text-decoration:none">${label}</a>`
 }
 
 function infoBox(content: string, tone: 'neutral' | 'success' = 'neutral') {
@@ -185,6 +186,26 @@ export function renderProAccessEmail(params: {
   return {
     html,
     text: `Olá ${params.name}, seu plano Pro está ativo!\n\nE-mail: ${params.email}\nAcesse: ${appUrl()}/app${textFooter}`,
+  }
+}
+
+export function renderPasswordResetEmail(params: { name: string; resetUrl: string }) {
+  const bodyHtml = `
+    <p style="margin:0 0 16px">Olá, <strong style="color:${C.heading}">${params.name}</strong>. Recebemos um pedido para redefinir a senha da sua conta SimulaOrdem.</p>
+    <p style="margin:0 0 16px;font-size:14px;color:${C.body}">Clique no botão abaixo para criar uma nova senha. O link abre em uma nova aba e expira em <strong>1 hora</strong>.</p>
+    ${btn(params.resetUrl, 'Redefinir minha senha', 'primary', true)}
+    <p style="margin:20px 0 0;font-size:12px;color:${C.caption};word-break:break-all">Se o botão não funcionar, copie e cole este link no navegador:<br/><a href="${params.resetUrl}" style="color:${C.accent}">${params.resetUrl}</a></p>
+    <p style="margin:16px 0 0;font-size:14px;color:${C.caption}">Se você não pediu isso, ignore este e-mail — sua senha continua a mesma.</p>`
+
+  const { html, textFooter } = renderEmailLayout({
+    preheader: 'Redefina sua senha do SimulaOrdem',
+    title: 'Redefinir senha',
+    bodyHtml,
+  })
+
+  return {
+    html,
+    text: `Olá ${params.name},\n\nRedefina sua senha: ${params.resetUrl}\n\nVálido por 1 hora. Se não foi você, ignore.${textFooter}`,
   }
 }
 

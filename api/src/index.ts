@@ -5,7 +5,9 @@ import { comparePassword, effectivePlan, hashPassword, isGoogleConfigured, signT
 import { iaDailyLimit } from './iaLimits.js'
 import { canStartSimulado, canUseCronograma, canUseTutor, currentYearMonth, filterProgressForPlan, isPro, recordSimuladoUsage } from './plans.js'
 import { isEmail2faEnabled, isEmailConfigured } from './email.js'
-import { sendLoginOtpEmail, sendWelcomeEmail } from './emails.js'
+import { sendLoginOtpEmail, sendPasswordResetEmail, sendWelcomeEmail } from './emails.js'
+import { appUrl } from './email.js'
+import { createPasswordResetToken, resetPasswordWithToken, validatePasswordResetToken } from './passwordReset.js'
 import { isAsaasConfigured, isAsaasSandbox } from './asaas.js'
 import { registerBillingRoutes } from './billing.js'
 import { isGeminiConfigured } from './gemini.js'
@@ -106,6 +108,42 @@ app.post<{ Body: { email: string; password: string } }>('/auth/login', async (re
   const plan = effectivePlan(user.plan, user.plan_expires_at)
   const token = signToken({ sub: user.id, email: user.email, plan })
   return { token, user: userPublic(user) }
+})
+
+const FORGOT_PASSWORD_MSG =
+  'Se existir uma conta com este e-mail, enviamos um link para redefinir a senha. Verifique a caixa de entrada e o spam.'
+
+app.post<{ Body: { email: string } }>('/auth/forgot-password', async (req, reply) => {
+  const email = req.body?.email?.trim().toLowerCase()
+  if (!email?.includes('@')) return reply.code(400).send({ error: 'Informe um e-mail válido.' })
+  if (!isEmailConfigured()) {
+    return reply.code(503).send({ error: 'Envio de e-mail indisponível no momento. Tente mais tarde.' })
+  }
+
+  const { rows } = await pool.query<UserRow>('SELECT * FROM users WHERE email = $1', [email])
+  const user = rows[0]
+  if (user?.password_hash) {
+    const token = await createPasswordResetToken(user.id)
+    const resetUrl = `${appUrl()}/redefinir-senha?token=${encodeURIComponent(token)}`
+    sendPasswordResetEmail({ to: user.email, name: user.name, resetUrl })
+  }
+
+  return { ok: true, message: FORGOT_PASSWORD_MSG }
+})
+
+app.get<{ Querystring: { token?: string } }>('/auth/reset-password/validate', async (req, reply) => {
+  const token = req.query.token ?? ''
+  const result = await validatePasswordResetToken(token)
+  if (!result.ok) return reply.code(400).send({ error: result.reason, valid: false })
+  return { valid: true, email: result.email }
+})
+
+app.post<{ Body: { token: string; password: string } }>('/auth/reset-password', async (req, reply) => {
+  const { token, password } = req.body ?? {}
+  if (!token?.trim()) return reply.code(400).send({ error: 'Link inválido.' })
+  const result = await resetPasswordWithToken(token, password ?? '')
+  if (!result.ok) return reply.code(400).send({ error: result.reason })
+  return { ok: true, message: 'Senha alterada com sucesso. Você já pode entrar.' }
 })
 
 app.post<{ Body: { challengeId: string; code: string } }>('/auth/verify-otp', async (req, reply) => {

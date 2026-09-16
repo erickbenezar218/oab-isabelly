@@ -1,6 +1,7 @@
 import { fireAndForgetEmail } from './email.js'
 import {
   renderLoginOtpEmail,
+  renderPasswordResetEmail,
   renderProAccessEmail,
   renderWelcomeEmail,
 } from './emailTemplates.js'
@@ -32,6 +33,20 @@ export function sendProAccessEmail(params: { to: string; name: string; expiresAt
   fireAndForgetEmail({
     to: params.to,
     subject: 'SimulaOrdem Pro — acesso liberado',
+    html,
+    text,
+  })
+}
+
+export function sendPasswordResetEmail(params: { to: string; name: string; resetUrl: string }) {
+  const { html, text } = renderPasswordResetEmail({
+    name: params.name,
+    resetUrl: params.resetUrl,
+  })
+
+  fireAndForgetEmail({
+    to: params.to,
+    subject: 'Redefinir senha — SimulaOrdem',
     html,
     text,
   })

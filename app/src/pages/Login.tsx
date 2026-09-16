@@ -230,7 +230,12 @@ export default function Login() {
                       />
                       Lembrar de mim
                     </label>
-                    <a href="mailto:suporte@simulaordem.com.br" className="text-sm font-medium text-brand-600 hover:underline">
+                    <a
+                      href="/redefinir-senha"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-medium text-brand-600 hover:underline"
+                    >
                       Esqueceu a senha?
                     </a>
                   </div>

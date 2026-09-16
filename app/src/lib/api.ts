@@ -75,6 +75,35 @@ export async function apiLogin(email: string, password: string): Promise<LoginRe
   return { token: data.token, user: data.user }
 }
 
+export async function apiForgotPassword(email: string) {
+  const res = await fetch(`${API_URL}/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao solicitar redefinição')
+  return data as { ok: true; message: string }
+}
+
+export async function apiValidateResetToken(token: string) {
+  const res = await fetch(`${API_URL}/auth/reset-password/validate?token=${encodeURIComponent(token)}`)
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Link inválido')
+  return data as { valid: true; email: string }
+}
+
+export async function apiResetPassword(token: string, password: string) {
+  const res = await fetch(`${API_URL}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, password }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao redefinir senha')
+  return data as { ok: true; message: string }
+}
+
 export async function apiVerifyOtp(challengeId: string, code: string) {
   const res = await fetch(`${API_URL}/auth/verify-otp`, {
     method: 'POST',
