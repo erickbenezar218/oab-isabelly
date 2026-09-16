@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { IconSparkles } from './icons'
 import { useAuth } from '../context/AuthContext'
 import {
   apiTutorChat,
@@ -130,7 +131,10 @@ export default function TutorPanel({
   if (!token) {
     return (
       <div className="rounded-2xl border border-slate-200 bg-brand-50 p-4">
-        <p className="text-sm font-medium text-brand-700">✨ Professor IA</p>
+        <p className="flex items-center gap-2 text-sm font-medium text-brand-700">
+          <IconSparkles size={16} />
+          Professor IA
+        </p>
         <p className="mt-1 text-xs text-muted">Entre na conta para ver explicações geradas por IA.</p>
         <Link to="/login" className="mt-3 inline-block text-xs font-semibold text-brand-600 underline">
           Fazer login
@@ -142,7 +146,10 @@ export default function TutorPanel({
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-ink">✨ Professor IA</p>
+        <p className="flex items-center gap-2 text-sm font-semibold text-ink">
+          <IconSparkles size={16} className="text-brand-600" />
+          Professor IA
+        </p>
         {canChat && explanation && (
           <span className="text-[10px] text-muted">{remaining} perguntas restantes</span>
         )}

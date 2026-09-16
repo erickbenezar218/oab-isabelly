@@ -2,7 +2,7 @@
 
 @theme {
   --font-sans: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
-  --color-brand-50: #f0fdfa;
+  --color-brand-50: #e6f0ef;
   --color-brand-100: #ccfbf1;
   --color-brand-200: #99f6e4;
   --color-brand-300: #5eead4;
@@ -17,6 +17,9 @@
   --color-ink: #0f172a;
   --color-muted: #64748b;
   --color-muted-light: #94a3b8;
+  --shadow-nav: 0 -4px 20px rgba(15, 23, 42, 0.06);
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-card-hover: 0 10px 25px rgba(15, 23, 42, 0.08), 0 4px 10px rgba(15, 23, 42, 0.04);
 }
 
 * {
@@ -55,7 +58,13 @@ body {
   border-radius: 1rem;
   border: 1px solid var(--color-surface-600);
   background: var(--color-surface-800);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow-card);
+}
+
+.card-featured {
+  background: var(--color-brand-600);
+  border: none;
+  box-shadow: var(--shadow-card-hover);
 }
 
 .btn-primary {
@@ -68,6 +77,40 @@ body {
 
 .btn-primary:hover {
   background: var(--color-brand-700);
+}
+
+.btn-secondary {
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-surface-600);
+  background: transparent;
+  color: var(--color-brand-600);
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--color-surface-700);
+}
+
+.input-field {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-surface-600);
+  background: #fff;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--color-ink);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input-field::placeholder {
+  color: var(--color-muted-light);
+}
+
+.input-field:focus {
+  border-color: var(--color-brand-400);
+  box-shadow: 0 0 0 2px rgba(60, 143, 146, 0.2);
 }
 
 .card-swipe {
@@ -85,18 +128,14 @@ body {
   opacity: 0;
 }
 
-@keyframes pulse-soft {
-  0%,
-  100% {
-    box-shadow: 0 4px 24px rgba(28, 63, 58, 0.15);
-  }
-  50% {
-    box-shadow: 0 8px 32px rgba(28, 63, 58, 0.22);
-  }
+.app-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
 }
 
-.glow-pulse {
-  animation: pulse-soft 3s ease-in-out infinite;
+.shadow-nav {
+  box-shadow: var(--shadow-nav);
 }
 
 .safe-top {

@@ -1,4 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { IconArrowRight, IconChart, IconCheck, IconClipboard } from '../components/icons'
+import PageHeader from '../components/ui/PageHeader'
+import StatCard from '../components/ui/StatCard'
 import { useApp } from '../context/AppContext'
 import { shuffle } from '../hooks/useAppData'
 
@@ -86,14 +89,11 @@ export default function Pecas() {
   }
 
   return (
-    <div className="space-y-5">
-      <section>
-        <p className="text-xs font-semibold uppercase tracking-wider text-brand-600">2ª fase OAB</p>
-        <h1 className="text-xl font-bold text-ink">Adivinhe a peça</h1>
-        <p className="mt-1 text-sm text-muted">
-          Leia o caso e escolha qual peça processual deve ser elaborada.
-        </p>
-      </section>
+    <div className="space-y-6">
+      <PageHeader
+        title="Adivinhe a peça"
+        subtitle="2ª fase OAB — leia o caso e escolha a peça processual correta."
+      />
 
       <details className="card rounded-2xl p-4">
         <summary className="cursor-pointer text-sm font-semibold text-brand-700">Método dos 3 pilares (como acertar a peça)</summary>
@@ -104,11 +104,17 @@ export default function Pecas() {
         </ol>
       </details>
 
-      <section className="grid grid-cols-3 gap-3">
-        <Stat label="Casos" value={String(banco.meta.total)} />
-        <Stat label="Seus acertos" value={`${stats.pct}%`} highlight={stats.pct >= 60} />
-        <Stat label="Tentativas" value={String(stats.total)} />
-      </section>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <StatCard label="Casos" value={String(banco.meta.total)} icon={<IconClipboard size={20} />} />
+        <StatCard
+          label="Seus acertos"
+          value={`${stats.pct}%`}
+          delta={stats.pct >= 60 ? 'Bom desempenho' : 'Continue praticando'}
+          deltaTone={stats.pct >= 60 ? 'up' : 'neutral'}
+          icon={<IconChart size={20} />}
+        />
+        <StatCard label="Tentativas" value={String(stats.total)} icon={<IconCheck size={20} />} />
+      </div>
 
       <div className="flex flex-wrap gap-2">
         <FilterChip active={areaFiltro === 'todas'} onClick={() => setAreaFiltro('todas')}>
@@ -152,7 +158,7 @@ export default function Pecas() {
                 className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition ${cls} disabled:cursor-default`}
               >
                 {alt}
-                {revelado && isCorreta && <span className="ml-2 text-green-600">✓</span>}
+                {revelado && isCorreta && <IconCheck size={16} className="ml-2 inline text-green-600" />}
               </button>
             )
           })}
@@ -178,21 +184,17 @@ export default function Pecas() {
               Confirmar
             </button>
           ) : (
-            <button type="button" onClick={proximo} className="flex-1 rounded-xl bg-brand-600 py-3 text-sm font-semibold text-white">
-              Próximo caso →
+            <button
+              type="button"
+              onClick={proximo}
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-600 py-3 text-sm font-semibold text-white"
+            >
+              Próximo caso
+              <IconArrowRight size={16} />
             </button>
           )}
         </div>
       </article>
-    </div>
-  )
-}
-
-function Stat({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
-  return (
-    <div className="card rounded-xl p-3 text-center">
-      <p className={`text-xl font-bold ${highlight ? 'text-green-600' : 'text-ink'}`}>{value}</p>
-      <p className="mt-1 text-[10px] text-muted">{label}</p>
     </div>
   )
 }

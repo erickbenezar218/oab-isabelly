@@ -1,5 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import {
+  IconArrowLeft,
+  IconArrowRight,
+  IconBookmark,
+  IconCircleCheck,
+  IconClipboard,
+  IconClock,
+  IconRocket,
+  IconCheck,
+} from '../components/icons'
+import PageHeader from '../components/ui/PageHeader'
 import { SimuladoHistoricoLista, SimuladoRevisaoDetalhe } from '../components/SimuladoRevisao'
 import { useAuth } from '../context/AuthContext'
 import { useApp } from '../context/AppContext'
@@ -126,12 +137,13 @@ export default function Simulado() {
   const tempoIdeal = (indice + 1) * TEMPO_POR_QUESTAO
   const tempoGasto = Math.floor((Date.now() - inicioProva) / 1000)
   const diffRitmo = tempoIdeal - tempoGasto
-  const ritmoMsg =
+  const ritmo =
     diffRitmo > 60
-      ? `Você está ${formatTempo(diffRitmo)} adiantada! 🚀`
+      ? { Icon: IconRocket, text: `Você está ${formatTempo(diffRitmo)} adiantada!` }
       : diffRitmo < -60
-        ? `Você está ${formatTempo(Math.abs(diffRitmo))} atrasada ⏰`
-        : 'Ritmo ideal! 👌'
+        ? { Icon: IconClock, text: `Você está ${formatTempo(Math.abs(diffRitmo))} atrasada` }
+        : { Icon: IconCircleCheck, text: 'Ritmo ideal!' }
+  const RitmoIcon = ritmo.Icon
 
   const tempoQuestaoCor = tempoQuestao > TEMPO_POR_QUESTAO ? 'text-red-400' : tempoQuestao > TEMPO_POR_QUESTAO * 0.85 ? 'text-yellow-400' : 'text-green-400'
 
@@ -139,13 +151,11 @@ export default function Simulado() {
 
   if (fase === 'setup') {
     return (
-      <div className="space-y-5">
-        <section className="card rounded-2xl p-5">
-          <h2 className="text-lg font-bold text-ink">Simulado Realista OAB</h2>
-          <p className="mt-2 text-sm text-muted">
-            Aprovação: {NOTA_APROVACAO}/80 · meta ~3min45s/questão
-          </p>
-        </section>
+      <div className="space-y-6">
+        <PageHeader
+          title="Simulado realista"
+          subtitle={`Aprovação: ${NOTA_APROVACAO}/80 · meta ~3min45s por questão`}
+        />
 
         <div className="grid gap-2 sm:grid-cols-3">
           {(Object.keys(SIMULADO_MODOS) as SimuladoModo[]).map((m) => (
@@ -218,9 +228,10 @@ export default function Simulado() {
           type="button"
           disabled={!exameSelecionado}
           onClick={() => void iniciar()}
-          className="w-full rounded-xl bg-brand-600 py-4 font-bold text-white disabled:opacity-40"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-4 font-bold text-white disabled:opacity-40"
         >
-          Iniciar {config.label} 📝
+          <IconClipboard size={20} />
+          Iniciar {config.label}
         </button>
       </div>
     )
@@ -274,8 +285,14 @@ export default function Simulado() {
     <div className="space-y-3">
       <div className="sticky top-0 z-30 space-y-2 rounded-xl border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur">
         <div className="flex justify-between text-xs">
-          <span className="text-muted">⏱ Global: {formatTempo(tempoGlobal)}</span>
-          <span className={tempoQuestaoCor}>Questão: {formatTempo(tempoQuestao)}</span>
+          <span className="inline-flex items-center gap-1 text-muted">
+            <IconClock size={14} />
+            Global: {formatTempo(tempoGlobal)}
+          </span>
+          <span className={`inline-flex items-center gap-1 ${tempoQuestaoCor}`}>
+            <IconClock size={14} />
+            Questão: {formatTempo(tempoQuestao)}
+          </span>
         </div>
         <div className="h-1.5 overflow-hidden rounded-full bg-surface-700">
           <div
@@ -283,7 +300,10 @@ export default function Simulado() {
             style={{ width: `${(respondidas / provaTotal) * 100}%` }}
           />
         </div>
-        <p className="text-center text-[11px] text-brand-500">{ritmoMsg}</p>
+        <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-brand-500">
+          <RitmoIcon size={14} />
+          {ritmo.text}
+        </p>
       </div>
 
       <div className="flex flex-wrap gap-1">
@@ -347,9 +367,10 @@ export default function Simulado() {
             })
             toggleSalvarRevisao(questaoAtual.id)
           }}
-          className={`rounded-xl px-4 py-2.5 text-sm ${marcadas.has(questaoAtual.id) ? 'bg-yellow-100 text-yellow-800' : 'bg-surface-700 text-muted'}`}
+          className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm ${marcadas.has(questaoAtual.id) ? 'bg-yellow-100 text-yellow-800' : 'bg-surface-700 text-muted'}`}
         >
-          🔖 Revisar
+          <IconBookmark size={16} />
+          Revisar
         </button>
         <button
           type="button"
@@ -358,9 +379,10 @@ export default function Simulado() {
             setIndice((i) => i - 1)
             setTempoQuestao(0)
           }}
-          className="flex-1 rounded-xl bg-surface-700 py-2.5 text-sm text-ink disabled:opacity-30"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-surface-700 py-2.5 text-sm text-ink disabled:opacity-30"
         >
-          ← Anterior
+          <IconArrowLeft size={16} />
+          Anterior
         </button>
         {indice < provaQuestoes.length - 1 ? (
           <button
@@ -369,13 +391,19 @@ export default function Simulado() {
               setIndice((i) => i + 1)
               setTempoQuestao(0)
             }}
-            className="flex-1 rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white"
           >
-            Próxima →
+            Próxima
+            <IconArrowRight size={16} />
           </button>
         ) : (
-          <button type="button" onClick={finalizar} className="flex-1 rounded-xl bg-green-600 py-2.5 text-sm font-semibold text-white">
-            Finalizar ✓
+          <button
+            type="button"
+            onClick={finalizar}
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-green-600 py-2.5 text-sm font-semibold text-white"
+          >
+            <IconCheck size={16} />
+            Finalizar
           </button>
         )}
       </div>

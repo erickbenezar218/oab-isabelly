@@ -1,5 +1,7 @@
 import confetti from 'canvas-confetti'
 import { useCallback, useMemo, useRef, useState } from 'react'
+import { IconArrowLeft, IconArrowRight, IconCheck, IconStar, IconStarOutline, IconX } from '../components/icons'
+import PageHeader from '../components/ui/PageHeader'
 import TutorPanel from '../components/TutorPanel'
 import { useApp } from '../context/AppContext'
 import { shuffle } from '../hooks/useAppData'
@@ -80,7 +82,11 @@ export default function Flashcards() {
   if (loading) return <Loading />
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      <PageHeader
+        title="Flashcards"
+        subtitle="Active recall — revele o gabarito e marque se acertou ou errou."
+      />
       <div className="flex gap-2 overflow-x-auto pb-1">
         {(['materia', 'exame', 'revisao'] as FiltroTipo[]).map((t) => (
           <button
@@ -193,33 +199,51 @@ export default function Flashcards() {
               type="button"
               disabled={!mostrarGabarito}
               onClick={() => responder(false)}
-              className="flex-1 rounded-xl bg-red-600/80 py-3 text-sm font-semibold text-white disabled:opacity-40"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-600/80 py-3 text-sm font-semibold text-white disabled:opacity-40"
             >
-              ❌ Errei / Revisar
+              <IconX size={16} />
+              Errei / Revisar
             </button>
             <button
               type="button"
               disabled={!mostrarGabarito}
               onClick={() => responder(selected === atual.resposta_correta)}
-              className="flex-1 rounded-xl bg-green-600/80 py-3 text-sm font-semibold text-white disabled:opacity-40"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-green-600/80 py-3 text-sm font-semibold text-white disabled:opacity-40"
             >
-              ✅ Acertei / Dominei
+              <IconCheck size={16} />
+              Acertei / Dominei
             </button>
           </div>
 
           <button
             type="button"
             onClick={() => toggleSalvarRevisao(atual.id)}
-            className={`w-full rounded-xl py-2.5 text-sm font-medium ${
+            className={`flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium ${
               progress.salvosRevisao.includes(atual.id)
                 ? 'bg-brand-50 text-brand-600'
                 : 'bg-surface-700 text-muted'
             }`}
           >
-            {progress.salvosRevisao.includes(atual.id) ? '⭐ Salvo para revisão' : '☆ Salvar para revisar depois'}
+            {progress.salvosRevisao.includes(atual.id) ? (
+              <>
+                <IconStar size={16} />
+                Salvo para revisão
+              </>
+            ) : (
+              <>
+                <IconStarOutline size={16} />
+                Salvar para revisar depois
+              </>
+            )}
           </button>
 
-          <p className="text-center text-[11px] text-muted-light">Deslize ← erro · → acerto (após revelar gabarito)</p>
+          <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-muted-light">
+            Deslize
+            <IconArrowLeft size={12} />
+            erro ·
+            <IconArrowRight size={12} />
+            acerto (após revelar gabarito)
+          </p>
         </>
       ) : null}
     </div>

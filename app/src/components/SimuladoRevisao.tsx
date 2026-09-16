@@ -1,4 +1,14 @@
 import { useMemo, useState } from 'react'
+import {
+  IconArrowLeft,
+  IconArrowRight,
+  IconCheck,
+  IconStar,
+  IconStarOutline,
+  IconTrophy,
+  QuestionStatusIcon,
+  QuestionStatusLabel,
+} from './icons'
 import TutorPanel from './TutorPanel'
 import { formatTempo } from '../hooks/useAppData'
 import { NOTA_APROVACAO, SIMULADO_TOTAL, type Questao, type SimuladoResult } from '../types'
@@ -125,8 +135,13 @@ export function SimuladoRevisaoDetalhe({
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <button type="button" onClick={() => setQuestaoAtivaId(null)} className="rounded-lg bg-surface-700 px-3 py-2 text-sm text-muted">
-            ← Lista
+          <button
+            type="button"
+            onClick={() => setQuestaoAtivaId(null)}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-surface-700 px-3 py-2 text-sm text-muted"
+          >
+            <IconArrowLeft size={16} />
+            Lista
           </button>
           <p className="text-xs text-muted">
             {indiceAtivo + 1}/{filtradas.length} · Q{questaoAtiva.numero}
@@ -142,7 +157,7 @@ export function SimuladoRevisaoDetalhe({
               st === 'acerto' ? 'bg-green-50 text-green-700' : st === 'erro' ? 'bg-red-50 text-red-700' : 'bg-yellow-50 text-yellow-700'
             }`}
           >
-            {st === 'acerto' ? '✅ Acertou' : st === 'erro' ? '❌ Errou' : '⚠️ Não respondida'}
+            <QuestionStatusLabel status={st} />
           </p>
           <p className="mt-3 text-sm leading-relaxed text-ink">{questaoAtiva.enunciado}</p>
 
@@ -163,7 +178,12 @@ export function SimuladoRevisaoDetalhe({
                 >
                   <span className="mr-2 font-bold text-brand-500">{letra})</span>
                   {questaoAtiva.alternativas[letra]}
-                  {isCorreta && <span className="ml-2 text-xs text-green-600">✓ gabarito</span>}
+                  {isCorreta && (
+                    <span className="ml-2 inline-flex items-center gap-1 text-xs text-green-600">
+                      <IconCheck size={12} />
+                      gabarito
+                    </span>
+                  )}
                   {isSua && !isCorreta && <span className="ml-2 text-xs text-red-600">sua resposta</span>}
                 </div>
               )
@@ -178,11 +198,21 @@ export function SimuladoRevisaoDetalhe({
         <button
           type="button"
           onClick={() => toggleSalvarRevisao(questaoAtiva.id)}
-          className={`w-full rounded-xl py-2.5 text-sm font-medium ${
+          className={`flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium ${
             salvosRevisao.includes(questaoAtiva.id) ? 'bg-brand-50 text-brand-600' : 'bg-surface-700 text-muted'
           }`}
         >
-          {salvosRevisao.includes(questaoAtiva.id) ? '⭐ Salva para revisão' : '☆ Salvar para revisar depois'}
+          {salvosRevisao.includes(questaoAtiva.id) ? (
+            <>
+              <IconStar size={16} />
+              Salva para revisão
+            </>
+          ) : (
+            <>
+              <IconStarOutline size={16} />
+              Salvar para revisar depois
+            </>
+          )}
         </button>
 
         <div className="flex gap-2">
@@ -190,17 +220,19 @@ export function SimuladoRevisaoDetalhe({
             type="button"
             disabled={indiceAtivo <= 0}
             onClick={() => setQuestaoAtivaId(filtradas[indiceAtivo - 1]?.id ?? null)}
-            className="flex-1 rounded-xl bg-surface-700 py-2.5 text-sm text-ink disabled:opacity-30"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-surface-700 py-2.5 text-sm text-ink disabled:opacity-30"
           >
-            ← Anterior
+            <IconArrowLeft size={16} />
+            Anterior
           </button>
           <button
             type="button"
             disabled={indiceAtivo >= filtradas.length - 1}
             onClick={() => setQuestaoAtivaId(filtradas[indiceAtivo + 1]?.id ?? null)}
-            className="flex-1 rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white disabled:opacity-30"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white disabled:opacity-30"
           >
-            Próximo erro →
+            Próximo erro
+            <IconArrowRight size={16} />
           </button>
         </div>
       </div>
@@ -209,8 +241,13 @@ export function SimuladoRevisaoDetalhe({
 
   return (
     <div className="space-y-4">
-      <button type="button" onClick={onVoltar} className="rounded-lg bg-surface-700 px-3 py-2 text-sm text-muted">
-        ← Voltar
+      <button
+        type="button"
+        onClick={onVoltar}
+        className="inline-flex items-center gap-1.5 rounded-lg bg-surface-700 px-3 py-2 text-sm text-muted"
+      >
+        <IconArrowLeft size={16} />
+        Voltar
       </button>
 
       <section className={`rounded-2xl p-5 text-center ${aprovada ? 'bg-green-50' : 'card'}`}>
@@ -250,7 +287,10 @@ export function SimuladoRevisaoDetalhe({
 
       <div className="space-y-2">
         {filtradas.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted">Nenhuma questão neste filtro 🎉</p>
+          <p className="flex items-center justify-center gap-2 py-8 text-center text-sm text-muted">
+            <IconTrophy size={18} className="text-brand-500" />
+            Nenhuma questão neste filtro
+          </p>
         ) : (
           filtradas.map((q) => {
             const sel = sim.respostas[q.id]
@@ -264,12 +304,16 @@ export function SimuladoRevisaoDetalhe({
                   st === 'acerto' ? 'border-green-200 bg-green-50' : st === 'erro' ? 'border-red-200 bg-red-50' : 'border-yellow-200 bg-yellow-50'
                 }`}
               >
-                <p className="font-medium text-ink">
-                  Q{q.numero} · {q.materia} — {st === 'acerto' ? '✅' : st === 'erro' ? '❌' : '⚠️'}
+                <p className="flex flex-wrap items-center gap-1.5 font-medium text-ink">
+                  Q{q.numero} · {q.materia}
+                  <QuestionStatusIcon status={st} size={14} />
                   {sel ? ` · Sua: ${sel}` : ' · Em branco'} · Gabarito: {q.resposta_correta}
                 </p>
                 <p className="mt-1 line-clamp-2 text-xs text-muted">{q.enunciado}</p>
-                <p className="mt-1 text-xs text-brand-500">Toque para estudar →</p>
+                <p className="mt-1 inline-flex items-center gap-1 text-xs text-brand-500">
+                  Toque para estudar
+                  <IconArrowRight size={12} />
+                </p>
               </button>
             )
           })

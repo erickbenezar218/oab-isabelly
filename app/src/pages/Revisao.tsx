@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { IconArrowRight, IconTarget } from '../components/icons'
+import PageHeader from '../components/ui/PageHeader'
 import TutorPanel from '../components/TutorPanel'
 import { useApp } from '../context/AppContext'
 import { questoesParaRevisao } from '../lib/revisao'
@@ -46,7 +48,9 @@ export default function Revisao() {
   if (!fila.length) {
     return (
       <div className="card rounded-2xl p-8 text-center">
-        <p className="text-4xl">🎯</p>
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+          <IconTarget size={28} />
+        </div>
         <h1 className="mt-3 text-lg font-bold text-ink">Nada para revisar agora</h1>
         <p className="mt-2 text-sm text-muted">Erre questões nos flashcards ou simulados para montar sua fila automática.</p>
         <Link to="/app/flashcards" className="mt-4 inline-block rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white">
@@ -59,21 +63,24 @@ export default function Revisao() {
   if (!atual) return null
 
   return (
-    <div className="space-y-4">
-      <section>
-        <h1 className="text-xl font-bold text-ink">Revisão de erros</h1>
-        <p className="mt-1 text-sm text-muted">
-          Fila automática · {idx + 1}/{fila.length} questões erradas
-        </p>
-      </section>
+    <div className="space-y-5">
+      <PageHeader
+        title="Revisão de erros"
+        subtitle={`Fila automática · ${idx + 1}/${fila.length} questões erradas`}
+      />
 
       <QuestaoCard questao={atual} selected={selected} revelado={revelado} onSelect={confirmar} />
 
       {revelado && (
         <>
           <TutorPanel questao={atual} respostaUsuario={selected} />
-          <button type="button" onClick={proximo} className="w-full rounded-xl bg-brand-600 py-3 text-sm font-semibold text-white">
-            Próximo erro →
+          <button
+            type="button"
+            onClick={proximo}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-3 text-sm font-semibold text-white"
+          >
+            Próximo erro
+            <IconArrowRight size={16} />
           </button>
         </>
       )}

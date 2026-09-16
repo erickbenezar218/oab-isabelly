@@ -16,11 +16,13 @@ export default function OnboardingModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-      <div className="card max-w-md rounded-2xl p-6 shadow-xl">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+      <div className="card max-w-md rounded-3xl p-6 shadow-xl md:p-8">
         <p className="text-xs font-semibold uppercase tracking-wider text-brand-600">Bem-vindo ao SimulaOrdem</p>
         <h2 className="mt-2 text-xl font-bold text-ink">Configure sua preparação</h2>
-        <p className="mt-2 text-sm text-muted">Leva 30 segundos — usamos isso no cronograma e na trilha diária.</p>
+        <p className="mt-2 text-sm text-muted">
+          Leva 30 segundos — depois um tour rápido mostra cada módulo do app.
+        </p>
 
         <label className="mt-5 block">
           <span className="mb-1.5 block text-sm font-medium text-ink">Data da próxima prova objetiva</span>
@@ -28,7 +30,7 @@ export default function OnboardingModal() {
             type="date"
             value={examDate}
             onChange={(e) => setExamDate(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm"
+            className="input-field"
           />
         </label>
 
@@ -37,7 +39,7 @@ export default function OnboardingModal() {
           <select
             value={area2fase}
             onChange={(e) => setArea2fase(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm"
+            className="input-field"
           >
             {AREAS_2F.map((a) => (
               <option key={a} value={a}>

@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { IconChart, IconClose, IconPencil } from '../components/icons'
+import PageHeader from '../components/ui/PageHeader'
+import SectionCard from '../components/ui/SectionCard'
 import { useApp } from '../context/AppContext'
 
 const CORES = ['#3C8F92', '#2A606B', '#1C3F3A', '#5EEAD4', '#0F766E', '#134E4A']
@@ -57,18 +60,29 @@ export default function Desempenho() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      <PageHeader title="Desempenho" subtitle="Acompanhe seu acerto por matéria e salve anotações." />
       <div className="flex gap-2">
         {(['grafico', 'custom'] as const).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setAba(t)}
-            className={`flex-1 rounded-xl py-2.5 text-sm font-medium ${
+            className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium ${
               aba === t ? 'bg-brand-600 text-white' : 'bg-surface-700 text-muted'
             }`}
           >
-            {t === 'grafico' ? '📊 Por matéria' : '✏️ Anotações'}
+            {t === 'grafico' ? (
+              <>
+                <IconChart size={16} />
+                Por matéria
+              </>
+            ) : (
+              <>
+                <IconPencil size={16} />
+                Anotações
+              </>
+            )}
           </button>
         ))}
       </div>
@@ -122,9 +136,7 @@ export default function Desempenho() {
           )}
 
           {progress.simulados.length > 0 && (
-            <section className="card rounded-2xl p-4">
-              <h3 className="font-semibold text-ink">Histórico de Simulados</h3>
-              <p className="mt-1 text-xs text-muted">Revise erros na aba Simulado</p>
+            <SectionCard title="Histórico de simulados" subtitle="Revise erros na aba Simulado">
               <div className="mt-3 space-y-2">
                 {progress.simulados.slice(0, 5).map((s) => (
                   <div key={s.id} className="flex justify-between rounded-lg bg-surface-700 px-3 py-2 text-sm">
@@ -135,7 +147,7 @@ export default function Desempenho() {
                   </div>
                 ))}
               </div>
-            </section>
+            </SectionCard>
           )}
         </>
       )}
@@ -189,9 +201,10 @@ export default function Desempenho() {
                     <button
                       type="button"
                       onClick={() => removeCustomCard(card.id)}
-                      className="text-xs text-red-400/70 hover:text-red-400"
+                      className="rounded-lg p-1 text-red-400/70 hover:bg-red-50 hover:text-red-500"
+                      title="Remover"
                     >
-                      ✕
+                      <IconClose size={16} />
                     </button>
                   </div>
                   <p className="mt-2 whitespace-pre-wrap text-sm text-muted">{card.conteudo}</p>

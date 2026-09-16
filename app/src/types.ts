@@ -58,6 +58,7 @@ export interface UserProfile {
   examDate?: string
   area2fase?: string
   onboardingDone?: boolean
+  welcomeTourDone?: boolean
 }
 
 export interface UserProgress {

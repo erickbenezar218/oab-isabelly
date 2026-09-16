@@ -233,8 +233,24 @@
   },
   "appShell": {
     "background": "#F8FAFB",
-    "header": { "background": "#FFFFFF", "borderBottom": "#E2E8F0" },
-    "content": { "maxWidth": "768px", "padding": "16px" },
-    "bottomNav": { "style": "components.nav.app" }
+    "layout": "sidebar-main-activity",
+    "sidebar": {
+      "width": "256px",
+      "background": "#FFFFFF",
+      "borderRight": "#E2E8F0",
+      "navItemActive": { "background": "#E6F0EF", "color": "#1C3F3A" }
+    },
+    "header": { "background": "#FFFFFF", "borderBottom": "#E2E8F0", "mobileOnly": true },
+    "content": { "maxWidth": "1152px", "padding": "20px 32px" },
+    "activityPanel": { "width": "300px", "desktopOnly": true, "breakpoint": "xl" },
+    "bottomNav": { "style": "components.nav.app", "mobileOnly": true, "maxItems": 5 }
+  },
+  "appDashboard": {
+    "pageHeader": "Olá, {firstName} + date pill with calendar icon",
+    "statsRow": "3 StatCards — respondidas, acerto, meta diária",
+    "performanceChart": "Line chart 7 dias — esta semana vs anterior",
+    "trilhaHoje": "TaskRow list with status dots",
+    "modulos": "Icon + title + desc rows",
+    "activityPanel": "Profile card + recent simulados feed"
   }
 }
