@@ -11,7 +11,7 @@ export default defineConfig({
     tailwindcss(),
     ...(enablePwa
       ? [VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.svg', 'logo.svg', 'logo-icon.svg', 'logo-dark.svg'],
       manifest: {
         name: 'SimulaOrdem',

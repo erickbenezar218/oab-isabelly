@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
+import UpdateBanner from './components/UpdateBanner'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AppProvider } from './context/AppContext'
 import { AuthProvider } from './context/AuthContext'
@@ -23,6 +24,7 @@ export default function App() {
     <AuthProvider>
       <AppProvider>
         <BrowserRouter>
+          <UpdateBanner />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
