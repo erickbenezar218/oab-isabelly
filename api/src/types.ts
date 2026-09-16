@@ -17,6 +17,7 @@ export interface UserRow {
   email_2fa_enabled: boolean
   daily_goal_override: number | null
   study_reminder_enabled: boolean
+  study_reminder_last_sent: Date | null
   created_at: Date
   updated_at?: Date
 }

@@ -209,6 +209,35 @@ export function renderPasswordResetEmail(params: { name: string; resetUrl: strin
   }
 }
 
+export function renderStudyReminderEmail(params: { name: string; hourLabel: string }) {
+  const bodyHtml = `
+    <p style="margin:0 0 16px">Olá, <strong style="color:${C.heading}">${params.name}</strong>! Hora de manter o ritmo na preparação para a OAB.</p>
+    ${infoBox(`
+      <p style="margin:0 0 8px"><strong style="color:${C.heading}">Meta de hoje:</strong> responda questões, revise erros ou avance no simulado.</p>
+      <p style="margin:0;font-size:13px;color:${C.caption}">Você ativou este lembrete diário por e-mail (${params.hourLabel}, horário de Brasília).</p>
+    `)}
+    <p style="margin:0">Sugestão rápida:</p>
+    <ul style="margin:8px 0 0;padding-left:20px;color:${C.body}">
+      <li style="margin-bottom:6px"><strong>Flashcards</strong> — 10 minutos de active recall</li>
+      <li style="margin-bottom:6px"><strong>Revisão de erros</strong> — corrija o que errou ontem</li>
+      <li><strong>Cronograma</strong> — confira sua meta diária no app</li>
+    </ul>
+    <p style="margin:16px 0 0;font-size:13px;color:${C.caption}">Para desativar, abra <strong>Conta → Estudo → Lembretes</strong>.</p>`
+
+  const { html, textFooter } = renderEmailLayout({
+    preheader: 'Hora de estudar para a OAB — SimulaOrdem',
+    title: 'Hora de estudar!',
+    bodyHtml,
+    cta: { href: `${appUrl()}/app`, label: 'Abrir o SimulaOrdem' },
+    secondaryCta: { href: `${appUrl()}/app/flashcards`, label: 'Ir aos flashcards' },
+  })
+
+  return {
+    html,
+    text: `Olá ${params.name}, hora de estudar!\n\nAbra o SimulaOrdem e mantenha sua meta diária.\nFlashcards: ${appUrl()}/app/flashcards\nApp: ${appUrl()}/app${textFooter}`,
+  }
+}
+
 export function renderLoginOtpEmail(params: { name: string; code: string }) {
   const bodyHtml = `
     <p style="margin:0 0 16px">Olá, <strong style="color:${C.heading}">${params.name}</strong>. Use o código abaixo para concluir seu login:</p>

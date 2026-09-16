@@ -154,18 +154,19 @@ export default function Conta() {
     flash('Backup exportado.')
   }
 
-  const requestReminder = async () => {
-    if (!('Notification' in window)) {
-      setErr('Seu navegador não suporta notificações.')
-      return
-    }
-    const perm = await Notification.requestPermission()
-    if (perm === 'granted') {
-      setReminder(true)
-      await updateProfile({ studyReminderEnabled: true })
-      flash('Lembretes ativados neste dispositivo.')
-    } else {
-      setErr('Permissão de notificação negada.')
+  const saveReminder = async (enabled: boolean) => {
+    setReminder(enabled)
+    setErr('')
+    try {
+      await updateProfile({ studyReminderEnabled: enabled })
+      flash(
+        enabled
+          ? 'Lembrete diário por e-mail ativado (por volta das 8h, horário de Brasília).'
+          : 'Lembrete por e-mail desativado.',
+      )
+    } catch (e) {
+      setReminder(!enabled)
+      setErr(e instanceof Error ? e.message : 'Erro ao salvar lembrete.')
     }
   }
 
@@ -338,23 +339,22 @@ export default function Conta() {
             </button>
           </SectionCard>
 
-          <SectionCard title="Lembretes">
-            <p className="text-sm text-muted">Receba lembrete neste dispositivo para estudar todo dia.</p>
-            <div className="mt-3 flex gap-2">
-              <button type="button" onClick={() => void requestReminder()} className="btn-secondary flex-1 py-2.5 text-sm">
-                Ativar notificações
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setReminder(false)
-                  void updateProfile({ studyReminderEnabled: false })
-                }}
-                className="btn-secondary flex-1 py-2.5 text-sm"
-              >
-                Desativar
-              </button>
-            </div>
+          <SectionCard title="Lembretes por e-mail">
+            <label className="flex cursor-pointer items-start justify-between gap-4 rounded-xl border border-slate-200 px-4 py-3">
+              <div>
+                <p className="text-sm font-medium text-ink">Lembrete diário de estudo</p>
+                <p className="mt-1 text-xs text-muted">
+                  Enviado todo dia por volta das <strong>8h</strong> (Brasília) para{' '}
+                  <span className="font-medium text-ink">{user?.email}</span>.
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                checked={reminder}
+                onChange={(e) => void saveReminder(e.target.checked)}
+                className="mt-1 h-5 w-5 shrink-0 rounded border-slate-300 text-brand-600"
+              />
+            </label>
           </SectionCard>
 
           <SectionCard title="Tour e backup">

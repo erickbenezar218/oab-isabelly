@@ -7,8 +7,36 @@
 | Cadastro (e-mail/senha ou Google) | Boas-vindas + dados de acesso |
 | Login (e-mail/senha) | Código 2FA de 6 dígitos (10 min) |
 | Assinatura Pro confirmada | Acesso Pro liberado (via `activateProPlan`) |
+| Lembrete diário de estudo (opt-in) | “Hora de estudar!” — cron às 8h (Brasília) |
 
 Login com **Google** não pede 2FA (Google já autentica).
+
+## Lembrete diário de estudo
+
+Usuários com **Conta → Estudo → Lembretes** ativado recebem um e-mail por dia.
+
+- Cron **interno** na API (a cada minuto verifica se é 8h em `America/Sao_Paulo`)
+- Um e-mail por usuário por dia (campo `study_reminder_last_sent` no Postgres)
+- Template alinhado ao `design.json` (teal, card branco, CTA)
+
+```env
+STUDY_REMINDER_CRON_ENABLED=true
+STUDY_REMINDER_HOUR=8
+STUDY_REMINDER_TZ=America/Sao_Paulo
+```
+
+**Cron externo (opcional, Coolify):** se preferir disparo manual/agendado:
+
+```env
+CRON_SECRET=uma-string-longa-secreta
+```
+
+```bash
+curl -X POST https://simulaordem.com.br/api/internal/cron/study-reminders \
+  -H "Authorization: Bearer $CRON_SECRET"
+```
+
+Desativar cron interno: `STUDY_REMINDER_CRON_ENABLED=false` e use só o endpoint acima.
 
 ## Configuração
 

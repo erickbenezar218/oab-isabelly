@@ -25,6 +25,12 @@ import {
   updateUserProfile,
   type ProfilePatch,
 } from './profile.js'
+import {
+  isStudyReminderCronEnabled,
+  runStudyReminderJob,
+  startStudyReminderScheduler,
+  studyReminderHourLabel,
+} from './studyReminders.js'
 import { defaultProgress } from './types.js'
 import type { UserRow } from './types.js'
 
@@ -67,9 +73,26 @@ app.get('/health', async () => ({
   gemini: isGeminiConfigured(),
   email: isEmailConfigured(),
   email2fa: isEmail2faEnabled(),
+  studyReminderCron: isStudyReminderCronEnabled(),
+  studyReminderHour: studyReminderHourLabel(),
   asaas: isAsaasConfigured(),
   asaasSandbox: isAsaasSandbox(),
 }))
+
+function verifyCronSecret(header?: string): boolean {
+  const secret = process.env.CRON_SECRET?.trim()
+  if (!secret) return false
+  if (!header?.startsWith('Bearer ')) return false
+  return header.slice(7) === secret
+}
+
+app.post('/internal/cron/study-reminders', async (req, reply) => {
+  if (!verifyCronSecret(req.headers.authorization)) {
+    return reply.code(401).send({ error: 'Não autorizado.' })
+  }
+  const result = await runStudyReminderJob()
+  return { ok: true, ...result }
+})
 
 app.post<{ Body: { email: string; password: string; name: string } }>('/auth/register', async (req, reply) => {
   const { email, password, name } = req.body ?? {}
@@ -333,6 +356,8 @@ app.post<{ Body: { mode?: 'full' | 'express' } }>('/simulado/start', async (req,
 
 await registerTutorRoutes(app, { pool, getUser: getUserFromAuth })
 await registerBillingRoutes(app, { pool, getUser: getUserFromAuth })
+
+startStudyReminderScheduler()
 
 const port = Number(process.env.PORT ?? 3001)
 const host = process.env.HOST ?? '0.0.0.0'

@@ -3,8 +3,10 @@ import {
   renderLoginOtpEmail,
   renderPasswordResetEmail,
   renderProAccessEmail,
+  renderStudyReminderEmail,
   renderWelcomeEmail,
 } from './emailTemplates.js'
+import { sendEmail } from './email.js'
 
 export function sendWelcomeEmail(params: { to: string; name: string; planLabel?: string; passwordHint?: string }) {
   const { html, text } = renderWelcomeEmail({
@@ -47,6 +49,20 @@ export function sendPasswordResetEmail(params: { to: string; name: string; reset
   fireAndForgetEmail({
     to: params.to,
     subject: 'Redefinir senha — SimulaOrdem',
+    html,
+    text,
+  })
+}
+
+export async function sendStudyReminderEmail(params: { to: string; name: string; hourLabel: string }) {
+  const { html, text } = renderStudyReminderEmail({
+    name: params.name,
+    hourLabel: params.hourLabel,
+  })
+
+  await sendEmail({
+    to: params.to,
+    subject: 'Hora de estudar! — SimulaOrdem',
     html,
     text,
   })
