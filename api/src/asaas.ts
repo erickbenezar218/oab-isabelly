@@ -32,8 +32,21 @@ export type AsaasWebhookEvent = {
   subscription?: { id: string; customer: string; externalReference?: string; status?: string }
 }
 
+export function getAsaasApiKey(): string | undefined {
+  const b64 = process.env.ASAAS_API_KEY_B64?.trim()
+  if (b64) {
+    try {
+      return Buffer.from(b64, 'base64').toString('utf8').trim() || undefined
+    } catch {
+      return undefined
+    }
+  }
+  const key = process.env.ASAAS_API_KEY?.trim()
+  return key || undefined
+}
+
 export function isAsaasConfigured(): boolean {
-  return Boolean(process.env.ASAAS_API_KEY?.trim())
+  return Boolean(getAsaasApiKey())
 }
 
 export function isAsaasSandbox(): boolean {
@@ -60,7 +73,7 @@ export class AsaasError extends Error {
 }
 
 export async function asaasRequest<T>(path: string, init?: RequestInit): Promise<T> {
-  const apiKey = process.env.ASAAS_API_KEY?.trim()
+  const apiKey = getAsaasApiKey()
   if (!apiKey) throw new Error('ASAAS_API_KEY não configurada')
 
   const res = await fetch(`${asaasBaseUrl()}${path}`, {

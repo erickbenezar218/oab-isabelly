@@ -1,4 +1,4 @@
-# Build stage — Vite 6 + Rollup (estável em Linux/CI)
+# Build stage — Vite 6 + Rollup (Linux/CI)
 FROM node:22-bookworm-slim AS builder
 
 WORKDIR /app
@@ -8,7 +8,7 @@ ARG VITE_GOOGLE_CLIENT_ID=
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
 ENV NODE_OPTIONS=--max-old-space-size=4096
-ENV CI=true
+ENV DISABLE_PWA=true
 
 COPY app/package*.json app/.npmrc ./
 RUN npm ci
@@ -17,15 +17,7 @@ COPY app/ ./
 COPY banco_oab.json ./public/banco_oab.json
 COPY app/public/pecas_oab.json ./public/pecas_oab.json
 
-# Só VITE_* no build — Coolify injeta dezenas de ENV que quebram o Rollup
-RUN env -i \
-  PATH="$PATH" \
-  HOME="$HOME" \
-  NODE_OPTIONS="$NODE_OPTIONS" \
-  CI=true \
-  VITE_API_URL="$VITE_API_URL" \
-  VITE_GOOGLE_CLIENT_ID="$VITE_GOOGLE_CLIENT_ID" \
-  npm run build
+RUN chmod +x scripts/docker-build.sh && ./scripts/docker-build.sh
 
 # Production stage
 FROM nginx:alpine

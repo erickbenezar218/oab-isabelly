@@ -3,11 +3,14 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const enablePwa = process.env.DISABLE_PWA !== 'true'
+
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    VitePWA({
+    ...(enablePwa
+      ? [VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'logo.svg', 'logo-icon.svg', 'logo-dark.svg'],
       manifest: {
@@ -48,7 +51,8 @@ export default defineConfig({
           },
         ],
       },
-    }),
+    })]
+      : []),
   ],
   server: {
     host: true,
