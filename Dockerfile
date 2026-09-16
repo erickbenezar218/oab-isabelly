@@ -10,9 +10,8 @@ ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
 ENV NODE_OPTIONS=--max-old-space-size=4096
 ENV CI=true
 
-COPY app/package*.json ./
-# Instala deps da plataforma atual (bindings Linux no CI)
-RUN npm ci --include=optional
+COPY app/package*.json app/.npmrc ./
+RUN npm ci
 
 COPY app/ ./
 COPY banco_oab.json ./public/banco_oab.json
