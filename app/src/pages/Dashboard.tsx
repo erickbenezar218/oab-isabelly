@@ -21,6 +21,8 @@ import TaskRow, { type TaskStatus } from '../components/ui/TaskRow'
 import UpgradeCard from '../components/ui/UpgradeCard'
 import { useApp } from '../context/AppContext'
 import { useAuth } from '../context/AuthContext'
+import ExamDateEditor from '../components/ExamDateEditor'
+import { formatExamDatePt, provaCountdown } from '../lib/examDate'
 import { calcMetaDiaria, diasParaProva, questoesRespondidasHoje } from '../lib/cronograma'
 import { levelFromXp, calcXp, passariaHoje } from '../lib/gamification'
 import { gerarTrilha } from '../lib/trilha'
@@ -46,9 +48,11 @@ export default function Dashboard() {
   const { limits, user } = useAuth()
   const isPro = limits?.cronograma ?? user?.plan === 'pro'
   const examDate = progress.profile?.examDate
-  const dias = diasParaProva(new Date(), examDate)
+  const countdown = provaCountdown(examDate)
+  const rawDias = diasParaProva(new Date(), examDate)
+  const diasMeta = rawDias > 0 ? rawDias : 30
   const total = meta?.total_questoes ?? questoes.length
-  const { metaDiaria } = calcMetaDiaria(total, progress.respostas.length, dias)
+  const { metaDiaria } = calcMetaDiaria(total, progress.respostas.length, diasMeta)
   const hoje = questoesRespondidasHoje(progress.respostas)
   const xp = calcXp(progress)
   const level = levelFromXp(xp)
@@ -76,28 +80,38 @@ export default function Dashboard() {
         <PageHeader
           title={`Olá, ${firstName}`}
           subtitle={
-            dias === 0
-              ? 'Prova hoje — mantenha o foco e confie no seu ritmo.'
-              : `Faltam ${dias} dias para a prova. Você está ${pctHoje >= 100 ? 'no caminho certo' : 'quase na meta de hoje'}.`
+            countdown.status === 'past'
+              ? 'Atualize a data da prova para ver a contagem correta.'
+              : countdown.status === 'today'
+                ? 'Prova hoje — foco total e boa sorte!'
+                : `${countdown.label}. Meta de hoje: ${pctHoje >= 100 ? 'concluída' : `${hoje}/${metaDiaria} questões`}.`
           }
         />
 
-        {/* Countdown banner */}
         <div className="card-featured rounded-3xl p-6 text-white md:p-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-brand-200">Reta final OAB</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-brand-200">Sua prova objetiva</p>
               <p className="mt-2 flex items-center gap-2 text-3xl font-extrabold md:text-4xl">
-                {dias === 0 ? (
+                {countdown.status === 'past' ? (
+                  'Data passada'
+                ) : countdown.status === 'today' ? (
                   <>
-                    É HOJE!
+                    Prova hoje!
                     <IconTarget size={28} className="text-brand-200" />
                   </>
                 ) : (
-                  `${dias} dias`
+                  `${countdown.dias} dias`
                 )}
               </p>
-              <p className="mt-1 text-sm text-white/75">Nível {level.level} · {level.title} · {xp} XP</p>
+              <p className="mt-1 text-sm text-white/75">
+                {formatExamDatePt(examDate)} · Nível {level.level} · {xp} XP
+              </p>
+              {countdown.status === 'past' && (
+                <div className="mt-3 text-ink">
+                  <ExamDateEditor compact />
+                </div>
+              )}
             </div>
             {passaria !== null && (
               <span

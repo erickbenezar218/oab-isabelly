@@ -8,7 +8,8 @@ import { useApp } from '../context/AppContext'
 import { useAuth } from '../context/AuthContext'
 import { calcCenarios, calcMetaDiaria, diasParaProva, questoesRespondidasHoje } from '../lib/cronograma'
 import { gerarTrilha } from '../lib/trilha'
-import { EXAM_DATE } from '../types'
+import ExamDateEditor from '../components/ExamDateEditor'
+import { formatExamDatePt, provaCountdown } from '../lib/examDate'
 
 export default function Cronograma() {
   const { questoes, meta, progress, loading } = useApp()
@@ -36,25 +37,34 @@ export default function Cronograma() {
   const total = meta?.total_questoes ?? questoes.length
   const respondidas = progress.respostas.length
   const examDate = progress.profile?.examDate
-  const dias = diasParaProva(new Date(), examDate)
+  const countdown = provaCountdown(examDate)
+  const rawDias = diasParaProva(new Date(), examDate)
+  const diasMeta = rawDias > 0 ? rawDias : 30
+  const dias = rawDias > 0 ? rawDias : 0
   const hoje = questoesRespondidasHoje(progress.respostas)
-  const { questoesRestantes, metaDiaria } = calcMetaDiaria(total, respondidas, dias)
+  const { questoesRestantes, metaDiaria } = calcMetaDiaria(total, respondidas, diasMeta)
   const trilha = gerarTrilha({ totalQuestoes: total, respostas: progress.respostas, examDate })
   const pctHoje = metaDiaria > 0 ? Math.min(100, Math.round((hoje / metaDiaria) * 100)) : 100
   const cenarios = calcCenarios(total, respondidas, [dias, 60, 30, 20, 10].filter((d, i, arr) => arr.indexOf(d) === i))
 
-  const dataProva = EXAM_DATE.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
+  const dataProva = formatExamDatePt(examDate)
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Meta diária"
-        subtitle={`Próxima prova objetiva em ${dataProva} · mínimo 40 acertos em 80 questões`}
+        subtitle={`Prova em ${dataProva} · para passar, acerte pelo menos 40 de 80 questões`}
       />
+
+      {countdown.status === 'past' && <ExamDateEditor />}
 
       <section className="card-featured rounded-3xl p-6 text-white">
         <p className="text-sm font-medium text-brand-100">
-          {dias === 0 ? 'Prova hoje!' : `Faltam ${dias} dias`}
+          {countdown.status === 'past'
+            ? 'Atualize a data da prova acima'
+            : countdown.status === 'today'
+              ? 'Prova hoje!'
+              : `Faltam ${dias} dias`}
         </p>
         <p className="mt-2 text-4xl font-extrabold">{metaDiaria}</p>
         <p className="text-sm text-brand-100">questões por dia para cobrir o banco</p>

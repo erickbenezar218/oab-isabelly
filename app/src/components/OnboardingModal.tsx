@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
-import { EXAM_DATE } from '../types'
+import { defaultExamDateString } from '../lib/examDate'
 
 const AREAS_2F = ['Trabalhista', 'Cível', 'Penal', 'Administrativo', 'Tributário', 'Empresarial', 'Constitucional']
 
 export default function OnboardingModal() {
   const { progress, updateProfile } = useApp()
-  const [examDate, setExamDate] = useState(EXAM_DATE.toISOString().slice(0, 10))
+  const [examDate, setExamDate] = useState(defaultExamDateString())
   const [area2fase, setArea2fase] = useState('Trabalhista')
 
   if (progress.profile?.onboardingDone) return null
@@ -31,11 +31,12 @@ export default function OnboardingModal() {
             value={examDate}
             onChange={(e) => setExamDate(e.target.value)}
             className="input-field"
+            min={new Date().toISOString().slice(0, 10)}
           />
         </label>
 
         <label className="mt-4 block">
-          <span className="mb-1.5 block text-sm font-medium text-ink">Área da 2ª fase (quando passar)</span>
+          <span className="mb-1.5 block text-sm font-medium text-ink">Área da 2ª fase (depois que passar na 1ª)</span>
           <select
             value={area2fase}
             onChange={(e) => setArea2fase(e.target.value)}

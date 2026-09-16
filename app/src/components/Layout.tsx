@@ -46,7 +46,7 @@ export default function Layout() {
   const isPro = limits?.plan === 'pro' || user?.plan === 'pro'
 
   return (
-    <div className="flex min-h-dvh bg-surface-900">
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col bg-surface-900 lg:flex-row">
       <OnboardingModal />
       <WelcomeTour />
 
@@ -82,7 +82,7 @@ export default function Layout() {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         {/* Mobile header */}
         <header className="shrink-0 border-b border-slate-200 bg-white safe-top lg:hidden">
           <div className="flex items-center justify-between px-4 py-3">

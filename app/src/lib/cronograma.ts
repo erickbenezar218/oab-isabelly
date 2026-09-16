@@ -1,17 +1,10 @@
-import { EXAM_DATE } from '../types'
-
-export function diasParaProva(date = new Date(), examDateStr?: string): number {
-  const today = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-  const examSrc = examDateStr ? new Date(examDateStr) : EXAM_DATE
-  const exam = new Date(examSrc.getFullYear(), examSrc.getMonth(), examSrc.getDate())
-  const diff = exam.getTime() - today.getTime()
-  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
-}
+export { diasParaProva, defaultExamDateString, formatExamDatePt, provaCountdown, resolveExamDate } from './examDate'
 
 export function calcMetaDiaria(totalQuestoes: number, questoesRespondidas: number, diasRestantes: number) {
   const questoesRestantes = Math.max(0, totalQuestoes - questoesRespondidas)
-  const dias = Math.max(1, diasRestantes || 1)
-  const metaDiaria = diasRestantes === 0 ? questoesRestantes : Math.max(1, Math.ceil(questoesRestantes / dias))
+  const dias = diasRestantes > 0 ? diasRestantes : 1
+  const metaDiaria =
+    diasRestantes <= 0 ? Math.max(1, Math.min(50, questoesRestantes || 20)) : Math.max(1, Math.ceil(questoesRestantes / dias))
 
   return { questoesRestantes, metaDiaria, diasRestantes }
 }
