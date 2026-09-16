@@ -33,17 +33,23 @@ GEMINI_MODEL=gemini-2.5-flash
 
 **Nunca** commite `.env` no git. Configure só no painel do Coolify.
 
-### Frontend (`web-dist/`)
+### Frontend (`VITE_*` no build)
 
-O serviço `web` **não roda npm/vite no Coolify** — só nginx servindo a pasta `web-dist/` já buildada.
+Variáveis `VITE_*` **entram no JavaScript no momento do build** — não adianta só colocar no Coolify se o deploy não rebuildar o frontend.
 
-Antes de push/deploy, gere o build localmente:
+O `Dockerfile` do serviço `web` faz **build multi-stage** (npm + vite) e recebe:
+
+| Build arg | Variável Coolify |
+|-----------|------------------|
+| `VITE_API_URL` | `VITE_API_URL` (padrão `/api`) |
+| `VITE_GOOGLE_CLIENT_ID` | `VITE_GOOGLE_CLIENT_ID` (= mesmo valor de `GOOGLE_CLIENT_ID`) |
+
+**Obrigatório no Coolify:** `VITE_GOOGLE_CLIENT_ID` igual ao `GOOGLE_CLIENT_ID` para o botão Google aparecer.
+
+Build local opcional (usa `.env` da raiz se existir):
 
 ```bash
-VITE_API_URL=/api \
-VITE_GOOGLE_CLIENT_ID=<mesmo do GOOGLE_CLIENT_ID> \
 ./scripts/build-web.sh
-git add web-dist && git commit -m "chore: rebuild web-dist"
 ```
 
 ### Variáveis Runtime (API)

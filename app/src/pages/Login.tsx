@@ -265,12 +265,6 @@ export default function Login() {
                 </>
               )}
 
-              {step === 'credentials' && !isGoogleSignInEnabled() && (
-                <p className="mt-6 text-center text-xs text-muted-light">
-                  Login com Google disponível quando <code className="text-brand-600">VITE_GOOGLE_CLIENT_ID</code> estiver configurado.
-                </p>
-              )}
-
               {step === 'credentials' && (
               <p className="mt-8 text-center text-sm text-muted">
                 {mode === 'login' ? (
