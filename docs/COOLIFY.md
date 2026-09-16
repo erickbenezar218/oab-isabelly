@@ -32,6 +32,22 @@ VITE_GOOGLE_CLIENT_ID=<mesmo do GOOGLE_CLIENT_ID>
 
 **Nunca** commite `.env` no git. Configure só no painel do Coolify.
 
+### Variáveis Build vs Runtime (importante)
+
+No Coolify, cada variável pode ser **Build** ou **Runtime**. Para evitar falha no `npm run build`:
+
+| Variável | Build | Runtime |
+|----------|-------|---------|
+| `VITE_API_URL` | ✅ | — |
+| `VITE_GOOGLE_CLIENT_ID` | ✅ | — |
+| `GOOGLE_CLIENT_ID`, `JWT_SECRET`, SMTP, Asaas, Gemini, Postgres… | ❌ | ✅ |
+
+Marque SMTP, e-mail, Asaas, JWT etc. como **somente Runtime** (desmarque "Available at Buildtime").
+
+**Asaas:** `ASAAS_API_KEY=$$aact_hmlg_...` (dois `$` no Coolify).
+
+**E-mail:** se der erro no build, use aspas: `EMAIL_FROM="SimulaOrdem <suporte@simulaordem.com.br>"`
+
 ## Checklist pré-produção
 
 ### Infra
