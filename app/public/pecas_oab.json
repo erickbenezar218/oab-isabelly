@@ -1,0 +1,176 @@
+{
+  "meta": {
+    "total": 12,
+    "areas": ["Trabalhista", "Cível", "Penal", "Administrativo"]
+  },
+  "casos": [
+    {
+      "id": "peca-001",
+      "area": "Trabalhista",
+      "exame": "Exemplo — 2ª fase",
+      "enunciado": "Maria foi dispensada sem justa causa após 3 anos de contrato. Recebeu as verbas rescisórias, mas a empresa não pagou horas extras habituais nem refletiu o adicional de insalubridade nos 13º salários. Maria deseja ajuizar ação contra a ex-empregadora, pleiteando diferenças salariais, reflexos e indenização por danos morais em razão de assédio moral comprovado por testemunhas.",
+      "peca_correta": "Reclamação Trabalhista",
+      "alternativas": [
+        "Reclamação Trabalhista",
+        "Recurso Ordinário",
+        "Contestação",
+        "Mandado de Segurança"
+      ],
+      "explicacao": "Trata-se de pedidos de natureza trabalhista contra empregador — a peça de ingresso é a Reclamação Trabalhista (art. 840 da CLT)."
+    },
+    {
+      "id": "peca-002",
+      "area": "Trabalhista",
+      "exame": "Exemplo — 2ª fase",
+      "enunciado": "João obteve sentença favorável em reclamação trabalhista, reconhecendo vínculo e condenando a ré ao pagamento de verbas. A empresa interpôs recurso, mas o TRT manteve a decisão. Agora João precisa impugnar embargos de declaração opostos pela ré e, caso necessário, preparar recurso para instância superior visando acelerar o cumprimento da decisão transitada em julgado.",
+      "peca_correta": "Recurso Ordinário",
+      "alternativas": [
+        "Reclamação Trabalhista",
+        "Recurso Ordinário",
+        "Contrarrazões de Recurso de Revista",
+        "Execução de Sentença"
+      ],
+      "explicacao": "Após sentença em reclamação, o recurso típico para o TRT revisar mérito é o Recurso Ordinário (art. 895, I, CLT)."
+    },
+    {
+      "id": "peca-003",
+      "area": "Cível",
+      "exame": "Exemplo — 2ª fase",
+      "enunciado": "Pedro ajuizou ação de cobrança contra Lucas, que não pagou empréstimo formalizado por contrato escrito. Lucas foi citado e o prazo para resposta está correndo. Lucas alega que já quitou metade do débito e que o valor cobrado inclui juros abusivos. Precisa apresentar defesa no processo de conhecimento, impugnando o valor e requerendo produção de prova pericial contábil.",
+      "peca_correta": "Contestação",
+      "alternativas": [
+        "Contestação",
+        "Apelação",
+        "Embargos à Execução",
+        "Reconvenção"
+      ],
+      "explicacao": "Citado em ação de conhecimento, a defesa do réu é a Contestação (art. 335, CPC)."
+    },
+    {
+      "id": "peca-004",
+      "area": "Cível",
+      "exame": "Exemplo — 2ª fase",
+      "enunciado": "Ana obteve sentença de procedência parcial em ação de indenização por danos morais contra operadora de plano de saúde. Inconformada com o valor fixado a título de danos morais e com a rejeição do pedido de danos materiais, deseja reformar integralmente a sentença perante o Tribunal de Justiça, dentro do prazo recursal.",
+      "peca_correta": "Apelação",
+      "alternativas": [
+        "Apelação",
+        "Contestação",
+        "Agravo de Instrumento",
+        "Embargos de Declaração"
+      ],
+      "explicacao": "Contra sentença de 1º grau em processo de conhecimento, o recurso adequado é a Apelação (art. 1.009, CPC)."
+    },
+    {
+      "id": "peca-005",
+      "area": "Cível",
+      "exame": "Exemplo — 2ª fase",
+      "enunciado": "Carlos possui título executivo extrajudicial (contrato de mútuo com assinatura de duas testemunhas) e o devedor não pagou na data acordada. Carlos quer iniciar procedimento para satisfazer o crédito de forma rápida, penhorando bens do devedor caso não haja pagamento voluntário no prazo legal.",
+      "peca_correta": "Ação de Execução de Título Extrajudicial",
+      "alternativas": [
+        "Ação de Execução de Título Extrajudicial",
+        "Ação Monitória",
+        "Ação de Cobrança",
+        "Mandado de Segurança"
+      ],
+      "explicacao": "Título executivo extrajudicial autoriza execução direta (art. 784, III, CPC)."
+    },
+    {
+      "id": "peca-006",
+      "area": "Penal",
+      "exame": "Exemplo — 2ª fase",
+      "enunciado": "Ricardo foi preso em flagrante por posse de entorpecentes em pequena quantidade, sem violência. A audiência de custódia já ocorreu e ele permanece preso preventivamente, mas a defesa entende que não há fundamentos concretos para a custódia, pois é primário, tem residência fixa e emprego lícito. É necessário impugnar a prisão perante o juízo competente com urgência.",
+      "peca_correta": "Habeas Corpus",
+      "alternativas": [
+        "Habeas Corpus",
+        "Recurso em Sentido Estrito",
+        "Apelação Criminal",
+        "Liberdade Provisória"
+      ],
+      "explicacao": "Coação ilegal ou abuso de poder na restrição de liberdade é combatida por Habeas Corpus (art. 5º, LXVIII, CF)."
+    },
+    {
+      "id": "peca-007",
+      "area": "Penal",
+      "exame": "Exemplo — 2ª fase",
+      "enunciado": "Fernanda foi denunciada por estelionato. Após a instrução, o Ministério Público requereu a condenação. A defesa sustenta ausência de dolo, erro de tipo e insuficiência probatória, requerendo absolvição com fundamento no art. 386, VII, do CPP. Precisa apresentar alegações finais por memoriais antes da sentença.",
+      "peca_correta": "Alegações Finais",
+      "alternativas": [
+        "Alegações Finais",
+        "Resposta à Acusação",
+        "Apelação Criminal",
+        "Recurso Especial"
+      ],
+      "explicacao": "Encerrada a instrução, as partes apresentam Alegações Finais (art. 403, CPP)."
+    },
+    {
+      "id": "peca-008",
+      "area": "Administrativo",
+      "exame": "Exemplo — 2ª fase",
+      "enunciado": "Um servidor público estadual teve concurso para provimento de cargo anulado por edital que exigia requisito não previsto em lei. O ato de anulação já foi praticado e não há outro remédio judicial eficaz tão rápido quanto o mandamental. O candidato busca, liminarmente, a suspensão dos efeitos do ato e a garantia de sua participação no certame.",
+      "peca_correta": "Mandado de Segurança",
+      "alternativas": [
+        "Mandado de Segurança",
+        "Ação Popular",
+        "Ação Civil Pública",
+        "Mandado de Injunção"
+      ],
+      "explicacao": "Violência ou abuso de poder de autoridade pública contra direito líquido e certo → Mandado de Segurança (art. 5º, LXIX, CF)."
+    },
+    {
+      "id": "peca-009",
+      "area": "Cível",
+      "exame": "Exemplo — 2ª fase",
+      "enunciado": "Beatriz comprou apartamento na planta e o prazo de entrega venceu há 8 meses. A construtora oferece nova data sem multa contratual. Beatriz quer rescindir o contrato, recuperar valores pagos corrigidos e receber indenização por lucros cessantes, ajuizando demanda contra a incorporadora.",
+      "peca_correta": "Ação de Resolução Contratual c/c Indenização",
+      "alternativas": [
+        "Ação de Resolução Contratual c/c Indenização",
+        "Ação de Consignação em Pagamento",
+        "Embargos de Terceiro",
+        "Ação Possessória"
+      ],
+      "explicacao": "Inadimplemento do vendedor autoriza resolução do contrato com restituição e perdas e danos (CC, arts. 475 e 389)."
+    },
+    {
+      "id": "peca-010",
+      "area": "Trabalhista",
+      "exame": "Exemplo — 2ª fase",
+      "enunciado": "Empresa foi citada em execução trabalhista definitiva. Alega que o cálculo homologado inclui verbas já pagas e que houve excesso de execução. Pretende discutir o valor exequendo e suspender atos constritivos até o julgamento.",
+      "peca_correta": "Embargos à Execução",
+      "alternativas": [
+        "Embargos à Execução",
+        "Impugnação ao Cumprimento de Sentença",
+        "Contestação",
+        "Recurso Ordinário"
+      ],
+      "explicacao": "Executado pode opor Embargos à Execução quando discute o título ou o excesso (CLT, art. 884)."
+    },
+    {
+      "id": "peca-011",
+      "area": "Penal",
+      "exame": "Exemplo — 2ª fase",
+      "enunciado": "O juízo recebeu denúncia contra Paulo por crime de ameaça. Antes da instrução, a defesa identifica causa de extinção da punibilidade: transação penal homologada em crime anterior impede nova persecução por fatos anteriores ao acordo. Necessário suscitar a matéria para evitar condenação.",
+      "peca_correta": "Resposta à Acusação",
+      "alternativas": [
+        "Resposta à Acusação",
+        "Alegações Finais",
+        "Habeas Corpus",
+        "Recurso em Sentido Estrito"
+      ],
+      "explicacao": "Após o recebimento da denúncia, a defesa apresenta Resposta à Acusação (art. 396-A, CPP)."
+    },
+    {
+      "id": "peca-012",
+      "area": "Administrativo",
+      "exame": "Exemplo — 2ª fase",
+      "enunciado": "Associação de moradores identifica obra pública abandonada que causa risco de desabamento em praça municipal. O Município foi notificado extrajudicialmente e não tomou providências. A associação deseja compelir a Administração a executar a obra ou adotar medidas de segurança, em benefício coletivo.",
+      "peca_correta": "Ação Civil Pública",
+      "alternativas": [
+        "Ação Civil Pública",
+        "Mandado de Segurança Coletivo",
+        "Ação Popular",
+        "Representação por Excesso de Prazo"
+      ],
+      "explicacao": "Defesa de interesses difusos/coletivos contra omissão estatal → Ação Civil Pública (Lei 7.347/85)."
+    }
+  ]
+}

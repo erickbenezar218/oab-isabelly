@@ -16,18 +16,39 @@ services:
 
   api:
     build: ./api
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql://simulaordem:${POSTGRES_PASSWORD:-simulaordem}@db:5432/simulaordem
       JWT_SECRET: ${JWT_SECRET:-troque-isso-no-coolify}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.0-flash}
+      APP_URL: ${APP_URL:-http://localhost:8080}
+      EMAIL_FROM: ${EMAIL_FROM:-SimulaOrdem <noreply@simulaordem.com.br>}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      EMAIL_2FA_ENABLED: ${EMAIL_2FA_ENABLED:-true}
+      ASAAS_ENV: ${ASAAS_ENV:-sandbox}
+      ASAAS_API_KEY: ${ASAAS_API_KEY:-}
+      ASAAS_WEBHOOK_TOKEN: ${ASAAS_WEBHOOK_TOKEN:-}
+      ASAAS_PRO_VALUE: ${ASAAS_PRO_VALUE:-24.90}
+      ASAAS_RETA_VALUE: ${ASAAS_RETA_VALUE:-59.90}
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
 
   web:
-    build: .
+    build:
+      context: .
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api}
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-${GOOGLE_CLIENT_ID:-}}
     ports:
       - '8080:80'
     depends_on:

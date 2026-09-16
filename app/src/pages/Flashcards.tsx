@@ -1,5 +1,6 @@
 import confetti from 'canvas-confetti'
 import { useCallback, useMemo, useRef, useState } from 'react'
+import TutorPanel from '../components/TutorPanel'
 import { useApp } from '../context/AppContext'
 import { shuffle } from '../hooks/useAppData'
 import type { Questao } from '../types'
@@ -44,7 +45,7 @@ export default function Flashcards() {
   const atual: Questao | undefined = deck[index]
 
   const fireConfetti = () => {
-    confetti({ particleCount: 120, spread: 70, origin: { y: 0.65 }, colors: ['#e879f9', '#d946ef', '#f0abfc', '#fff'] })
+    confetti({ particleCount: 120, spread: 70, origin: { y: 0.65 }, colors: ['#3c8f92', '#1c3f3a', '#5eead4', '#fff'] })
   }
 
   const avancar = useCallback(
@@ -91,7 +92,7 @@ export default function Flashcards() {
               setIndex(0)
             }}
             className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
-              filtroTipo === t ? 'bg-brand-600 text-white' : 'bg-surface-700 text-purple-200'
+              filtroTipo === t ? 'bg-brand-600 text-white' : 'bg-surface-700 text-muted'
             }`}
           >
             {t === 'materia' ? 'Matéria' : t === 'exame' ? 'Exame' : 'Revisão'}
@@ -106,7 +107,7 @@ export default function Flashcards() {
             setFiltroValor(e.target.value)
             setIndex(0)
           }}
-          className="w-full rounded-xl bg-surface-700 px-3 py-2.5 text-sm text-white outline-none"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-ink outline-none"
         >
           <option value="">Todas as matérias</option>
           {materias.map((m) => (
@@ -124,7 +125,7 @@ export default function Flashcards() {
             setFiltroValor(e.target.value)
             setIndex(0)
           }}
-          className="w-full rounded-xl bg-surface-700 px-3 py-2.5 text-sm text-white outline-none"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-ink outline-none"
         >
           <option value="">Todos os exames</option>
           {exames.map((e) => (
@@ -136,12 +137,12 @@ export default function Flashcards() {
       )}
 
       {deck.length === 0 ? (
-        <p className="py-12 text-center text-purple-300/60">
+        <p className="py-12 text-center text-muted">
           {filtroTipo === 'revisao' ? 'Nenhuma questão salva para revisão ainda.' : 'Nenhuma questão no filtro.'}
         </p>
       ) : atual ? (
         <>
-          <div className="flex items-center justify-between text-xs text-purple-300/60">
+          <div className="flex items-center justify-between text-xs text-muted">
             <span>
               {atual.materia} · {atual.exame}
             </span>
@@ -151,11 +152,11 @@ export default function Flashcards() {
           </div>
 
           <div
-            className={`card-swipe ${swipeClass} rounded-2xl bg-surface-800 p-5 shadow-lg`}
+            className={`card-swipe ${swipeClass} card rounded-2xl p-5`}
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
           >
-            <p className="text-sm leading-relaxed text-purple-100">{atual.enunciado}</p>
+            <p className="text-sm leading-relaxed text-ink">{atual.enunciado}</p>
 
             <div className="mt-4 space-y-2">
               {(['A', 'B', 'C', 'D'] as const).map((letra) => (
@@ -168,20 +169,24 @@ export default function Flashcards() {
                   }}
                   className={`w-full rounded-xl border px-3 py-2.5 text-left text-sm transition ${
                     mostrarGabarito && letra === atual.resposta_correta
-                      ? 'border-green-500/50 bg-green-500/10 text-green-300'
+                      ? 'border-green-500 bg-green-50 text-green-700'
                       : mostrarGabarito && selected === letra && letra !== atual.resposta_correta
-                        ? 'border-red-500/50 bg-red-500/10 text-red-300'
+                        ? 'border-red-500 bg-red-50 text-red-700'
                         : selected === letra
-                          ? 'border-brand-500 bg-brand-600/20 text-white'
-                          : 'border-surface-600 bg-surface-700/50 text-purple-100 hover:border-brand-600/50'
+                          ? 'border-brand-500 bg-brand-50 text-brand-700'
+                          : 'border-slate-200 bg-white text-ink hover:border-brand-400'
                   }`}
                 >
-                  <span className="mr-2 font-bold text-brand-300">{letra})</span>
+                  <span className="mr-2 font-bold text-brand-500">{letra})</span>
                   {atual.alternativas[letra]}
                 </button>
               ))}
             </div>
           </div>
+
+          {mostrarGabarito && selected && (
+            <TutorPanel questao={atual} respostaUsuario={selected} />
+          )}
 
           <div className="flex gap-3">
             <button
@@ -207,14 +212,14 @@ export default function Flashcards() {
             onClick={() => toggleSalvarRevisao(atual.id)}
             className={`w-full rounded-xl py-2.5 text-sm font-medium ${
               progress.salvosRevisao.includes(atual.id)
-                ? 'bg-brand-600/30 text-brand-200'
-                : 'bg-surface-700 text-purple-200'
+                ? 'bg-brand-50 text-brand-600'
+                : 'bg-surface-700 text-muted'
             }`}
           >
             {progress.salvosRevisao.includes(atual.id) ? '⭐ Salvo para revisão' : '☆ Salvar para revisar depois'}
           </button>
 
-          <p className="text-center text-[11px] text-purple-400/50">Deslize ← erro · → acerto (após revelar gabarito)</p>
+          <p className="text-center text-[11px] text-muted-light">Deslize ← erro · → acerto (após revelar gabarito)</p>
         </>
       ) : null}
     </div>

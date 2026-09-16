@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import TutorPanel from './TutorPanel'
 import { formatTempo } from '../hooks/useAppData'
 import { NOTA_APROVACAO, SIMULADO_TOTAL, type Questao, type SimuladoResult } from '../types'
 
@@ -43,9 +44,9 @@ export function SimuladoHistoricoLista({
   if (simulados.length === 0) return null
 
   return (
-    <section className="rounded-2xl bg-surface-800 p-4">
-      <h3 className="font-semibold text-white">Histórico de simulados</h3>
-      <p className="mt-1 text-xs text-purple-300/60">Toque para revisar erros e estudar questão por questão</p>
+    <section className="card rounded-2xl p-4">
+      <h3 className="font-semibold text-ink">Histórico de simulados</h3>
+      <p className="mt-1 text-xs text-muted">Toque para revisar erros e estudar questão por questão</p>
       <div className="mt-3 space-y-2">
         {simulados.map((s) => {
           const aprovada = s.acertos >= NOTA_APROVACAO
@@ -57,14 +58,14 @@ export function SimuladoHistoricoLista({
               className="flex w-full items-center justify-between rounded-xl bg-surface-700 px-3 py-3 text-left transition active:scale-[0.99] hover:bg-surface-600"
             >
               <div className="min-w-0 pr-3">
-                <p className="truncate font-medium text-white">{s.exame}</p>
-                <p className="text-xs text-purple-300/60">{formatarData(s.finalizadoEm)}</p>
+                <p className="truncate font-medium text-ink">{s.exame}</p>
+                <p className="text-xs text-muted">{formatarData(s.finalizadoEm)}</p>
               </div>
               <div className="shrink-0 text-right">
-                <p className={`font-bold ${aprovada ? 'text-green-400' : 'text-yellow-400'}`}>
+                <p className={`font-bold ${aprovada ? 'text-green-600' : 'text-yellow-600'}`}>
                   {s.acertos}/{s.total}
                 </p>
-                <p className="text-[10px] text-purple-400/50">{formatTempo(s.tempoUsadoSeg)}</p>
+                <p className="text-[10px] text-muted-light">{formatTempo(s.tempoUsadoSeg)}</p>
               </div>
             </button>
           )
@@ -124,26 +125,26 @@ export function SimuladoRevisaoDetalhe({
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <button type="button" onClick={() => setQuestaoAtivaId(null)} className="rounded-lg bg-surface-700 px-3 py-2 text-sm text-purple-200">
+          <button type="button" onClick={() => setQuestaoAtivaId(null)} className="rounded-lg bg-surface-700 px-3 py-2 text-sm text-muted">
             ← Lista
           </button>
-          <p className="text-xs text-purple-300/60">
+          <p className="text-xs text-muted">
             {indiceAtivo + 1}/{filtradas.length} · Q{questaoAtiva.numero}
           </p>
         </div>
 
-        <div className="rounded-2xl bg-surface-800 p-4">
-          <p className="text-xs text-brand-300">
+        <div className="card rounded-2xl p-4">
+          <p className="text-xs font-medium text-brand-500">
             {questaoAtiva.materia} · {questaoAtiva.exame}
           </p>
           <p
             className={`mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${
-              st === 'acerto' ? 'bg-green-500/20 text-green-300' : st === 'erro' ? 'bg-red-500/20 text-red-300' : 'bg-yellow-500/20 text-yellow-300'
+              st === 'acerto' ? 'bg-green-50 text-green-700' : st === 'erro' ? 'bg-red-50 text-red-700' : 'bg-yellow-50 text-yellow-700'
             }`}
           >
             {st === 'acerto' ? '✅ Acertou' : st === 'erro' ? '❌ Errou' : '⚠️ Não respondida'}
           </p>
-          <p className="mt-3 text-sm leading-relaxed text-purple-100">{questaoAtiva.enunciado}</p>
+          <p className="mt-3 text-sm leading-relaxed text-ink">{questaoAtiva.enunciado}</p>
 
           <div className="mt-4 space-y-2">
             {(['A', 'B', 'C', 'D'] as const).map((letra) => {
@@ -154,27 +155,31 @@ export function SimuladoRevisaoDetalhe({
                   key={letra}
                   className={`rounded-xl border px-3 py-2.5 text-sm ${
                     isCorreta
-                      ? 'border-green-500/50 bg-green-500/10 text-green-200'
+                      ? 'border-green-500 bg-green-50 text-green-800'
                       : isSua && !isCorreta
-                        ? 'border-red-500/50 bg-red-500/10 text-red-200'
-                        : 'border-surface-600 bg-surface-700/50 text-purple-100'
+                        ? 'border-red-500 bg-red-50 text-red-800'
+                        : 'border-slate-200 bg-white text-ink'
                   }`}
                 >
-                  <span className="mr-2 font-bold text-brand-300">{letra})</span>
+                  <span className="mr-2 font-bold text-brand-500">{letra})</span>
                   {questaoAtiva.alternativas[letra]}
-                  {isCorreta && <span className="ml-2 text-xs text-green-400">✓ gabarito</span>}
-                  {isSua && !isCorreta && <span className="ml-2 text-xs text-red-400">sua resposta</span>}
+                  {isCorreta && <span className="ml-2 text-xs text-green-600">✓ gabarito</span>}
+                  {isSua && !isCorreta && <span className="ml-2 text-xs text-red-600">sua resposta</span>}
                 </div>
               )
             })}
           </div>
         </div>
 
+        {(st === 'erro' || st === 'nao-respondida') && (
+          <TutorPanel questao={questaoAtiva} respostaUsuario={sel ?? null} />
+        )}
+
         <button
           type="button"
           onClick={() => toggleSalvarRevisao(questaoAtiva.id)}
           className={`w-full rounded-xl py-2.5 text-sm font-medium ${
-            salvosRevisao.includes(questaoAtiva.id) ? 'bg-brand-600/30 text-brand-200' : 'bg-surface-700 text-purple-200'
+            salvosRevisao.includes(questaoAtiva.id) ? 'bg-brand-50 text-brand-600' : 'bg-surface-700 text-muted'
           }`}
         >
           {salvosRevisao.includes(questaoAtiva.id) ? '⭐ Salva para revisão' : '☆ Salvar para revisar depois'}
@@ -185,7 +190,7 @@ export function SimuladoRevisaoDetalhe({
             type="button"
             disabled={indiceAtivo <= 0}
             onClick={() => setQuestaoAtivaId(filtradas[indiceAtivo - 1]?.id ?? null)}
-            className="flex-1 rounded-xl bg-surface-700 py-2.5 text-sm disabled:opacity-30"
+            className="flex-1 rounded-xl bg-surface-700 py-2.5 text-sm text-ink disabled:opacity-30"
           >
             ← Anterior
           </button>
@@ -204,20 +209,20 @@ export function SimuladoRevisaoDetalhe({
 
   return (
     <div className="space-y-4">
-      <button type="button" onClick={onVoltar} className="rounded-lg bg-surface-700 px-3 py-2 text-sm text-purple-200">
+      <button type="button" onClick={onVoltar} className="rounded-lg bg-surface-700 px-3 py-2 text-sm text-muted">
         ← Voltar
       </button>
 
-      <section className={`rounded-2xl p-5 text-center ${aprovada ? 'bg-green-900/30' : 'bg-surface-800'}`}>
-        <p className="text-xs text-purple-300/60">{formatarData(sim.finalizadoEm)}</p>
-        <h2 className="mt-1 text-xl font-bold text-white">{sim.exame}</h2>
-        <p className="mt-2 text-3xl font-extrabold text-white">
+      <section className={`rounded-2xl p-5 text-center ${aprovada ? 'bg-green-50' : 'card'}`}>
+        <p className="text-xs text-muted">{formatarData(sim.finalizadoEm)}</p>
+        <h2 className="mt-1 text-xl font-bold text-ink">{sim.exame}</h2>
+        <p className="mt-2 text-3xl font-extrabold text-ink">
           {sim.acertos}/{sim.total}
         </p>
-        <p className={`mt-1 text-sm font-semibold ${aprovada ? 'text-green-400' : 'text-yellow-400'}`}>
+        <p className={`mt-1 text-sm font-semibold ${aprovada ? 'text-green-600' : 'text-yellow-600'}`}>
           {aprovada ? 'Aprovada!' : `${NOTA_APROVACAO - sim.acertos} acertos faltando`}
         </p>
-        <p className="mt-2 text-xs text-purple-300/60">
+        <p className="mt-2 text-xs text-muted">
           {stats.erros} erros · {stats.naoRespondidas} em branco · {formatTempo(sim.tempoUsadoSeg)}
         </p>
       </section>
@@ -235,7 +240,7 @@ export function SimuladoRevisaoDetalhe({
             type="button"
             onClick={() => setFiltro(key)}
             className={`flex-1 rounded-xl py-2 text-xs font-medium ${
-              filtro === key ? 'bg-brand-600 text-white' : 'bg-surface-700 text-purple-200'
+              filtro === key ? 'bg-brand-600 text-white' : 'bg-surface-700 text-muted'
             }`}
           >
             {label}
@@ -245,7 +250,7 @@ export function SimuladoRevisaoDetalhe({
 
       <div className="space-y-2">
         {filtradas.length === 0 ? (
-          <p className="py-8 text-center text-sm text-purple-300/60">Nenhuma questão neste filtro 🎉</p>
+          <p className="py-8 text-center text-sm text-muted">Nenhuma questão neste filtro 🎉</p>
         ) : (
           filtradas.map((q) => {
             const sel = sim.respostas[q.id]
@@ -255,16 +260,16 @@ export function SimuladoRevisaoDetalhe({
                 key={q.id}
                 type="button"
                 onClick={() => setQuestaoAtivaId(q.id)}
-                className={`w-full rounded-xl p-3 text-left text-sm transition active:scale-[0.99] ${
-                  st === 'acerto' ? 'bg-green-500/10' : st === 'erro' ? 'bg-red-500/10' : 'bg-yellow-500/10'
+                className={`w-full rounded-xl border p-3 text-left text-sm transition active:scale-[0.99] ${
+                  st === 'acerto' ? 'border-green-200 bg-green-50' : st === 'erro' ? 'border-red-200 bg-red-50' : 'border-yellow-200 bg-yellow-50'
                 }`}
               >
-                <p className="font-medium text-white">
+                <p className="font-medium text-ink">
                   Q{q.numero} · {q.materia} — {st === 'acerto' ? '✅' : st === 'erro' ? '❌' : '⚠️'}
                   {sel ? ` · Sua: ${sel}` : ' · Em branco'} · Gabarito: {q.resposta_correta}
                 </p>
-                <p className="mt-1 line-clamp-2 text-xs text-purple-200/60">{q.enunciado}</p>
-                <p className="mt-1 text-xs text-brand-300">Toque para estudar →</p>
+                <p className="mt-1 line-clamp-2 text-xs text-muted">{q.enunciado}</p>
+                <p className="mt-1 text-xs text-brand-500">Toque para estudar →</p>
               </button>
             )
           })

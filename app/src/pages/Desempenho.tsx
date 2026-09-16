@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { useApp } from '../context/AppContext'
 
-const CORES = ['#e879f9', '#d946ef', '#c026d3', '#a21caf', '#86198f', '#701a75']
+const CORES = ['#3C8F92', '#2A606B', '#1C3F3A', '#5EEAD4', '#0F766E', '#134E4A']
 
 export default function Desempenho() {
   const { progress, questoes, loading, addCustomCard, removeCustomCard } = useApp()
@@ -65,10 +65,10 @@ export default function Desempenho() {
             type="button"
             onClick={() => setAba(t)}
             className={`flex-1 rounded-xl py-2.5 text-sm font-medium ${
-              aba === t ? 'bg-brand-600 text-white' : 'bg-surface-700 text-purple-200'
+              aba === t ? 'bg-brand-600 text-white' : 'bg-surface-700 text-muted'
             }`}
           >
-            {t === 'grafico' ? '📊 Por Matéria' : '✏️ Cards Custom'}
+            {t === 'grafico' ? '📊 Por matéria' : '✏️ Anotações'}
           </button>
         ))}
       </div>
@@ -76,18 +76,18 @@ export default function Desempenho() {
       {aba === 'grafico' && (
         <>
           {statsPorMateria.length === 0 ? (
-            <p className="py-12 text-center text-purple-300/60">
-              Responda questões nos flashcards ou simulados para ver estatísticas aqui.
+            <p className="py-12 text-center text-muted">
+              Responda questões nos flashcards ou simulados para ver seu desempenho por matéria aqui.
             </p>
           ) : (
             <>
-              <div className="h-72 rounded-2xl bg-surface-800 p-3">
+              <div className="card h-72 rounded-2xl p-3">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={statsPorMateria} layout="vertical" margin={{ left: 4, right: 8 }}>
-                    <XAxis type="number" domain={[0, 100]} tick={{ fill: '#c4b5fd', fontSize: 10 }} />
-                    <YAxis type="category" dataKey="materia" width={100} tick={{ fill: '#c4b5fd', fontSize: 9 }} />
+                    <XAxis type="number" domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 10 }} />
+                    <YAxis type="category" dataKey="materia" width={100} tick={{ fill: '#64748b', fontSize: 9 }} />
                     <Tooltip
-                      contentStyle={{ background: '#1a1025', border: '1px solid #a21caf', borderRadius: 8 }}
+                      contentStyle={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 8, color: '#0f172a' }}
                       formatter={(value, _, item) => [
                         `${value}% (${item.payload.acertos}/${item.payload.total})`,
                         item.payload.materiaFull,
@@ -104,15 +104,15 @@ export default function Desempenho() {
 
               <div className="space-y-2">
                 {statsPorMateria.map((s) => (
-                  <div key={s.materiaFull} className="rounded-xl bg-surface-800 px-4 py-3">
+                  <div key={s.materiaFull} className="card rounded-xl px-4 py-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-white">{s.materiaFull}</span>
-                      <span className={s.pct >= 50 ? 'text-green-400' : 'text-yellow-400'}>{s.pct}%</span>
+                      <span className="text-ink">{s.materiaFull}</span>
+                      <span className={s.pct >= 50 ? 'text-green-600' : 'text-yellow-600'}>{s.pct}%</span>
                     </div>
                     <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-700">
                       <div className="h-full bg-brand-500" style={{ width: `${s.pct}%` }} />
                     </div>
-                    <p className="mt-1 text-xs text-purple-300/50">
+                    <p className="mt-1 text-xs text-muted-light">
                       {s.acertos} acertos em {s.total} questões
                     </p>
                   </div>
@@ -122,14 +122,14 @@ export default function Desempenho() {
           )}
 
           {progress.simulados.length > 0 && (
-            <section className="rounded-2xl bg-surface-800 p-4">
-              <h3 className="font-semibold text-white">Histórico de Simulados</h3>
-              <p className="mt-1 text-xs text-purple-300/60">Revise erros na aba Simulado</p>
+            <section className="card rounded-2xl p-4">
+              <h3 className="font-semibold text-ink">Histórico de Simulados</h3>
+              <p className="mt-1 text-xs text-muted">Revise erros na aba Simulado</p>
               <div className="mt-3 space-y-2">
                 {progress.simulados.slice(0, 5).map((s) => (
                   <div key={s.id} className="flex justify-between rounded-lg bg-surface-700 px-3 py-2 text-sm">
-                    <span className="text-purple-200">{s.exame}</span>
-                    <span className={s.acertos >= 40 ? 'text-green-400' : 'text-yellow-400'}>
+                    <span className="text-ink">{s.exame}</span>
+                    <span className={s.acertos >= 40 ? 'text-green-600' : 'text-yellow-600'}>
                       {s.acertos}/{s.total}
                     </span>
                   </div>
@@ -142,19 +142,19 @@ export default function Desempenho() {
 
       {aba === 'custom' && (
         <>
-          <form onSubmit={handleAddCard} className="space-y-3 rounded-2xl bg-surface-800 p-4">
-            <h3 className="font-semibold text-white">Cadastrar Card Customizado</h3>
-            <p className="text-xs text-purple-300/60">Anotações rápidas salvas no seu navegador 💜</p>
+          <form onSubmit={handleAddCard} className="card space-y-3 rounded-2xl p-4">
+            <h3 className="font-semibold text-ink">Cadastrar Card Customizado</h3>
+            <p className="text-xs text-muted">Anotações rápidas salvas na sua conta</p>
             <input
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               placeholder="Título do card"
-              className="w-full rounded-xl bg-surface-700 px-3 py-2.5 text-sm text-white outline-none placeholder:text-purple-400/40"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-ink outline-none placeholder:text-muted-light"
             />
             <select
               value={materiaCustom}
               onChange={(e) => setMateriaCustom(e.target.value)}
-              className="w-full rounded-xl bg-surface-700 px-3 py-2.5 text-sm text-white outline-none"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-ink outline-none"
             >
               <option value="">Matéria (opcional)</option>
               {materias.map((m) => (
@@ -168,7 +168,7 @@ export default function Desempenho() {
               onChange={(e) => setConteudo(e.target.value)}
               placeholder="Conteúdo / anotação..."
               rows={4}
-              className="w-full resize-none rounded-xl bg-surface-700 px-3 py-2.5 text-sm text-white outline-none placeholder:text-purple-400/40"
+              className="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-ink outline-none placeholder:text-muted-light"
             />
             <button type="submit" className="w-full rounded-xl bg-brand-600 py-3 text-sm font-semibold text-white">
               Salvar Card
@@ -177,14 +177,14 @@ export default function Desempenho() {
 
           <div className="space-y-2">
             {progress.customCards.length === 0 ? (
-              <p className="py-8 text-center text-sm text-purple-300/50">Nenhum card customizado ainda.</p>
+              <p className="py-8 text-center text-sm text-muted">Nenhum card customizado ainda.</p>
             ) : (
               progress.customCards.map((card) => (
-                <div key={card.id} className="rounded-xl bg-surface-800 p-4">
+                <div key={card.id} className="card rounded-xl p-4">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="font-semibold text-white">{card.titulo}</p>
-                      {card.materia && <p className="text-xs text-brand-300">{card.materia}</p>}
+                      <p className="font-semibold text-ink">{card.titulo}</p>
+                      {card.materia && <p className="text-xs text-brand-500">{card.materia}</p>}
                     </div>
                     <button
                       type="button"
@@ -194,7 +194,7 @@ export default function Desempenho() {
                       ✕
                     </button>
                   </div>
-                  <p className="mt-2 whitespace-pre-wrap text-sm text-purple-100/80">{card.conteudo}</p>
+                  <p className="mt-2 whitespace-pre-wrap text-sm text-muted">{card.conteudo}</p>
                 </div>
               ))
             )}

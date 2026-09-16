@@ -14,5 +14,9 @@ export default function ProtectedRoute() {
 
   if (!user) return <Navigate to="/login" replace />
 
-  return <Outlet />
+  return (
+    <div className="h-dvh overflow-hidden">
+      <Outlet />
+    </div>
+  )
 }

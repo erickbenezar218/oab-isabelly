@@ -1,0 +1,258 @@
+{
+  "meta": {
+    "product": "SimulaOrdem",
+    "tagline": "Preparação completa para a OAB — 1ª e 2ª fase",
+    "designDirection": "Finpay-inspired SaaS — clean, trustworthy, professional. Light-first UI with deep teal accents. No purple. No gradients on text. No dark-mode-by-default.",
+    "reference": "Fintech landing (Finpay): generous whitespace, soft shadows, large radii, teal + navy + off-white",
+    "version": "1.0.0"
+  },
+  "principles": [
+    "Calm by default — one primary action per screen",
+    "Trust through clarity — legible type, high contrast, no visual noise",
+    "Serious but approachable — legal/education product, not playful fintech gimmicks",
+    "Mobile-first — thumb-friendly targets, 44px min touch areas",
+    "Data-forward — stats and simulado progress are heroes, not decoration"
+  ],
+  "antiPatterns": [
+    "Purple or magenta accent colors",
+    "Dark purple backgrounds (#0f0a14, #1a1025)",
+    "Glow effects and neon pulse animations",
+    "Gradient text on headings",
+    "Over-rounded pill overload on every element",
+    "Emoji as primary navigation icons in production (use Lucide in landing; app may keep minimal emoji in cards)"
+  ],
+  "colors": {
+    "primary": {
+      "DEFAULT": "#1C3F3A",
+      "hover": "#0F2A27",
+      "light": "#2A606B",
+      "accent": "#3C8F92",
+      "muted": "#E6F0EF",
+      "foreground": "#FFFFFF"
+    },
+    "background": {
+      "page": "#F8FAFB",
+      "card": "#FFFFFF",
+      "muted": "#F1F5F9",
+      "dark": "#1C3F3A",
+      "darkAlt": "#0F1E29"
+    },
+    "text": {
+      "heading": "#0F172A",
+      "body": "#475569",
+      "muted": "#64748B",
+      "onDark": "#FFFFFF",
+      "onDarkMuted": "#CBD5E1"
+    },
+    "border": {
+      "DEFAULT": "#E2E8F0",
+      "strong": "#CBD5E1",
+      "focus": "#3C8F92"
+    },
+    "semantic": {
+      "success": "#16A34A",
+      "successBg": "#F0FDF4",
+      "warning": "#CA8A04",
+      "warningBg": "#FEFCE8",
+      "error": "#DC2626",
+      "errorBg": "#FEF2F2"
+    },
+    "chart": ["#3C8F92", "#2A606B", "#1C3F3A", "#5EEAD4", "#0F766E", "#134E4A"]
+  },
+  "typography": {
+    "fontFamily": {
+      "sans": "Plus Jakarta Sans, Inter, system-ui, sans-serif",
+      "display": "Plus Jakarta Sans, Inter, system-ui, sans-serif"
+    },
+    "scale": {
+      "overline": { "size": "11px", "weight": 600, "letterSpacing": "0.12em", "transform": "uppercase", "color": "primary.accent" },
+      "h1": { "size": "clamp(2rem, 5vw, 3.25rem)", "weight": 700, "lineHeight": 1.1, "letterSpacing": "-0.02em", "color": "text.heading" },
+      "h2": { "size": "clamp(1.5rem, 3vw, 2.25rem)", "weight": 700, "lineHeight": 1.2, "letterSpacing": "-0.01em", "color": "text.heading" },
+      "h3": { "size": "1.125rem", "weight": 600, "lineHeight": 1.3, "color": "text.heading" },
+      "body": { "size": "1rem", "weight": 400, "lineHeight": 1.6, "color": "text.body" },
+      "bodySm": { "size": "0.875rem", "weight": 400, "lineHeight": 1.5, "color": "text.body" },
+      "caption": { "size": "0.75rem", "weight": 500, "lineHeight": 1.4, "color": "text.muted" },
+      "stat": { "size": "2rem", "weight": 700, "lineHeight": 1, "color": "text.heading" }
+    }
+  },
+  "spacing": {
+    "unit": 4,
+    "sectionY": "5rem",
+    "sectionYMobile": "3rem",
+    "containerMax": "1200px",
+    "appMax": "768px",
+    "cardPadding": "1.25rem",
+    "cardPaddingLg": "2rem",
+    "gridGap": "1.5rem"
+  },
+  "radius": {
+    "sm": "8px",
+    "md": "12px",
+    "lg": "16px",
+    "xl": "24px",
+    "2xl": "32px",
+    "full": "9999px",
+    "button": "12px",
+    "card": "16px",
+    "input": "12px",
+    "appShell": "0px"
+  },
+  "shadow": {
+    "card": "0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04)",
+    "cardHover": "0 10px 25px rgba(15, 23, 42, 0.08), 0 4px 10px rgba(15, 23, 42, 0.04)",
+    "nav": "0 -4px 20px rgba(15, 23, 42, 0.06)"
+  },
+  "components": {
+    "button": {
+      "primary": {
+        "background": "#1C3F3A",
+        "color": "#FFFFFF",
+        "hoverBackground": "#0F2A27",
+        "radius": "12px",
+        "padding": "12px 24px",
+        "fontWeight": 600,
+        "shadow": "none"
+      },
+      "secondary": {
+        "background": "transparent",
+        "color": "#1C3F3A",
+        "border": "1px solid #CBD5E1",
+        "hoverBackground": "#F1F5F9"
+      },
+      "ghost": {
+        "background": "transparent",
+        "color": "#475569",
+        "hoverBackground": "#F1F5F9"
+      }
+    },
+    "card": {
+      "background": "#FFFFFF",
+      "border": "1px solid #E2E8F0",
+      "radius": "16px",
+      "padding": "20px",
+      "shadow": "card"
+    },
+    "cardFeatured": {
+      "background": "#1C3F3A",
+      "color": "#FFFFFF",
+      "radius": "24px",
+      "padding": "32px",
+      "pattern": "optional subtle geometric overlay at 5% opacity"
+    },
+    "input": {
+      "background": "#FFFFFF",
+      "border": "1px solid #E2E8F0",
+      "radius": "12px",
+      "padding": "12px 16px",
+      "focusRing": "2px solid #3C8F92",
+      "placeholder": "#94A3B8"
+    },
+    "nav": {
+      "app": {
+        "background": "#FFFFFF",
+        "borderTop": "1px solid #E2E8F0",
+        "activeItem": { "background": "#E6F0EF", "color": "#1C3F3A" },
+        "inactiveItem": { "color": "#64748B" }
+      },
+      "marketing": {
+        "background": "transparent",
+        "linkColor": "#475569",
+        "ctaStyle": "primary button"
+      }
+    },
+    "badge": {
+      "free": { "background": "#F1F5F9", "color": "#64748B" },
+      "pro": { "background": "#F0FDF4", "color": "#16A34A" }
+    },
+    "iconContainer": {
+      "size": "48px",
+      "background": "#E6F0EF",
+      "iconColor": "#1C3F3A",
+      "radius": "12px"
+    }
+  },
+  "logo": {
+    "mark": "Two parallel tilted bars (Finpay-style geometry) forming abstract balance / forward motion. Flat teal #1C3F3A on white. No purple. No gradients on mark.",
+    "wordmark": "SimulaOrdem — 'Simula' in #0F172A, 'Ordem' in #1C3F3A or single weight with teal dot accent",
+    "clearSpace": "Height of mark on all sides",
+    "minSize": { "mark": "24px", "wordmark": "120px width" }
+  },
+  "landingPage": {
+    "section1_hero": {
+      "layout": "2 columns",
+      "background": "#FFFFFF",
+      "column1": {
+        "overline": "SIMULADOS OAB · 1ª FASE",
+        "h1": "Simulados reais. Ritmo de prova. Aprovação na mira.",
+        "subtitle": "80 questões, 5 horas, cronômetro por questão e revisão dos erros — tudo no celular, no formato da FGV.",
+        "cta": "Começar grátis"
+      },
+      "column2": "UI mockup: simulado em andamento + timer + questão 42/80"
+    },
+    "section2_why": {
+      "layout": "1 column header + 3 column cards",
+      "background": "#FFFFFF",
+      "h2": "Por que SimulaOrdem?",
+      "cards": [
+        { "icon": "Clock", "title": "Simulado realista", "description": "80 questões e 5 horas — igual à prova" },
+        { "icon": "BarChart3", "title": "Desempenho por matéria", "description": "Veja onde errar menos antes do exame" },
+        { "icon": "RotateCcw", "title": "Revisão de erros", "description": "Estude questão por questão o que errou" }
+      ]
+    },
+    "section3_aiLearning": {
+      "layout": "2 columns",
+      "background": "#FFFFFF",
+      "overline": "INTELIGÊNCIA ARTIFICIAL",
+      "h2": "Estude com inteligência artificial",
+      "tagline": "Cada erro em questões, você aprende.",
+      "visual": "Mockup: wrong answer + AI explanation + review suggestion chips"
+    },
+    "section4_darkFeature": {
+      "layout": "1 column",
+      "background": "#1C3F3A",
+      "h2": "Você treina. O SimulaOrdem corrige.",
+      "visual": "Chat-like or simulado result UI with error review list"
+    },
+    "section5_trust": {
+      "layout": "2 columns",
+      "background": "#EBE8D8",
+      "h2": "Feito para a reta final da OAB",
+      "items": ["1120+ questões oficiais", "Progresso salvo na nuvem", "Plano grátis para testar", "Pagamento seguro via Asaas"]
+    },
+    "section6_cta": {
+      "background": "#1C3F3A",
+      "h2": "Entre na prova sabendo seu ritmo",
+      "bullets": ["1 simulado grátis por mês", "Flashcards ilimitados", "Pro a partir de R$ 24,90/mês"],
+      "cta": "Criar conta grátis"
+    },
+    "footer": {
+      "background": "#FFFFFF",
+      "borderTop": "#E2E8F0",
+      "links": ["Termos", "Privacidade", "Suporte", "Planos"]
+    }
+  },
+  "pricingPage": {
+    "layout": "marketing full-page",
+    "hero": {
+      "background": "#FFFFFF",
+      "overline": "PLANOS",
+      "h1": "Invista na sua aprovação",
+      "subtitle": "Comece grátis. Evolua com simulados ilimitados e tutor IA."
+    },
+    "cards": {
+      "layout": "3 columns",
+      "free": { "style": "components.card", "priceDisplay": "large stat typography" },
+      "pro": { "style": "components.cardFeatured", "badge": "Mais popular", "scale": "1.03 on desktop" },
+      "retaFinal": { "style": "components.card", "badge": "Melhor custo" }
+    },
+    "comparisonTable": { "background": "#FFFFFF", "border": "#E2E8F0", "proColumnHighlight": "#1C3F3A" },
+    "faq": { "style": "expandable card", "background": "#FFFFFF" },
+    "cta": { "background": "#1C3F3A", "buttons": ["primary white", "ghost outline"] }
+  },
+  "appShell": {
+    "background": "#F8FAFB",
+    "header": { "background": "#FFFFFF", "borderBottom": "#E2E8F0" },
+    "content": { "maxWidth": "768px", "padding": "16px" },
+    "bottomNav": { "style": "components.nav.app" }
+  }
+}

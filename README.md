@@ -1,6 +1,6 @@
 # SimulaOrdem ⚖️
 
-Plataforma SaaS de simulados para a 1ª fase da OAB — flashcards, simulado real (80q / 5h) e estatísticas.
+Plataforma SaaS de preparação para a OAB (1ª e 2ª fase) — simulados reais, flashcards, peças processuais, cronograma e tutor IA.
 
 **Repositório:** https://github.com/erickbenezar218/oab-isabelly
 
@@ -8,11 +8,13 @@ Plataforma SaaS de simulados para a 1ª fase da OAB — flashcards, simulado rea
 
 | Plano | Preço | Inclui |
 |-------|-------|--------|
-| Grátis | R$ 0 | Flashcards ilimitados, 1 simulado/mês, último histórico |
-| Pro | R$ 24,90/mês | Simulados ilimitados, histórico completo, revisão de erros |
+| Grátis | R$ 0 | Flashcards, peças 2ª fase, 1 simulado/mês |
+| Pro | R$ 24,90/mês | Simulados ∞, cronograma, tutor IA, histórico completo |
 | Reta Final | R$ 59,90 / 3 meses | Tudo do Pro |
 
 Pagamento via **Asaas** (integração fase 2).
+
+**Tutor IA (Pro):** explica erros e chat por questão via Gemini API (`GEMINI_API_KEY` no `.env`).
 
 ## Stack
 
@@ -37,7 +39,15 @@ cd app && npm install && npm run dev   # :5173 (proxy /api)
 
 ## Variáveis de ambiente
 
-Ver `.env.example`. No Coolify, configure `JWT_SECRET`, `POSTGRES_PASSWORD` e `CORS_ORIGIN`.
+Ver `.env.example`. No Coolify, configure `JWT_SECRET`, `POSTGRES_PASSWORD`, `CORS_ORIGIN` e `GEMINI_API_KEY`.
+
+**Deploy Coolify:** guia completo em [docs/COOLIFY.md](docs/COOLIFY.md).
+
+**Google Login:** passo a passo em [docs/GOOGLE_OAUTH.md](docs/GOOGLE_OAUTH.md).
+
+**E-mail + 2FA:** boas-vindas e código de login em [docs/EMAIL.md](docs/EMAIL.md).
+
+**Testar Gemini:** crie `.env` na raiz e rode `cd api && npm run test:gemini`.
 
 ## Estrutura
 

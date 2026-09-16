@@ -7,10 +7,11 @@ import { formatTempo } from '../hooks/useAppData'
 import { apiSimuladoStart } from '../lib/api'
 import {
   NOTA_APROVACAO,
-  SIMULADO_TEMPO_TOTAL,
+  SIMULADO_MODOS,
   SIMULADO_TOTAL,
   TEMPO_POR_QUESTAO,
   type Questao,
+  type SimuladoModo,
   type SimuladoResult,
 } from '../types'
 
@@ -21,12 +22,16 @@ export default function Simulado() {
   const { questoes, progress, loading, registrarResposta, saveSimulado, toggleSalvarRevisao } = useApp()
   const [fase, setFase] = useState<Fase>('setup')
   const [limiteMsg, setLimiteMsg] = useState('')
+  const [modo, setModo] = useState<SimuladoModo>('completo')
   const [exameSelecionado, setExameSelecionado] = useState('')
   const [provaQuestoes, setProvaQuestoes] = useState<Questao[]>([])
+  const config = SIMULADO_MODOS[modo]
+  const provaTotal = config.total
+  const provaTempo = config.tempo
   const [indice, setIndice] = useState(0)
   const [respostas, setRespostas] = useState<Record<string, string>>({})
   const [marcadas, setMarcadas] = useState<Set<string>>(new Set())
-  const [tempoGlobal, setTempoGlobal] = useState(SIMULADO_TEMPO_TOTAL)
+  const [tempoGlobal, setTempoGlobal] = useState(provaTempo)
   const [tempoQuestao, setTempoQuestao] = useState(0)
   const [inicioProva, setInicioProva] = useState(0)
   const [resultado, setResultado] = useState<SimuladoResult | null>(null)
@@ -38,24 +43,29 @@ export default function Simulado() {
       if (!map.has(q.exame)) map.set(q.exame, [])
       map.get(q.exame)!.push(q)
     })
-    return [...map.entries()].filter(([, qs]) => qs.length >= SIMULADO_TOTAL)
-  }, [questoes])
+    return [...map.entries()].filter(([, qs]) => qs.length >= (modo === 'express' ? 40 : SIMULADO_TOTAL))
+  }, [questoes, modo])
 
   const iniciar = async () => {
     setLimiteMsg('')
     try {
-      if (token) await apiSimuladoStart(token)
+      if (token) await apiSimuladoStart(token, config.apiMode)
     } catch (e) {
       setLimiteMsg(e instanceof Error ? e.message : 'Limite do plano atingido.')
       return
     }
-    const pool = questoes.filter((q) => q.exame === exameSelecionado).sort((a, b) => a.numero - b.numero)
-    const selecionadas = pool.slice(0, SIMULADO_TOTAL)
+    let pool = questoes.filter((q) => q.exame === exameSelecionado).sort((a, b) => a.numero - b.numero)
+    let selecionadas: Questao[]
+    if (modo === 'express') {
+      selecionadas = [...pool].sort(() => Math.random() - 0.5).slice(0, provaTotal)
+    } else {
+      selecionadas = pool.slice(0, provaTotal)
+    }
     setProvaQuestoes(selecionadas)
     setIndice(0)
     setRespostas({})
     setMarcadas(new Set())
-    setTempoGlobal(SIMULADO_TEMPO_TOTAL)
+    setTempoGlobal(provaTempo)
     setTempoQuestao(0)
     setInicioProva(Date.now())
     setFase('prova')
@@ -82,7 +92,7 @@ export default function Simulado() {
       exame: exameSelecionado,
       acertos,
       total: provaQuestoes.length,
-      tempoUsadoSeg: SIMULADO_TEMPO_TOTAL - tempoGlobal,
+      tempoUsadoSeg: provaTempo - tempoGlobal,
       finalizadoEm: Date.now(),
       respostas: { ...respostas },
       questaoIds: provaQuestoes.map((q) => q.id),
@@ -90,7 +100,7 @@ export default function Simulado() {
     saveSimulado(result)
     setResultado(result)
     setFase('resultado')
-  }, [provaQuestoes, respostas, tempoGlobal, exameSelecionado, registrarResposta, saveSimulado])
+  }, [provaQuestoes, respostas, tempoGlobal, exameSelecionado, registrarResposta, saveSimulado, provaTempo])
 
   useEffect(() => {
     if (fase !== 'prova') return
@@ -130,40 +140,56 @@ export default function Simulado() {
   if (fase === 'setup') {
     return (
       <div className="space-y-5">
-        <section className="rounded-2xl bg-surface-800 p-5">
-          <h2 className="text-lg font-bold text-white">Simulado Realista OAB</h2>
-          <p className="mt--2 text-sm text-purple-200/70">
-            80 questões · 5 horas · meta 3min45s/questão · aprovação: {NOTA_APROVACAO}/80
+        <section className="card rounded-2xl p-5">
+          <h2 className="text-lg font-bold text-ink">Simulado Realista OAB</h2>
+          <p className="mt-2 text-sm text-muted">
+            Aprovação: {NOTA_APROVACAO}/80 · meta ~3min45s/questão
           </p>
         </section>
 
+        <div className="grid gap-2 sm:grid-cols-3">
+          {(Object.keys(SIMULADO_MODOS) as SimuladoModo[]).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setModo(m)}
+              className={`rounded-xl border p-3 text-left transition ${
+                modo === m ? 'border-brand-500 bg-brand-50' : 'border-slate-200 bg-white'
+              }`}
+            >
+              <p className="text-sm font-semibold text-ink">{SIMULADO_MODOS[m].label}</p>
+              <p className="mt-1 text-[10px] text-muted">{SIMULADO_MODOS[m].desc}</p>
+            </button>
+          ))}
+        </div>
+
         <label className="block">
-          <span className="mb-2 block text-sm text-purple-200">Escolha o exame completo:</span>
+          <span className="mb-2 block text-sm text-muted">Escolha o exame completo:</span>
           <select
             value={exameSelecionado}
             onChange={(e) => setExameSelecionado(e.target.value)}
-            className="w-full rounded-xl bg-surface-700 px-3 py-3 text-white outline-none"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-ink outline-none"
           >
             <option value="">Selecione...</option>
             {exames.map(([nome]) => (
               <option key={nome} value={nome}>
-                {nome} (80 questões)
+                {nome} ({modo === 'express' ? '40+' : '80'} questões)
               </option>
             ))}
           </select>
         </label>
 
         {limits && limits.plan === 'free' && (
-          <p className="rounded-xl bg-surface-800 px-3 py-2 text-xs text-purple-300/70">
+          <p className="rounded-xl bg-brand-50 px-3 py-2 text-xs text-brand-700">
             Plano grátis: {limits.simuladosRestantesMes ?? 0} simulado(s) restante(s) este mês.{' '}
-            <Link to="/planos" className="text-brand-300 underline">
+            <Link to="/planos" className="text-brand-600 underline">
               Ver Pro
             </Link>
           </p>
         )}
 
         {limiteMsg && (
-          <p className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-300">
+          <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">
             {limiteMsg}{' '}
             <Link to="/planos" className="underline">
               Assinar Pro
@@ -180,9 +206,9 @@ export default function Simulado() {
         />
 
         {!limits?.historicoCompleto && progress.simulados.length > 0 && (
-          <p className="text-center text-xs text-purple-400/50">
+          <p className="text-center text-xs text-muted-light">
             Histórico completo disponível no plano Pro.{' '}
-            <Link to="/planos" className="text-brand-300 underline">
+            <Link to="/planos" className="text-brand-500 underline">
               Upgrade
             </Link>
           </p>
@@ -194,7 +220,7 @@ export default function Simulado() {
           onClick={() => void iniciar()}
           className="w-full rounded-xl bg-brand-600 py-4 font-bold text-white disabled:opacity-40"
         >
-          Iniciar Simulado 📝
+          Iniciar {config.label} 📝
         </button>
       </div>
     )
@@ -246,18 +272,18 @@ export default function Simulado() {
 
   return (
     <div className="space-y-3">
-      <div className="sticky top-0 z-30 space-y-2 rounded-xl bg-surface-800/95 p-3 backdrop-blur">
+      <div className="sticky top-0 z-30 space-y-2 rounded-xl border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur">
         <div className="flex justify-between text-xs">
-          <span className="text-purple-300">⏱ Global: {formatTempo(tempoGlobal)}</span>
+          <span className="text-muted">⏱ Global: {formatTempo(tempoGlobal)}</span>
           <span className={tempoQuestaoCor}>Questão: {formatTempo(tempoQuestao)}</span>
         </div>
         <div className="h-1.5 overflow-hidden rounded-full bg-surface-700">
           <div
             className="h-full bg-brand-500 transition-all"
-            style={{ width: `${(respondidas / SIMULADO_TOTAL) * 100}%` }}
+            style={{ width: `${(respondidas / provaTotal) * 100}%` }}
           />
         </div>
-        <p className="text-center text-[11px] text-brand-200">{ritmoMsg}</p>
+        <p className="text-center text-[11px] text-brand-500">{ritmoMsg}</p>
       </div>
 
       <div className="flex flex-wrap gap-1">
@@ -273,10 +299,10 @@ export default function Simulado() {
               i === indice
                 ? 'bg-brand-600 text-white'
                 : marcadas.has(q.id)
-                  ? 'bg-yellow-600/40 text-yellow-200'
+                  ? 'bg-yellow-100 text-yellow-800'
                   : respostas[q.id]
-                    ? 'bg-green-600/30 text-green-200'
-                    : 'bg-surface-700 text-purple-300'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-surface-700 text-muted'
             }`}
           >
             {q.numero}
@@ -284,11 +310,11 @@ export default function Simulado() {
         ))}
       </div>
 
-      <div className="rounded-2xl bg-surface-800 p-4">
-        <p className="text-xs text-brand-300">
-          Questão {questaoAtual.numero}/80 · {questaoAtual.materia}
+      <div className="card rounded-2xl p-4">
+        <p className="text-xs font-medium text-brand-500">
+          Questão {indice + 1}/{provaTotal} · {questaoAtual.materia}
         </p>
-        <p className="mt-3 text-sm leading-relaxed text-purple-100">{questaoAtual.enunciado}</p>
+        <p className="mt-3 text-sm leading-relaxed text-ink">{questaoAtual.enunciado}</p>
 
         <div className="mt-4 space-y-2">
           {(['A', 'B', 'C', 'D'] as const).map((letra) => (
@@ -298,11 +324,11 @@ export default function Simulado() {
               onClick={() => setRespostas((r) => ({ ...r, [questaoAtual.id]: letra }))}
               className={`w-full rounded-xl border px-3 py-2.5 text-left text-sm ${
                 respostas[questaoAtual.id] === letra
-                  ? 'border-brand-500 bg-brand-600/20 text-white'
-                  : 'border-surface-600 bg-surface-700/50 text-purple-100'
+                  ? 'border-brand-500 bg-brand-50 text-brand-700'
+                  : 'border-slate-200 bg-white text-ink'
               }`}
             >
-              <span className="mr-2 font-bold text-brand-300">{letra})</span>
+              <span className="mr-2 font-bold text-brand-500">{letra})</span>
               {questaoAtual.alternativas[letra]}
             </button>
           ))}
@@ -321,7 +347,7 @@ export default function Simulado() {
             })
             toggleSalvarRevisao(questaoAtual.id)
           }}
-          className={`rounded-xl px-4 py-2.5 text-sm ${marcadas.has(questaoAtual.id) ? 'bg-yellow-600/30 text-yellow-200' : 'bg-surface-700 text-purple-200'}`}
+          className={`rounded-xl px-4 py-2.5 text-sm ${marcadas.has(questaoAtual.id) ? 'bg-yellow-100 text-yellow-800' : 'bg-surface-700 text-muted'}`}
         >
           🔖 Revisar
         </button>
@@ -332,7 +358,7 @@ export default function Simulado() {
             setIndice((i) => i - 1)
             setTempoQuestao(0)
           }}
-          className="flex-1 rounded-xl bg-surface-700 py-2.5 text-sm disabled:opacity-30"
+          className="flex-1 rounded-xl bg-surface-700 py-2.5 text-sm text-ink disabled:opacity-30"
         >
           ← Anterior
         </button>
@@ -363,7 +389,7 @@ export default function Simulado() {
             setIndice(next >= 0 ? next : first)
             setTempoQuestao(0)
           }}
-          className="w-full rounded-xl bg-yellow-600/20 py-2 text-sm text-yellow-200"
+          className="w-full rounded-xl bg-yellow-50 py-2 text-sm text-yellow-800"
         >
           Ir para próxima marcada ({marcadas.size})
         </button>

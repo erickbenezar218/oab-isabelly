@@ -6,6 +6,14 @@ export function currentYearMonth(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
 }
 
+export function canUseTutor(plan: Plan, planExpiresAt: Date | null): boolean {
+  return isPro(plan, planExpiresAt)
+}
+
+export function canUseCronograma(plan: Plan, planExpiresAt: Date | null): boolean {
+  return isPro(plan, planExpiresAt)
+}
+
 export function isPro(plan: Plan, planExpiresAt: Date | null): boolean {
   if (plan !== 'pro') return false
   if (!planExpiresAt) return true

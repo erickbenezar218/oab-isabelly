@@ -3,7 +3,7 @@ import LegalLayout from '../components/LegalLayout'
 export default function Privacidade() {
   return (
     <LegalLayout title="Política de Privacidade (LGPD)">
-      <p className="text-xs text-purple-400/60">Última atualização: 15 de setembro de 2026</p>
+      <p className="text-xs text-muted-light">Última atualização: 15 de setembro de 2026</p>
 
       <section>
         <h2>1. Controlador dos dados</h2>

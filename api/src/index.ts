@@ -1,10 +1,18 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import { initDb, pool } from './db.js'
-import { comparePassword, effectivePlan, hashPassword, signToken, verifyGoogleToken, verifyToken } from './auth.js'
-import { canStartSimulado, currentYearMonth, filterProgressForPlan, isPro, recordSimuladoUsage } from './plans.js'
+import { comparePassword, effectivePlan, hashPassword, isGoogleConfigured, signToken, verifyGoogleToken, verifyToken } from './auth.js'
+import { iaDailyLimit } from './iaLimits.js'
+import { canStartSimulado, canUseCronograma, canUseTutor, currentYearMonth, filterProgressForPlan, isPro, recordSimuladoUsage } from './plans.js'
+import { isEmail2faEnabled, isEmailConfigured } from './email.js'
+import { sendLoginOtpEmail, sendWelcomeEmail } from './emails.js'
+import { isAsaasConfigured, isAsaasSandbox } from './asaas.js'
+import { registerBillingRoutes } from './billing.js'
+import { isGeminiConfigured } from './gemini.js'
+import { createLoginChallenge, maskEmail, verifyLoginChallenge } from './otp.js'
+import { registerTutorRoutes } from './tutor.js'
 import { defaultProgress } from './types.js'
-import type { JwtPayload, UserRow } from './types.js'
+import type { UserRow } from './types.js'
 
 const app = Fastify({ logger: true })
 
@@ -37,7 +45,16 @@ async function getUserFromAuth(header?: string): Promise<UserRow | null> {
   }
 }
 
-app.get('/health', async () => ({ ok: true, service: 'simulaordem-api' }))
+app.get('/health', async () => ({
+  ok: true,
+  service: 'simulaordem-api',
+  google: isGoogleConfigured(),
+  gemini: isGeminiConfigured(),
+  email: isEmailConfigured(),
+  email2fa: isEmail2faEnabled(),
+  asaas: isAsaasConfigured(),
+  asaasSandbox: isAsaasSandbox(),
+}))
 
 app.post<{ Body: { email: string; password: string; name: string } }>('/auth/register', async (req, reply) => {
   const { email, password, name } = req.body ?? {}
@@ -55,6 +72,7 @@ app.post<{ Body: { email: string; password: string; name: string } }>('/auth/reg
   )
   const user = rows[0]
   await pool.query('INSERT INTO user_progress (user_id, data) VALUES ($1, $2)', [user.id, defaultProgress()])
+  sendWelcomeEmail({ to: user.email, name: user.name, planLabel: 'Grátis' })
   const token = signToken({ sub: user.id, email: user.email, plan: user.plan })
   return { token, user: userPublic(user) }
 })
@@ -67,6 +85,39 @@ app.post<{ Body: { email: string; password: string } }>('/auth/login', async (re
   if (!user?.password_hash || !(await comparePassword(password, user.password_hash))) {
     return reply.code(401).send({ error: 'E-mail ou senha incorretos.' })
   }
+
+  if (isEmail2faEnabled()) {
+    const { challengeId, code } = await createLoginChallenge(user.id)
+    sendLoginOtpEmail({ to: user.email, name: user.name, code })
+    return {
+      requiresOtp: true,
+      challengeId,
+      email: maskEmail(user.email),
+    }
+  }
+
+  const plan = effectivePlan(user.plan, user.plan_expires_at)
+  const token = signToken({ sub: user.id, email: user.email, plan })
+  return { token, user: userPublic(user) }
+})
+
+app.post<{ Body: { challengeId: string; code: string } }>('/auth/verify-otp', async (req, reply) => {
+  const { challengeId, code } = req.body ?? {}
+  if (!challengeId || !code?.trim()) {
+    return reply.code(400).send({ error: 'Código obrigatório.' })
+  }
+  const normalized = code.trim().replace(/\D/g, '')
+  if (normalized.length !== 6) {
+    return reply.code(400).send({ error: 'Informe o código de 6 dígitos.' })
+  }
+
+  const result = await verifyLoginChallenge(challengeId, normalized)
+  if (!result.ok) return reply.code(401).send({ error: result.reason })
+
+  const { rows } = await pool.query<UserRow>('SELECT * FROM users WHERE id = $1', [result.userId])
+  const user = rows[0]
+  if (!user) return reply.code(401).send({ error: 'Usuário não encontrado.' })
+
   const plan = effectivePlan(user.plan, user.plan_expires_at)
   const token = signToken({ sub: user.id, email: user.email, plan })
   return { token, user: userPublic(user) }
@@ -89,6 +140,7 @@ app.post<{ Body: { credential: string } }>('/auth/google', async (req, reply) =>
     )
     user = inserted.rows[0]
     await pool.query('INSERT INTO user_progress (user_id, data) VALUES ($1, $2)', [user.id, defaultProgress()])
+    sendWelcomeEmail({ to: user.email, name: user.name, planLabel: 'Grátis' })
   } else if (!user.google_id) {
     await pool.query('UPDATE users SET google_id = $1, updated_at = NOW() WHERE id = $2', [googleUser.sub, user.id])
     user.google_id = googleUser.sub
@@ -125,6 +177,10 @@ app.get('/progress', async (req, reply) => {
       simuladosRestantesMes: pro ? null : Math.max(0, 1 - Number(usage.rows[0]?.count ?? 0)),
       historicoCompleto: pro,
       revisaoErrosCompleta: pro,
+      tutorIa: canUseTutor(user.plan, user.plan_expires_at),
+      cronograma: canUseCronograma(user.plan, user.plan_expires_at),
+      iaExplicacoesDia: iaDailyLimit(user.plan, user.plan_expires_at),
+      tutorChat: canUseTutor(user.plan, user.plan_expires_at),
     },
   }
 })
@@ -142,9 +198,11 @@ app.put<{ Body: { progress: Record<string, unknown> } }>('/progress', async (req
   return { ok: true }
 })
 
-app.post('/simulado/start', async (req, reply) => {
+app.post<{ Body: { mode?: 'full' | 'express' } }>('/simulado/start', async (req, reply) => {
   const user = await getUserFromAuth(req.headers.authorization)
   if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
+  const mode = req.body?.mode ?? 'full'
+  if (mode === 'express') return { ok: true, mode: 'express' }
   const plan = effectivePlan(user.plan, user.plan_expires_at)
   const allowed = await canStartSimulado(user.id, plan, user.plan_expires_at)
   if (!allowed) {
@@ -156,6 +214,9 @@ app.post('/simulado/start', async (req, reply) => {
   if (plan === 'free') await recordSimuladoUsage(user.id)
   return { ok: true }
 })
+
+await registerTutorRoutes(app, { pool, getUser: getUserFromAuth })
+await registerBillingRoutes(app, { pool, getUser: getUserFromAuth })
 
 const port = Number(process.env.PORT ?? 3001)
 const host = process.env.HOST ?? '0.0.0.0'

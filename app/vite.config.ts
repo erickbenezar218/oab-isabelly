@@ -13,9 +13,9 @@ export default defineConfig({
       manifest: {
         name: 'SimulaOrdem',
         short_name: 'SimulaOrdem',
-        description: 'Simulados reais para a 1ª fase da OAB',
-        theme_color: '#1a1025',
-        background_color: '#0f0a14',
+        description: 'Preparação completa para a OAB — 1ª e 2ª fase',
+        theme_color: '#1C3F3A',
+        background_color: '#F8FAFB',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',

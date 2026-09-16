@@ -8,6 +8,8 @@ export interface UserRow {
   google_id: string | null
   plan: Plan
   plan_expires_at: Date | null
+  asaas_customer_id: string | null
+  cpf_cnpj: string | null
   created_at: Date
 }
 
@@ -24,4 +26,6 @@ export const defaultProgress = () => ({
   flashcardStreak: 0,
   flashcardLastDate: '',
   simulados: [] as unknown[],
+  pecasRespostas: [] as unknown[],
+  profile: {} as Record<string, unknown>,
 })

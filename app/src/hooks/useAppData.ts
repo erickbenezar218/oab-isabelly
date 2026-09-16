@@ -7,7 +7,7 @@ function loadLocalProgress(): UserProgress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return defaultProgress()
-    return { ...defaultProgress(), ...JSON.parse(raw) }
+    return { ...defaultProgress(), ...JSON.parse(raw), profile: { ...defaultProgress().profile, ...(JSON.parse(raw).profile ?? {}) } }
   } catch {
     return defaultProgress()
   }
@@ -27,7 +27,11 @@ export function useProgress() {
     setSyncing(true)
     apiGetProgress(token)
       .then(({ progress: remote, limits }) => {
-        setProgressState({ ...defaultProgress(), ...remote } as UserProgress)
+        setProgressState({
+          ...defaultProgress(),
+          ...remote,
+          profile: { ...defaultProgress().profile, ...(remote.profile ?? {}) },
+        } as UserProgress)
         setLimits(limits)
         localStorage.setItem(STORAGE_KEY, JSON.stringify(remote))
       })
@@ -108,6 +112,29 @@ export function useProgress() {
     [setProgress],
   )
 
+  const updateProfile = useCallback(
+    (patch: Partial<UserProgress['profile']>) => {
+      setProgress((prev) => ({
+        ...prev,
+        profile: { ...prev.profile, ...patch },
+      }))
+    },
+    [setProgress],
+  )
+
+  const registrarPeca = useCallback(
+    (entry: UserProgress['pecasRespostas'][0]) => {
+      setProgress((prev) => ({
+        ...prev,
+        pecasRespostas: [
+          ...prev.pecasRespostas.filter((p) => p.casoId !== entry.casoId),
+          entry,
+        ],
+      }))
+    },
+    [setProgress],
+  )
+
   return {
     progress,
     syncing,
@@ -117,6 +144,8 @@ export function useProgress() {
     removeCustomCard,
     updateStreak,
     saveSimulado,
+    registrarPeca,
+    updateProfile,
   }
 }
 
@@ -138,11 +167,7 @@ export function useQuestions() {
   return { questoes, meta, loading }
 }
 
-export function diasParaProva(): number {
-  const now = new Date()
-  const diff = new Date('2026-09-06').getTime() - new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
-  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
-}
+export { diasParaProva } from '../lib/cronograma'
 
 export function formatTempo(seg: number): string {
   const h = Math.floor(seg / 3600)

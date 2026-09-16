@@ -4,7 +4,12 @@ import { OAuth2Client } from 'google-auth-library'
 import type { JwtPayload, Plan } from './types.js'
 
 const JWT_SECRET = process.env.JWT_SECRET ?? 'dev-secret-change-in-production'
-const googleClient = process.env.GOOGLE_CLIENT_ID ? new OAuth2Client(process.env.GOOGLE_CLIENT_ID) : null
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID?.trim() ?? ''
+const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null
+
+export function isGoogleConfigured(): boolean {
+  return Boolean(GOOGLE_CLIENT_ID)
+}
 
 export function signToken(payload: JwtPayload): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '30d' })
@@ -23,17 +28,22 @@ export async function comparePassword(password: string, hash: string): Promise<b
 }
 
 export async function verifyGoogleToken(idToken: string): Promise<{ email: string; name: string; sub: string } | null> {
-  if (!googleClient || !process.env.GOOGLE_CLIENT_ID) return null
-  const ticket = await googleClient.verifyIdToken({
-    idToken,
-    audience: process.env.GOOGLE_CLIENT_ID,
-  })
-  const payload = ticket.getPayload()
-  if (!payload?.email || !payload.sub) return null
-  return {
-    email: payload.email,
-    name: payload.name ?? payload.email.split('@')[0],
-    sub: payload.sub,
+  if (!googleClient || !GOOGLE_CLIENT_ID || !idToken?.trim()) return null
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: GOOGLE_CLIENT_ID,
+    })
+    const payload = ticket.getPayload()
+    if (!payload?.email || !payload.sub) return null
+    if (payload.email_verified === false) return null
+    return {
+      email: payload.email,
+      name: payload.name ?? payload.email.split('@')[0],
+      sub: payload.sub,
+    }
+  } catch {
+    return null
   }
 }
 

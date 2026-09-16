@@ -13,6 +13,25 @@ export interface PlanLimits {
   simuladosRestantesMes: number | null
   historicoCompleto: boolean
   revisaoErrosCompleta: boolean
+  tutorIa: boolean
+  cronograma: boolean
+  iaExplicacoesDia: number | null
+  tutorChat: boolean
+}
+
+export interface TutorMessage {
+  role: 'user' | 'assistant'
+  content: string
+  createdAt: string
+}
+
+export interface TutorQuestaoPayload {
+  id: string
+  materia: string
+  exame?: string
+  enunciado: string
+  alternativas: Record<'A' | 'B' | 'C' | 'D', string>
+  resposta_correta: 'A' | 'B' | 'C' | 'D'
 }
 
 function authHeaders(token: string | null): HeadersInit {
@@ -30,7 +49,11 @@ export async function apiRegister(email: string, password: string, name: string)
   return data as { token: string; user: AuthUser }
 }
 
-export async function apiLogin(email: string, password: string) {
+export type LoginResult =
+  | { requiresOtp: true; challengeId: string; email: string }
+  | { token: string; user: AuthUser }
+
+export async function apiLogin(email: string, password: string): Promise<LoginResult> {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -38,6 +61,20 @@ export async function apiLogin(email: string, password: string) {
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.error ?? 'Erro ao entrar')
+  if (data.requiresOtp) {
+    return { requiresOtp: true, challengeId: data.challengeId, email: data.email }
+  }
+  return { token: data.token, user: data.user }
+}
+
+export async function apiVerifyOtp(challengeId: string, code: string) {
+  const res = await fetch(`${API_URL}/auth/verify-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ challengeId, code }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Código inválido')
   return data as { token: string; user: AuthUser }
 }
 
@@ -72,12 +109,100 @@ export async function apiSaveProgress(token: string, progress: Record<string, un
   })
 }
 
-export async function apiSimuladoStart(token: string) {
+export async function apiSimuladoStart(token: string, mode: 'full' | 'express' = 'full') {
   const res = await fetch(`${API_URL}/simulado/start`, {
     method: 'POST',
     headers: authHeaders(token),
+    body: JSON.stringify({ mode }),
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.error ?? 'Não foi possível iniciar simulado')
   return data
+}
+
+export async function apiTutorCommentCached(questaoId: string) {
+  const res = await fetch(`${API_URL}/tutor/comment/${encodeURIComponent(questaoId)}`)
+  if (!res.ok) return { explanation: null as string | null, cached: false }
+  return (await res.json()) as { explanation: string | null; cached: boolean }
+}
+
+export async function apiTutorComment(
+  token: string,
+  questao: TutorQuestaoPayload,
+  respostaUsuario: string | null,
+) {
+  const res = await fetch(`${API_URL}/tutor/comment`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: JSON.stringify({ questao, respostaUsuario }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao explicar questão')
+  return data as { explanation: string; cached: boolean; remainingMessages: number }
+}
+
+export async function apiTutorThread(token: string, questaoId: string) {
+  const res = await fetch(`${API_URL}/tutor/thread/${encodeURIComponent(questaoId)}`, {
+    headers: authHeaders(token),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao carregar tutor')
+  return data as { explanation: string | null; messages: TutorMessage[]; remainingMessages: number }
+}
+
+export async function apiTutorExplain(
+  token: string,
+  questao: TutorQuestaoPayload,
+  respostaUsuario: string | null,
+) {
+  const res = await fetch(`${API_URL}/tutor/explain`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: JSON.stringify({ questao, respostaUsuario }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao explicar questão')
+  return data as { explanation: string; messages: TutorMessage[]; remainingMessages: number }
+}
+
+export interface BillingConfig {
+  enabled: boolean
+  sandbox: boolean
+  plans: {
+    pro: { value: number; label: string; cycle: string }
+    reta: { value: number; label: string; cycle: string }
+  }
+}
+
+export async function apiBillingConfig() {
+  const res = await fetch(`${API_URL}/billing/config`)
+  if (!res.ok) throw new Error('Erro ao carregar pagamentos')
+  return (await res.json()) as BillingConfig
+}
+
+export async function apiBillingCheckout(token: string, plan: 'pro' | 'reta', cpfCnpj: string) {
+  const res = await fetch(`${API_URL}/billing/checkout`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: JSON.stringify({ plan, cpfCnpj }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao criar checkout')
+  return data as { checkoutUrl: string; sandbox: boolean }
+}
+
+export async function apiTutorChat(
+  token: string,
+  questao: TutorQuestaoPayload,
+  respostaUsuario: string | null,
+  message: string,
+) {
+  const res = await fetch(`${API_URL}/tutor/chat`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: JSON.stringify({ questao, respostaUsuario, message }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro no chat')
+  return data as { reply: string; messages: TutorMessage[]; remainingMessages: number }
 }

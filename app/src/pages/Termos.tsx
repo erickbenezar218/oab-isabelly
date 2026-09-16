@@ -3,13 +3,13 @@ import LegalLayout from '../components/LegalLayout'
 export default function Termos() {
   return (
     <LegalLayout title="Termos de Uso">
-      <p className="text-xs text-purple-400/60">Última atualização: 15 de setembro de 2026</p>
+      <p className="text-xs text-muted-light">Última atualização: 15 de setembro de 2026</p>
 
       <section>
         <h2>1. Quem somos</h2>
         <p>
           O <strong>SimulaOrdem</strong> é operado por <strong>R E BENEZAR DE SOUZA LTDA</strong>, CNPJ{' '}
-          <strong>37.409.487/0001-70</strong>, plataforma digital de simulados e estudos para a 1ª fase do Exame da OAB.
+          <strong>37.409.487/0001-70</strong>, plataforma digital de simulados e estudos para o Exame da OAB (1ª e 2ª fase).
         </p>
         <p>
           Contato: <a href="mailto:suporte@simulaordem.com.br">suporte@simulaordem.com.br</a>
@@ -28,9 +28,11 @@ export default function Termos() {
         <h2>3. Serviço</h2>
         <p>O SimulaOrdem oferece, conforme o plano contratado:</p>
         <ul>
-          <li>Simulados no formato da 1ª fase da OAB (80 questões, cronômetro);</li>
+          <li>Simulados no formato da prova objetiva (80 questões, cronômetro);</li>
           <li>Flashcards e active recall;</li>
-          <li>Estatísticas de desempenho e revisão de erros (planos pagos);</li>
+          <li>Treino de peças processuais da 2ª fase (identificação da peça pelo caso);</li>
+          <li>Cronograma de meta diária e estatísticas de desempenho (planos pagos);</li>
+          <li>Tutor IA para revisão de erros (plano Pro);</li>
           <li>Armazenamento do progresso na nuvem vinculado à sua conta.</li>
         </ul>
         <p>

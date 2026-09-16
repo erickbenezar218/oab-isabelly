@@ -1,74 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="SimulaOrdem">
-  <defs>
-    <linearGradient id="bg" x1="64" y1="32" x2="448" y2="480" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#251535"/>
-      <stop offset="1" stop-color="#0f0a14"/>
-    </linearGradient>
-    <linearGradient id="ring" x1="96" y1="96" x2="416" y2="416" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#e879f9"/>
-      <stop offset="0.5" stop-color="#d946ef"/>
-      <stop offset="1" stop-color="#a21caf"/>
-    </linearGradient>
-    <linearGradient id="shine" x1="256" y1="120" x2="256" y2="360" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#fae8ff" stop-opacity="0.35"/>
-      <stop offset="1" stop-color="#fae8ff" stop-opacity="0"/>
-    </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-  </defs>
-
-  <!-- App icon background -->
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <rect x="24" y="24" width="464" height="464" rx="96" stroke="url(#ring)" stroke-width="3" stroke-opacity="0.35"/>
-
-  <!-- Timer arc = simulado cronometrado -->
-  <path
-    d="M 256 96 A 160 160 0 1 1 120 280"
-    stroke="url(#ring)"
-    stroke-width="14"
-    stroke-linecap="round"
-    stroke-opacity="0.55"
-    fill="none"
-  />
-  <path
-    d="M 256 96 A 160 160 0 0 1 392 280"
-    stroke="url(#ring)"
-    stroke-width="14"
-    stroke-linecap="round"
-    fill="none"
-    filter="url(#glow)"
-  />
-
-  <!-- Balança da Ordem -->
-  <g transform="translate(256 248)">
-    <!-- poste -->
-    <rect x="-5" y="-72" width="10" height="96" rx="5" fill="#c026d3"/>
-    <rect x="-5" y="-72" width="10" height="48" rx="5" fill="url(#shine)"/>
-
-    <!-- travessa -->
-    <rect x="-88" y="-76" width="176" height="8" rx="4" fill="#d946ef"/>
-    <circle cx="0" cy="-72" r="10" fill="#e879f9"/>
-
-    <!-- pratos esquerda / direita -->
-    <path d="M -78 -20 L -38 -20 C -28 -20 -22 -14 -22 -6 L -22 8 C -22 18 -30 26 -40 26 L -76 26 C -86 26 -94 18 -94 8 L -94 -6 C -94 -14 -88 -20 -78 -20 Z" fill="#1a1025" stroke="#e879f9" stroke-width="4"/>
-    <path d="M 38 -20 L 78 -20 C 88 -20 94 -14 94 -6 L 94 8 C 94 18 86 26 76 26 L 40 26 C 30 26 22 18 22 8 L 22 -6 C 22 -14 28 -20 38 -20 Z" fill="#1a1025" stroke="#e879f9" stroke-width="4"/>
-
-    <!-- hastes dos pratos -->
-    <line x1="-58" y1="-68" x2="-58" y2="-20" stroke="#d946ef" stroke-width="4" stroke-linecap="round"/>
-    <line x1="58" y1="-68" x2="58" y2="-20" stroke="#d946ef" stroke-width="4" stroke-linecap="round"/>
-
-    <!-- check = gabarito (lado direito) -->
-    <path d="M 46 2 L 56 12 L 76 -10" stroke="#4ade80" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-
-    <!-- folha = prova (lado esquerdo) -->
-    <rect x="-72" y="-6" width="28" height="34" rx="4" fill="#352045" stroke="#a78bfa" stroke-width="2"/>
-    <line x1="-66" y1="4" x2="-46" y2="4" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round"/>
-    <line x1="-66" y1="12" x2="-50" y2="12" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round"/>
-    <line x1="-66" y1="20" x2="-54" y2="20" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round"/>
-  </g>
+  <rect width="512" height="512" rx="112" fill="#FFFFFF"/>
+  <rect x="24" y="24" width="464" height="464" rx="96" fill="#F8FAFB" stroke="#E2E8F0" stroke-width="2"/>
+  <rect x="148" y="108" width="56" height="200" rx="28" fill="#1C3F3A" transform="rotate(-24 176 208)"/>
+  <rect x="228" y="148" width="56" height="200" rx="28" fill="#3C8F92" transform="rotate(-24 256 248)"/>
+  <circle cx="256" cy="368" r="20" fill="#1C3F3A"/>
+  <rect x="248" y="280" width="16" height="88" rx="8" fill="#2A606B"/>
+  <line x1="176" y1="300" x2="336" y2="300" stroke="#1C3F3A" stroke-width="12" stroke-linecap="round"/>
 </svg>

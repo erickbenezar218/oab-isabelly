@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
-import { apiGoogleLogin, apiLogin, apiMe, apiRegister, type AuthUser, type PlanLimits } from '../lib/api'
+import { apiGoogleLogin, apiLogin, apiMe, apiRegister, apiVerifyOtp, type AuthUser, type LoginResult, type PlanLimits } from '../lib/api'
 
 const TOKEN_KEY = 'simulaordem-token'
 
@@ -8,7 +8,8 @@ interface AuthContextType {
   token: string | null
   limits: PlanLimits | null
   loading: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<LoginResult>
+  verifyOtp: (challengeId: string, code: string) => Promise<void>
   register: (email: string, password: string, name: string) => Promise<void>
   googleLogin: (credential: string) => Promise<void>
   logout: () => void
@@ -55,7 +56,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [token, logout])
 
   const login = async (email: string, password: string) => {
-    const { token: t, user: u } = await apiLogin(email, password)
+    const result = await apiLogin(email, password)
+    if ('requiresOtp' in result && result.requiresOtp) return result
+    persist(result.token, result.user)
+    return result
+  }
+
+  const verifyOtp = async (challengeId: string, code: string) => {
+    const { token: t, user: u } = await apiVerifyOtp(challengeId, code)
     persist(t, u)
   }
 
@@ -70,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, limits, loading, login, register, googleLogin, logout, setLimits, refreshUser }}>
+    <AuthContext.Provider value={{ user, token, limits, loading, login, verifyOtp, register, googleLogin, logout, setLimits, refreshUser }}>
       {children}
     </AuthContext.Provider>
   )
