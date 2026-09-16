@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import { formatTempo } from '../../hooks/useAppData'
+import type { ActivityItem } from '../../lib/dashboardInsights'
 import type { SimuladoResult } from '../../types'
-import { IconChart, IconClipboard } from '../icons'
+import { IconChart, IconClipboard, IconSettings } from '../icons'
 import SectionCard from './SectionCard'
 
 function formatarData(ts: number) {
@@ -18,17 +19,29 @@ export default function ActivityPanel({
   email,
   simulados,
   pctAcerto,
+  streak,
+  activityItems,
 }: {
   name: string
   email?: string
   simulados: SimuladoResult[]
   pctAcerto: number
+  streak?: number
+  activityItems?: ActivityItem[]
 }) {
   const initials = name
     .split(' ')
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase())
     .join('')
+
+  const items = activityItems ?? simulados.slice(0, 4).map((s) => ({
+    id: `sim-${s.id}`,
+    title: s.exame,
+    subtitle: `${s.acertos}/${s.total} acertos · ${formatTempo(s.tempoUsadoSeg)}`,
+    ts: s.finalizadoEm,
+    to: '/app/simulado',
+  }))
 
   return (
     <aside className="space-y-4">
@@ -37,19 +50,30 @@ export default function ActivityPanel({
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-600 text-sm font-bold text-white">
             {initials || 'SO'}
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="truncate font-semibold text-ink">{name}</p>
             {email && <p className="truncate text-xs text-muted">{email}</p>}
           </div>
+          <Link
+            to="/app/conta"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-muted transition hover:bg-brand-50 hover:text-brand-600"
+            aria-label="Configurações da conta"
+          >
+            <IconSettings size={18} />
+          </Link>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          <div className="rounded-xl bg-surface-700 px-3 py-2 text-center">
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          <div className="rounded-xl bg-surface-700 px-2 py-2 text-center">
             <p className="text-lg font-bold text-ink">{pctAcerto}%</p>
-            <p className="text-[10px] text-muted">Acerto geral</p>
+            <p className="text-[10px] text-muted">Acerto</p>
           </div>
-          <div className="rounded-xl bg-surface-700 px-3 py-2 text-center">
+          <div className="rounded-xl bg-surface-700 px-2 py-2 text-center">
             <p className="text-lg font-bold text-ink">{simulados.length}</p>
             <p className="text-[10px] text-muted">Simulados</p>
+          </div>
+          <div className="rounded-xl bg-surface-700 px-2 py-2 text-center">
+            <p className="text-lg font-bold text-ink">{streak ?? 0}</p>
+            <p className="text-[10px] text-muted">Sequência</p>
           </div>
         </div>
         <Link
@@ -61,31 +85,26 @@ export default function ActivityPanel({
         </Link>
       </SectionCard>
 
-      <SectionCard title="Atividade recente" subtitle="Últimos simulados">
-        {simulados.length === 0 ? (
-          <p className="text-sm text-muted">Nenhum simulado finalizado ainda.</p>
+      <SectionCard title="Atividade recente" subtitle="Simulados, flashcards e revisão">
+        {items.length === 0 ? (
+          <p className="text-sm text-muted">Nenhuma atividade ainda. Comece pelos flashcards!</p>
         ) : (
           <ul className="space-y-3">
-            {simulados.slice(0, 4).map((s) => (
-              <li key={s.id} className="flex gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600">
-                  <IconClipboard size={16} />
-                </div>
-                <div className="min-w-0 flex-1 border-b border-slate-100 pb-3 last:border-0 last:pb-0">
-                  <p className="truncate text-sm font-medium text-ink">{s.exame}</p>
-                  <p className="text-xs text-muted">
-                    {s.acertos}/{s.total} acertos · {formatTempo(s.tempoUsadoSeg)}
-                  </p>
-                  <p className="mt-0.5 text-[10px] text-muted-light">{formatarData(s.finalizadoEm)}</p>
-                </div>
+            {items.map((item) => (
+              <li key={item.id}>
+                <Link to={item.to} className="flex gap-3 rounded-xl transition hover:bg-surface-700/60">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600">
+                    <IconClipboard size={16} />
+                  </div>
+                  <div className="min-w-0 flex-1 border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                    <p className="truncate text-sm font-medium text-ink">{item.title}</p>
+                    <p className="text-xs text-muted">{item.subtitle}</p>
+                    <p className="mt-0.5 text-[10px] text-muted-light">{formatarData(item.ts)}</p>
+                  </div>
+                </Link>
               </li>
             ))}
           </ul>
-        )}
-        {simulados.length > 0 && (
-          <Link to="/app/simulado" className="mt-3 block text-center text-xs font-semibold text-brand-600 hover:underline">
-            Abrir simulados
-          </Link>
         )}
       </SectionCard>
     </aside>

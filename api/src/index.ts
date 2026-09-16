@@ -14,6 +14,12 @@ import { isGeminiConfigured } from './gemini.js'
 import { createLoginChallenge, maskEmail, verifyLoginChallenge } from './otp.js'
 import { registerTutorRoutes } from './tutor.js'
 import {
+  accountFromUser,
+  changePassword,
+  setPassword,
+  updateUserName,
+} from './account.js'
+import {
   migrateProfileFromProgressJson,
   profileFromUser,
   updateUserProfile,
@@ -95,7 +101,8 @@ app.post<{ Body: { email: string; password: string } }>('/auth/login', async (re
     return reply.code(401).send({ error: 'E-mail ou senha incorretos.' })
   }
 
-  if (isEmail2faEnabled()) {
+  const userWants2fa = user.email_2fa_enabled !== false
+  if (isEmail2faEnabled() && userWants2fa) {
     const { challengeId, code } = await createLoginChallenge(user.id)
     sendLoginOtpEmail({ to: user.email, name: user.name, code })
     return {
@@ -248,15 +255,61 @@ app.put<{ Body: { progress: Record<string, unknown> } }>('/progress', async (req
   return { ok: true }
 })
 
-app.patch<{ Body: ProfilePatch }>('/profile', async (req, reply) => {
+app.get('/account', async (req, reply) => {
   const user = await getUserFromAuth(req.headers.authorization)
   if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
-  const patch = req.body ?? {}
+  return {
+    user: userPublic(user),
+    account: accountFromUser(user),
+    profile: profileFromUser(user),
+  }
+})
+
+app.patch<{ Body: ProfilePatch & { name?: string } }>('/profile', async (req, reply) => {
+  const user = await getUserFromAuth(req.headers.authorization)
+  if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
+  const { name, ...patch } = req.body ?? {}
   try {
-    const updated = await updateUserProfile(pool, user.id, patch, profileFromUser(user))
-    return { ok: true, profile: profileFromUser(updated), user: userPublic(updated) }
+    let updated = user
+    if (name !== undefined) {
+      updated = await updateUserName(pool, user.id, name)
+    }
+    if (Object.keys(patch).length > 0) {
+      updated = await updateUserProfile(pool, updated.id, patch, profileFromUser(updated))
+    }
+    return {
+      ok: true,
+      profile: profileFromUser(updated),
+      account: accountFromUser(updated),
+      user: userPublic(updated),
+    }
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Erro ao salvar perfil.'
+    return reply.code(400).send({ error: msg })
+  }
+})
+
+app.post<{ Body: { currentPassword: string; newPassword: string } }>('/auth/change-password', async (req, reply) => {
+  const user = await getUserFromAuth(req.headers.authorization)
+  if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
+  const { currentPassword, newPassword } = req.body ?? {}
+  try {
+    await changePassword(pool, user, currentPassword ?? '', newPassword ?? '')
+    return { ok: true, message: 'Senha alterada com sucesso.' }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Erro ao alterar senha.'
+    return reply.code(400).send({ error: msg })
+  }
+})
+
+app.post<{ Body: { newPassword: string } }>('/auth/set-password', async (req, reply) => {
+  const user = await getUserFromAuth(req.headers.authorization)
+  if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
+  try {
+    await setPassword(pool, user, req.body?.newPassword ?? '')
+    return { ok: true, message: 'Senha definida. Agora você também pode entrar com e-mail e senha.' }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Erro ao definir senha.'
     return reply.code(400).send({ error: msg })
   }
 })

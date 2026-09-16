@@ -19,6 +19,7 @@ import PlanosSucesso from './pages/PlanosSucesso'
 import Privacidade from './pages/Privacidade'
 import Simulado from './pages/Simulado'
 import Termos from './pages/Termos'
+import Conta from './pages/Conta'
 
 export default function App() {
   return (
@@ -44,6 +45,7 @@ export default function App() {
                 <Route path="cronograma" element={<Cronograma />} />
                 <Route path="pecas" element={<Pecas />} />
                 <Route path="revisao" element={<Revisao />} />
+                <Route path="conta" element={<Conta />} />
               </Route>
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

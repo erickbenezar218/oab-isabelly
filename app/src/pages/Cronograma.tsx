@@ -42,8 +42,9 @@ export default function Cronograma() {
   const diasMeta = rawDias != null && rawDias > 0 ? rawDias : 30
   const dias = rawDias != null && rawDias > 0 ? rawDias : 0
   const hoje = questoesRespondidasHoje(progress.respostas)
-  const { questoesRestantes, metaDiaria } = calcMetaDiaria(total, respondidas, diasMeta)
-  const trilha = gerarTrilha({ totalQuestoes: total, respostas: progress.respostas, examDate })
+  const goalOverride = progress.profile?.dailyGoalOverride
+  const { questoesRestantes, metaDiaria } = calcMetaDiaria(total, respondidas, diasMeta, goalOverride)
+  const trilha = gerarTrilha({ totalQuestoes: total, respostas: progress.respostas, examDate, dailyGoalOverride: goalOverride })
   const pctHoje = metaDiaria > 0 ? Math.min(100, Math.round((hoje / metaDiaria) * 100)) : 100
   const cenarios = calcCenarios(total, respondidas, [dias, 60, 30, 20, 10].filter((d, i, arr) => arr.indexOf(d) === i))
 

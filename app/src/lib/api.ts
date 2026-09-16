@@ -5,6 +5,17 @@ export interface UserProfileDto {
   area2fase: string
   onboardingDone: boolean
   welcomeTourDone: boolean
+  dailyGoalOverride: number | null
+  studyReminderEnabled: boolean
+  email2faEnabled: boolean
+}
+
+export interface AccountInfoDto {
+  hasPassword: boolean
+  hasGoogle: boolean
+  email2faEnabled: boolean
+  dailyGoalOverride: number | null
+  studyReminderEnabled: boolean
 }
 
 export interface AuthUser {
@@ -146,7 +157,17 @@ export async function apiSaveProgress(token: string, progress: Record<string, un
   })
 }
 
-export async function apiUpdateProfile(token: string, patch: Partial<UserProfileDto>) {
+export async function apiGetAccount(token: string) {
+  const res = await fetch(`${API_URL}/account`, { headers: authHeaders(token) })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao carregar conta')
+  return data as { user: AuthUser; account: AccountInfoDto; profile: UserProfileDto }
+}
+
+export async function apiUpdateProfile(
+  token: string,
+  patch: Partial<UserProfileDto> & { name?: string },
+) {
   const res = await fetch(`${API_URL}/profile`, {
     method: 'PATCH',
     headers: authHeaders(token),
@@ -154,7 +175,29 @@ export async function apiUpdateProfile(token: string, patch: Partial<UserProfile
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.error ?? 'Erro ao salvar perfil')
-  return data as { ok: true; profile: UserProfileDto; user: AuthUser }
+  return data as { ok: true; profile: UserProfileDto; account: AccountInfoDto; user: AuthUser }
+}
+
+export async function apiChangePassword(token: string, currentPassword: string, newPassword: string) {
+  const res = await fetch(`${API_URL}/auth/change-password`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: JSON.stringify({ currentPassword, newPassword }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao alterar senha')
+  return data as { ok: true; message: string }
+}
+
+export async function apiSetPassword(token: string, newPassword: string) {
+  const res = await fetch(`${API_URL}/auth/set-password`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: JSON.stringify({ newPassword }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao definir senha')
+  return data as { ok: true; message: string }
 }
 
 export async function apiSimuladoStart(token: string, mode: 'full' | 'express' = 'full') {

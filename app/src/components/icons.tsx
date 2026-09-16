@@ -213,6 +213,41 @@ export function IconTrophy(props: IconProps) {
   )
 }
 
+export function IconSettings(props: IconProps) {
+  return (
+    <svg {...baseProps(props)}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+    </svg>
+  )
+}
+
+export function IconShield(props: IconProps) {
+  return (
+    <svg {...baseProps(props)}>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  )
+}
+
+export function IconBell(props: IconProps) {
+  return (
+    <svg {...baseProps(props)}>
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+    </svg>
+  )
+}
+
+export function IconDownload(props: IconProps) {
+  return (
+    <svg {...baseProps(props)}>
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <path d="M7 10l5 5 5-5M12 15V3" />
+    </svg>
+  )
+}
+
 export function IconLogout(props: IconProps) {
   return (
     <svg {...baseProps(props)}>

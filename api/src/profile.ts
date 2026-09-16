@@ -6,6 +6,9 @@ export type UserProfileDto = {
   area2fase: string
   onboardingDone: boolean
   welcomeTourDone: boolean
+  dailyGoalOverride: number | null
+  studyReminderEnabled: boolean
+  email2faEnabled: boolean
 }
 
 export type ProfilePatch = Partial<{
@@ -13,6 +16,9 @@ export type ProfilePatch = Partial<{
   area2fase: string
   onboardingDone: boolean
   welcomeTourDone: boolean
+  dailyGoalOverride: number | null
+  studyReminderEnabled: boolean
+  email2faEnabled: boolean
 }>
 
 function toIsoDate(d: Date | string | null | undefined): string | null {
@@ -27,6 +33,9 @@ export function profileFromUser(u: UserRow): UserProfileDto {
     area2fase: u.area_2fase ?? 'Trabalhista',
     onboardingDone: Boolean(u.onboarding_done),
     welcomeTourDone: Boolean(u.welcome_tour_done),
+    dailyGoalOverride: u.daily_goal_override ?? null,
+    studyReminderEnabled: Boolean(u.study_reminder_enabled),
+    email2faEnabled: u.email_2fa_enabled ?? true,
   }
 }
 
@@ -114,6 +123,27 @@ export async function updateUserProfile(
   if (patch.welcomeTourDone !== undefined) {
     sets.push(`welcome_tour_done = $${i}`)
     values.push(patch.welcomeTourDone)
+    i++
+  }
+  if (patch.email2faEnabled !== undefined) {
+    sets.push(`email_2fa_enabled = $${i}`)
+    values.push(patch.email2faEnabled)
+    i++
+  }
+  if (patch.dailyGoalOverride !== undefined) {
+    if (patch.dailyGoalOverride !== null) {
+      const n = patch.dailyGoalOverride
+      if (!Number.isInteger(n) || n < 1 || n > 500) {
+        throw new Error('Meta diária deve ser entre 1 e 500 questões.')
+      }
+    }
+    sets.push(`daily_goal_override = $${i}`)
+    values.push(patch.dailyGoalOverride)
+    i++
+  }
+  if (patch.studyReminderEnabled !== undefined) {
+    sets.push(`study_reminder_enabled = $${i}`)
+    values.push(patch.studyReminderEnabled)
     i++
   }
 

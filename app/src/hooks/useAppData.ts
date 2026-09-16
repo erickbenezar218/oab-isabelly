@@ -120,7 +120,7 @@ export function useProgress() {
   )
 
   const updateProfile = useCallback(
-    async (patch: Partial<UserProgress['profile']>) => {
+    async (patch: Partial<UserProgress['profile']> & { name?: string }) => {
       setProgress((prev) => ({
         ...prev,
         profile: { ...prev.profile, ...patch },

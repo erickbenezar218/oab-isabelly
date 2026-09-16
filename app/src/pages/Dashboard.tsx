@@ -26,6 +26,8 @@ import { formatExamDatePt, provaCountdown } from '../lib/examDate'
 import { calcMetaDiaria, diasParaProva, questoesRespondidasHoje } from '../lib/cronograma'
 import { levelFromXp, calcXp, passariaHoje } from '../lib/gamification'
 import { gerarTrilha } from '../lib/trilha'
+import { computeBadges } from '../lib/achievements'
+import { continueWhereLeftOff, dashboardAlerts, recentActivityItems } from '../lib/dashboardInsights'
 import type { ComponentType } from 'react'
 
 const modulos: {
@@ -43,20 +45,27 @@ const modulos: {
   { to: '/app/pecas', Icon: IconScale, title: '2ª fase — peças', desc: 'Adivinhe a peça processual' },
 ]
 
+const alertStyles = {
+  info: 'border-blue-200 bg-blue-50 text-blue-900',
+  warning: 'border-amber-200 bg-amber-50 text-amber-900',
+  success: 'border-green-200 bg-green-50 text-green-900',
+}
+
 export default function Dashboard() {
   const { questoes, progress, loading, meta } = useApp()
   const { limits, user } = useAuth()
   const isPro = limits?.cronograma ?? user?.plan === 'pro'
   const examDate = progress.profile?.examDate
+  const goalOverride = progress.profile?.dailyGoalOverride
   const countdown = provaCountdown(examDate)
   const rawDias = diasParaProva(new Date(), examDate)
   const diasMeta = rawDias != null && rawDias > 0 ? rawDias : 30
   const total = meta?.total_questoes ?? questoes.length
-  const { metaDiaria } = calcMetaDiaria(total, progress.respostas.length, diasMeta)
+  const { metaDiaria } = calcMetaDiaria(total, progress.respostas.length, diasMeta, goalOverride)
   const hoje = questoesRespondidasHoje(progress.respostas)
   const xp = calcXp(progress)
   const level = levelFromXp(xp)
-  const trilha = gerarTrilha({ totalQuestoes: total, respostas: progress.respostas, examDate })
+  const trilha = gerarTrilha({ totalQuestoes: total, respostas: progress.respostas, examDate, dailyGoalOverride: goalOverride })
   const ultimoSim = progress.simulados[0]
   const passaria = ultimoSim ? passariaHoje(ultimoSim.acertos, ultimoSim.total) : null
 
@@ -65,6 +74,17 @@ export default function Dashboard() {
   const pctAcerto = totalRespondidas > 0 ? Math.round((acertos / totalRespondidas) * 100) : 0
   const pctHoje = metaDiaria > 0 ? Math.min(100, Math.round((hoje / metaDiaria) * 100)) : 0
   const firstName = user?.name?.split(' ')[0] ?? 'estudante'
+
+  const continueHint = continueWhereLeftOff(progress)
+  const alerts = dashboardAlerts({
+    progress,
+    metaDiaria,
+    diasProva: rawDias,
+    planExpiresAt: user?.planExpiresAt ?? null,
+    isPro: Boolean(isPro),
+  })
+  const badges = computeBadges(progress).filter((b) => b.earned)
+  const activityItems = recentActivityItems(progress)
 
   if (loading) {
     return (
@@ -89,6 +109,41 @@ export default function Dashboard() {
                   : `${countdown.label}. Meta de hoje: ${pctHoje >= 100 ? 'concluída' : `${hoje}/${metaDiaria} questões`}.`
           }
         />
+
+        {alerts.length > 0 && (
+          <div className="space-y-2">
+            {alerts.map((a, i) => (
+              <div
+                key={i}
+                className={`flex flex-wrap items-center justify-between gap-2 rounded-xl border px-4 py-3 text-sm ${alertStyles[a.tone]}`}
+              >
+                <span>{a.message}</span>
+                {a.action && (
+                  <Link to={a.action.to} className="shrink-0 text-xs font-semibold underline underline-offset-2">
+                    {a.action.label}
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {continueHint && (
+          <Link
+            to={continueHint.to}
+            className="group flex items-center gap-4 rounded-2xl border border-brand-200 bg-brand-50 px-4 py-4 transition hover:border-brand-300 hover:shadow-sm"
+          >
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white">
+              <IconArrowRight size={22} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-brand-600">Continuar de onde parou</p>
+              <p className="font-semibold text-ink">{continueHint.label}</p>
+              <p className="text-xs text-muted">{continueHint.desc}</p>
+            </div>
+            <IconArrowRight size={18} className="shrink-0 text-brand-500 transition group-hover:translate-x-0.5" />
+          </Link>
+        )}
 
         <div className="card-featured rounded-3xl p-6 text-white md:p-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
@@ -130,7 +185,24 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Stats row */}
+        {pctHoje < 100 && metaDiaria > 0 && (
+          <Link
+            to="/app/flashcards"
+            className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-sm transition hover:border-brand-200"
+          >
+            <div className="flex items-center gap-3">
+              <IconTarget size={22} className="text-brand-600" />
+              <div>
+                <p className="text-sm font-semibold text-ink">Meta do dia</p>
+                <p className="text-xs text-muted">
+                  Faltam {Math.max(0, metaDiaria - hoje)} questões para bater a meta
+                </p>
+              </div>
+            </div>
+            <span className="rounded-full bg-brand-600 px-3 py-1 text-xs font-bold text-white">Estudar</span>
+          </Link>
+        )}
+
         <div className="grid gap-4 sm:grid-cols-3">
           <StatCard
             label="Respondidas"
@@ -155,9 +227,24 @@ export default function Dashboard() {
           />
         </div>
 
+        {badges.length > 0 && (
+          <SectionCard title="Conquistas" subtitle={`${badges.length} badge${badges.length === 1 ? '' : 's'} desbloqueada${badges.length === 1 ? '' : 's'}`}>
+            <div className="flex flex-wrap gap-2">
+              {badges.map((b) => (
+                <span
+                  key={b.id}
+                  title={b.desc}
+                  className="rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700"
+                >
+                  {b.label}
+                </span>
+              ))}
+            </div>
+          </SectionCard>
+        )}
+
         <PerformanceChart respostas={progress.respostas} />
 
-        {/* Trilha de hoje */}
         <SectionCard
           title="Trilha de hoje"
           subtitle={`${trilha.feitasHoje}/${trilha.metaQuestoes} questões · meta diária`}
@@ -186,7 +273,6 @@ export default function Dashboard() {
           </div>
         </SectionCard>
 
-        {/* Módulos */}
         <SectionCard title="Módulos de estudo" subtitle="Escolha como estudar agora">
           <div className="space-y-2">
             {modulos.map(({ to, Icon, title, desc, pro }) => (
@@ -225,15 +311,27 @@ export default function Dashboard() {
             <UpgradeCard />
           </div>
         )}
+
+        <div className="xl:hidden">
+          <ActivityPanel
+            name={user?.name ?? 'Estudante'}
+            email={user?.email}
+            simulados={progress.simulados}
+            pctAcerto={pctAcerto}
+            streak={progress.flashcardStreak}
+            activityItems={activityItems}
+          />
+        </div>
       </div>
 
-      {/* Right panel — desktop */}
       <div className="hidden xl:block">
         <ActivityPanel
           name={user?.name ?? 'Estudante'}
           email={user?.email}
           simulados={progress.simulados}
           pctAcerto={pctAcerto}
+          streak={progress.flashcardStreak}
+          activityItems={activityItems}
         />
       </div>
     </div>

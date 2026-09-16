@@ -59,6 +59,17 @@ export interface UserProfile {
   area2fase?: string
   onboardingDone?: boolean
   welcomeTourDone?: boolean
+  dailyGoalOverride?: number | null
+  studyReminderEnabled?: boolean
+  email2faEnabled?: boolean
+}
+
+export interface AccountInfo {
+  hasPassword: boolean
+  hasGoogle: boolean
+  email2faEnabled: boolean
+  dailyGoalOverride: number | null
+  studyReminderEnabled: boolean
 }
 
 export interface UserProgress {

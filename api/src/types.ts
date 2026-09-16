@@ -14,6 +14,9 @@ export interface UserRow {
   area_2fase: string | null
   onboarding_done: boolean
   welcome_tour_done: boolean
+  email_2fa_enabled: boolean
+  daily_goal_override: number | null
+  study_reminder_enabled: boolean
   created_at: Date
   updated_at?: Date
 }

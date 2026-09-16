@@ -11,12 +11,13 @@ export function gerarTrilha(params: {
   totalQuestoes: number
   respostas: { materia?: string; correta: boolean; timestamp: number }[]
   examDate?: string
+  dailyGoalOverride?: number | null
 }): TrilhaDia {
   const rawDias = params.examDate ? diasParaProva(new Date(), params.examDate) : null
   const dias = rawDias != null && rawDias > 0 ? rawDias : 30
 
   const respondidas = params.respostas.length
-  const { metaDiaria } = calcMetaDiaria(params.totalQuestoes, respondidas, dias)
+  const { metaDiaria } = calcMetaDiaria(params.totalQuestoes, respondidas, dias, params.dailyGoalOverride)
 
   const hojeKey = new Date().toISOString().slice(0, 10)
   const feitasHoje = params.respostas.filter((r) => new Date(r.timestamp).toISOString().slice(0, 10) === hojeKey).length

@@ -1,12 +1,19 @@
 export { diasParaProva, formatExamDatePt, provaCountdown, suggestedExamDateString } from './examDate'
 
-export function calcMetaDiaria(totalQuestoes: number, questoesRespondidas: number, diasRestantes: number) {
+export function calcMetaDiaria(
+  totalQuestoes: number,
+  questoesRespondidas: number,
+  diasRestantes: number,
+  dailyGoalOverride?: number | null,
+) {
   const questoesRestantes = Math.max(0, totalQuestoes - questoesRespondidas)
   const dias = diasRestantes > 0 ? diasRestantes : 1
-  const metaDiaria =
+  const autoMeta =
     diasRestantes <= 0 ? Math.max(1, Math.min(50, questoesRestantes || 20)) : Math.max(1, Math.ceil(questoesRestantes / dias))
+  const metaDiaria =
+    dailyGoalOverride != null && dailyGoalOverride > 0 ? dailyGoalOverride : autoMeta
 
-  return { questoesRestantes, metaDiaria, diasRestantes }
+  return { questoesRestantes, metaDiaria, diasRestantes, autoMeta }
 }
 
 export function questoesRespondidasHoje(respostas: { timestamp: number }[], date = new Date()): number {
