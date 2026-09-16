@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import TermometroQuiz from '../components/TermometroQuiz'
 import { useAuth } from '../context/AuthContext'
 
 const features = [
@@ -115,7 +114,6 @@ function Hero({ ctaTo, ctaLabel }: { ctaTo: string; ctaLabel: string }) {
 
         <SimuladoMockup />
       </div>
-      <TermometroQuiz />
     </section>
   )
 }
