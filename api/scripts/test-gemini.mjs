@@ -3,7 +3,7 @@
  * (a partir da pasta api/)
  */
 const key = process.env.GEMINI_API_KEY?.trim()
-const model = process.env.GEMINI_MODEL ?? 'gemini-2.0-flash'
+const model = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash'
 
 if (!key) {
   console.error('❌ GEMINI_API_KEY não definida')

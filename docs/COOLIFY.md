@@ -27,7 +27,7 @@ GOOGLE_CLIENT_ID=<client-id>.apps.googleusercontent.com
 
 # Tutor IA (Pro) — obrigatório se quiser IA
 GEMINI_API_KEY=<sua-chave>
-GEMINI_MODEL=gemini-2.0-flash
+GEMINI_MODEL=gemini-2.5-flash
 
 ```
 

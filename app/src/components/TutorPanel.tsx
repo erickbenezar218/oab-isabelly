@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { IconSparkles } from './icons'
 import { useAuth } from '../context/AuthContext'
@@ -26,9 +26,11 @@ function toPayload(q: Questao): TutorQuestaoPayload {
 export default function TutorPanel({
   questao,
   respostaUsuario,
+  autoExplain = true,
 }: {
   questao: Questao
   respostaUsuario: string | null
+  autoExplain?: boolean
 }) {
   const { token, limits, user } = useAuth()
   const [explanation, setExplanation] = useState<string | null>(null)
@@ -39,6 +41,7 @@ export default function TutorPanel({
   const [explaining, setExplaining] = useState(false)
   const [error, setError] = useState('')
   const [loaded, setLoaded] = useState(false)
+  const autoRequested = useRef(false)
   const chatEndRef = useRef<HTMLDivElement>(null)
 
   const canChat = limits?.tutorChat ?? user?.plan === 'pro'
@@ -49,6 +52,7 @@ export default function TutorPanel({
     setError('')
     setInput('')
     setLoaded(false)
+    autoRequested.current = false
   }, [questao.id])
 
   useEffect(() => {
@@ -82,7 +86,7 @@ export default function TutorPanel({
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
-  const explain = async () => {
+  const explain = useCallback(async () => {
     if (!token) return
     setExplaining(true)
     setError('')
@@ -96,7 +100,14 @@ export default function TutorPanel({
     } finally {
       setExplaining(false)
     }
-  }
+  }, [token, questao, respostaUsuario])
+
+  useEffect(() => {
+    if (!autoExplain || !token || !loaded || explanation || explaining || autoRequested.current) return
+    if (!respostaUsuario) return
+    autoRequested.current = true
+    void explain()
+  }, [autoExplain, token, loaded, explanation, explaining, respostaUsuario, explain])
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -158,19 +169,30 @@ export default function TutorPanel({
       {!explanation ? (
         <>
           <p className="mt-2 text-xs text-muted">
-            Gabarito comentado por IA — sem professor humano, explicação na hora.
+            {explaining
+              ? 'Analisando a questão e montando o gabarito comentado…'
+              : 'Gabarito comentado por IA — explicação automática após responder.'}
             {limits?.iaExplicacoesDia != null && (
-              <span className="block mt-1 text-muted-light">Plano grátis: até {limits.iaExplicacoesDia} explicações novas/dia.</span>
+              <span className="mt-1 block text-muted-light">
+                Plano grátis: até {limits.iaExplicacoesDia} explicações novas/dia.
+              </span>
             )}
           </p>
-          <button
-            type="button"
-            onClick={() => void explain()}
-            disabled={explaining}
-            className="mt-3 w-full rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50"
-          >
-            {explaining ? 'IA analisando...' : 'Ver explicação IA'}
-          </button>
+          {!explaining && (
+            <button
+              type="button"
+              onClick={() => void explain()}
+              className="mt-3 w-full rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
+            >
+              Ver explicação IA
+            </button>
+          )}
+          {explaining && (
+            <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-brand-50 py-3 text-sm text-brand-700">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+              IA analisando...
+            </div>
+          )}
         </>
       ) : (
         <>

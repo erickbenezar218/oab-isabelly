@@ -14,9 +14,5 @@ export default function ProtectedRoute() {
 
   if (!user) return <Navigate to="/login" replace />
 
-  return (
-    <div className="flex h-dvh flex-col overflow-hidden">
-      <Outlet />
-    </div>
-  )
+  return <Outlet />
 }

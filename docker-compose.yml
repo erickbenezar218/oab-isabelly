@@ -24,7 +24,8 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.0-flash}
+      GEMINI_API_KEY_B64: ${GEMINI_API_KEY_B64:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
       APP_URL: ${APP_URL:-http://localhost:8080}
       EMAIL_FROM: ${EMAIL_FROM:-SimulaOrdem <suporte@simulaordem.com.br>}
       RESEND_API_KEY: ${RESEND_API_KEY:-}

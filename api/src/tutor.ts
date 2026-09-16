@@ -162,8 +162,15 @@ export async function registerTutorRoutes(
       return { explanation, cached: false, remainingMessages: canUseTutor(user.plan, user.plan_expires_at) ? MAX_TUTOR_USER_MESSAGES : 0 }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Erro no tutor'
+      console.error('[tutor/comment]', msg)
       if (msg === 'GEMINI_NOT_CONFIGURED') {
-        return reply.code(503).send({ error: 'IA temporariamente indisponível.' })
+        return reply.code(503).send({ error: 'IA não configurada no servidor. Contate o suporte.' })
+      }
+      if (msg.toLowerCase().includes('quota') || msg.toLowerCase().includes('rate limit')) {
+        return reply.code(429).send({ error: 'Limite da API Gemini atingido. Tente em alguns minutos.' })
+      }
+      if (msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('permission')) {
+        return reply.code(503).send({ error: 'Chave da IA inválida no servidor. Contate o suporte.' })
       }
       return reply.code(502).send({ error: 'Não foi possível gerar a explicação. Tente novamente.' })
     }
