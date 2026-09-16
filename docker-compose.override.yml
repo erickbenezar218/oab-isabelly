@@ -1,0 +1,7 @@
+# Usado automaticamente pelo `docker compose up` local (fora do Coolify).
+# O Coolify aponta explicitamente para docker-compose.yml e ignora este arquivo,
+# então isso não reintroduz o conflito de porta fixa em produção.
+services:
+  web:
+    ports:
+      - '8080:80'

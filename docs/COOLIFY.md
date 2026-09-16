@@ -4,9 +4,13 @@
 
 | Serviço | Porta | Descrição |
 |---------|-------|-----------|
-| `web` | 8080 → 80 | Nginx + React PWA |
+| `web` | 80 (interno, roteado pelo proxy do Coolify) | Nginx + React PWA |
 | `api` | 3001 (interno) | Fastify + Postgres |
 | `db` | 5432 (interno) | PostgreSQL 16 |
+
+**Importante:** o serviço `web` não publica mais porta fixa no host (removemos `ports: 8080:80` do `docker-compose.yml`). Isso evitava que o deploy falhasse com `port is already allocated` — como o Coolify sobe o container novo antes de derrubar o antigo (deploy sem downtime), dois containers não conseguiam ligar na mesma porta 8080 do host ao mesmo tempo. Agora o Coolify roteia direto pela rede interna `coolify` até a porta 80 do container.
+
+No painel do Coolify, confira/ajuste em **web → Configuration → Ports** (ou Domains) para apontar para a porta **80** (não mais 8080).
 
 ## Variáveis obrigatórias (Coolify → Environment)
 

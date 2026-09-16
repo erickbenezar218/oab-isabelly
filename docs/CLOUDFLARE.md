@@ -14,7 +14,7 @@ Domínio: **simulaordem.com.br**
 
 ## 1. Coolify — domínio
 
-No serviço **web** (porta 8080):
+No serviço **web** (porta interna 80):
 
 - **Domains** → adicionar:
   - `simulaordem.com.br`
