@@ -16,4 +16,4 @@ fi
 echo "==> VITE_API_URL=${VITE_API_URL:-/api}"
 echo "==> VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID:+[set]}"
 
-DISABLE_PWA=true npm run build
+npm run build
