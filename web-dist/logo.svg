@@ -1,8 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" fill="none" role="img" aria-label="SimulaOrdem">
   <rect x="4" y="4" width="56" height="56" rx="14" fill="#F8FAFB" stroke="#E2E8F0" stroke-width="1"/>
-  <rect x="18" y="14" width="10" height="28" rx="5" fill="#1C3F3A" transform="rotate(-24 23 28)"/>
-  <rect x="30" y="20" width="10" height="28" rx="5" fill="#3C8F92" transform="rotate(-24 35 34)"/>
-  <circle cx="32" cy="48" r="4" fill="#1C3F3A"/>
+
+  <!-- Balança (mini) -->
+  <rect x="22" y="44" width="20" height="3" rx="1.5" fill="#1C3F3A"/>
+  <rect x="27" y="38" width="10" height="7" rx="2" fill="#2A606B"/>
+  <rect x="30" y="28" width="4" height="12" rx="1.5" fill="#1C3F3A"/>
+  <rect x="14" y="26" width="36" height="3" rx="1.5" fill="#1C3F3A"/>
+  <circle cx="32" cy="27.5" r="2.5" fill="#3C8F92"/>
+  <path d="M18 29 V34" stroke="#1C3F3A" stroke-width="2" stroke-linecap="round"/>
+  <path d="M46 29 V34" stroke="#1C3F3A" stroke-width="2" stroke-linecap="round"/>
+  <path d="M15 34 H23 Q23 38 19 38 Q15 38 15 34 Z" fill="#3C8F92"/>
+  <path d="M41 34 H49 Q49 38 45 38 Q41 38 41 34 Z" fill="#3C8F92"/>
+
   <text x="76" y="40" font-family="Plus Jakarta Sans, Inter, system-ui, sans-serif" font-size="26" letter-spacing="-0.04em">
     <tspan fill="#0F172A" font-weight="700">Simula</tspan><tspan fill="#1C3F3A" font-weight="800">Ordem</tspan>
   </text>

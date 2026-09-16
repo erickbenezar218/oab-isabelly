@@ -1,8 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="SimulaOrdem">
   <rect width="512" height="512" rx="112" fill="#1C3F3A"/>
-  <rect x="148" y="120" width="56" height="200" rx="28" fill="#FFFFFF" opacity="0.95" transform="rotate(-24 176 220)"/>
-  <rect x="228" y="160" width="56" height="200" rx="28" fill="#3C8F92" transform="rotate(-24 256 260)"/>
-  <circle cx="256" cy="380" r="20" fill="#FFFFFF"/>
-  <rect x="248" y="292" width="16" height="88" rx="8" fill="#2A606B"/>
+
+  <!-- Pedestal -->
+  <rect x="168" y="404" width="176" height="24" rx="12" fill="#FFFFFF" opacity="0.95"/>
+  <rect x="208" y="384" width="96" height="28" rx="8" fill="#3C8F92"/>
+
+  <!-- Coluna central -->
+  <rect x="238" y="256" width="36" height="136" rx="8" fill="#FFFFFF" opacity="0.95"/>
+
+  <!-- Haste horizontal -->
+  <rect x="56" y="232" width="400" height="18" rx="9" fill="#FFFFFF" opacity="0.95"/>
+
+  <!-- Pino central -->
+  <circle cx="256" cy="241" r="18" fill="#3C8F92"/>
+  <rect x="250" y="241" width="12" height="18" rx="4" fill="#5EEAD4"/>
+
+  <!-- Suportes dos pratos -->
+  <path d="M128 250 V302" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" opacity="0.95"/>
+  <path d="M384 250 V302" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" opacity="0.95"/>
+
+  <!-- Pratos -->
+  <path d="M84 302 H172 Q172 348 128 348 Q84 348 84 302 Z" fill="#3C8F92"/>
+  <path d="M340 302 H428 Q428 348 384 348 Q340 348 340 302 Z" fill="#3C8F92"/>
+  <path d="M84 302 H172" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+  <path d="M340 302 H428" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+
   <text x="256" y="448" text-anchor="middle" fill="#FFFFFF" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="48" font-weight="700">SimulaOrdem</text>
 </svg>
