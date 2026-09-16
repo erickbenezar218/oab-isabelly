@@ -25,28 +25,36 @@ GOOGLE_CLIENT_ID=<client-id>.apps.googleusercontent.com
 GEMINI_API_KEY=<sua-chave>
 GEMINI_MODEL=gemini-2.0-flash
 
-# Build do frontend (Coolify build args ou env no Dockerfile)
-VITE_API_URL=/api
-VITE_GOOGLE_CLIENT_ID=<mesmo do GOOGLE_CLIENT_ID>
 ```
 
 **Nunca** commite `.env` no git. Configure só no painel do Coolify.
 
-### Variáveis Build vs Runtime (importante)
+### Frontend (`web-dist/`)
 
-No Coolify, cada variável pode ser **Build** ou **Runtime**. Para evitar falha no `npm run build`:
+O serviço `web` **não roda npm/vite no Coolify** — só nginx servindo a pasta `web-dist/` já buildada.
 
-| Variável | Build | Runtime |
-|----------|-------|---------|
-| `VITE_API_URL` | ✅ | — |
-| `VITE_GOOGLE_CLIENT_ID` | ✅ | — |
-| `GOOGLE_CLIENT_ID`, `JWT_SECRET`, SMTP, Asaas, Gemini, Postgres… | ❌ | ✅ |
+Antes de push/deploy, gere o build localmente:
 
-Marque SMTP, e-mail, Asaas, JWT etc. como **somente Runtime** (desmarque "Available at Buildtime").
+```bash
+VITE_API_URL=/api \
+VITE_GOOGLE_CLIENT_ID=<mesmo do GOOGLE_CLIENT_ID> \
+./scripts/build-web.sh
+git add web-dist && git commit -m "chore: rebuild web-dist"
+```
 
-**Asaas:** `ASAAS_API_KEY=$$aact_hmlg_...` (dois `$` no Coolify).
+### Variáveis Runtime (API)
 
-**E-mail:** se der erro no build, use aspas: `EMAIL_FROM="SimulaOrdem <suporte@simulaordem.com.br>"`
+| Variável | Runtime |
+|----------|---------|
+| `GOOGLE_CLIENT_ID`, `JWT_SECRET`, SMTP, Asaas, Gemini, Postgres… | ✅ |
+
+**Asaas:** use `ASAAS_API_KEY_B64` (evita `$` quebrando o Docker Compose):
+
+```bash
+echo -n 'sua-chave-asaas' | base64
+```
+
+**E-mail:** `EMAIL_FROM="SimulaOrdem <suporte@simulaordem.com.br>"`
 
 ## Checklist pré-produção
 
@@ -64,8 +72,7 @@ Marque SMTP, e-mail, Asaas, JWT etc. como **somente Runtime** (desmarque "Availa
 - [ ] CORS restrito ao domínio real (não `*`)
 
 ### App
-- [ ] Build web com `VITE_API_URL=/api`
-- [ ] `banco_oab.json` copiado no build (Dockerfile já faz)
+- [ ] `./scripts/build-web.sh` com `VITE_API_URL=/api` e commit de `web-dist/`
 - [ ] Health: `GET /api/health` → `{ ok: true }`
 - [ ] Testar login, simulado, sync progresso
 - [ ] Testar tutor IA com usuário `plan=pro`
