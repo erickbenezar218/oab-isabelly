@@ -1,4 +1,4 @@
-# Build stage — Debian slim (Vite 8 / Rolldown falha em Alpine musl no CI)
+# Build stage — Vite 6 + Rollup (estável em Linux/CI)
 FROM node:22-bookworm-slim AS builder
 
 WORKDIR /app
@@ -11,7 +11,8 @@ ENV NODE_OPTIONS=--max-old-space-size=4096
 ENV CI=true
 
 COPY app/package*.json ./
-RUN npm ci
+# Instala deps da plataforma atual (bindings Linux no CI)
+RUN npm ci --include=optional
 
 COPY app/ ./
 COPY banco_oab.json ./public/banco_oab.json

@@ -26,7 +26,7 @@ services:
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.0-flash}
       APP_URL: ${APP_URL:-http://localhost:8080}
-      EMAIL_FROM: ${EMAIL_FROM:-SimulaOrdem <noreply@simulaordem.com.br>}
+      EMAIL_FROM: ${EMAIL_FROM:-SimulaOrdem <suporte@simulaordem.com.br>}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-465}
@@ -34,7 +34,7 @@ services:
       SMTP_PASS: ${SMTP_PASS:-}
       EMAIL_2FA_ENABLED: ${EMAIL_2FA_ENABLED:-true}
       ASAAS_ENV: ${ASAAS_ENV:-sandbox}
-      ASAAS_API_KEY: ${ASAAS_API_KEY:-}
+      ASAAS_API_KEY: ${ASAAS_API_KEY}
       ASAAS_WEBHOOK_TOKEN: ${ASAAS_WEBHOOK_TOKEN:-}
       ASAAS_PRO_VALUE: ${ASAAS_PRO_VALUE:-24.90}
       ASAAS_RETA_VALUE: ${ASAAS_RETA_VALUE:-59.90}
