@@ -11,6 +11,12 @@ import { registerBillingRoutes } from './billing.js'
 import { isGeminiConfigured } from './gemini.js'
 import { createLoginChallenge, maskEmail, verifyLoginChallenge } from './otp.js'
 import { registerTutorRoutes } from './tutor.js'
+import {
+  migrateProfileFromProgressJson,
+  profileFromUser,
+  updateUserProfile,
+  type ProfilePatch,
+} from './profile.js'
 import { defaultProgress } from './types.js'
 import type { UserRow } from './types.js'
 
@@ -31,6 +37,7 @@ function userPublic(u: UserRow) {
     name: u.name,
     plan,
     planExpiresAt: u.plan_expires_at?.toISOString() ?? null,
+    profile: profileFromUser(u),
   }
 }
 
@@ -157,21 +164,25 @@ app.get('/auth/me', async (req, reply) => {
 })
 
 app.get('/progress', async (req, reply) => {
-  const user = await getUserFromAuth(req.headers.authorization)
+  let user = await getUserFromAuth(req.headers.authorization)
   if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
   const { rows } = await pool.query<{ data: Record<string, unknown> }>(
     'SELECT data FROM user_progress WHERE user_id = $1',
     [user.id],
   )
   const raw = rows[0]?.data ?? defaultProgress()
+  user = await migrateProfileFromProgressJson(pool, user, raw)
+  const profile = profileFromUser(user)
   const pro = isPro(user.plan, user.plan_expires_at)
   const ym = currentYearMonth()
   const usage = await pool.query<{ count: string }>(
     'SELECT count FROM simulado_usage WHERE user_id = $1 AND year_month = $2',
     [user.id, ym],
   )
+  const filtered = filterProgressForPlan(raw, pro) as Record<string, unknown>
+  const { profile: _legacy, ...studyData } = filtered
   return {
-    progress: filterProgressForPlan(raw, pro),
+    progress: { ...studyData, profile },
     limits: {
       plan: effectivePlan(user.plan, user.plan_expires_at),
       simuladosRestantesMes: pro ? null : Math.max(0, 1 - Number(usage.rows[0]?.count ?? 0)),
@@ -190,12 +201,26 @@ app.put<{ Body: { progress: Record<string, unknown> } }>('/progress', async (req
   if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
   const progress = req.body?.progress
   if (!progress || typeof progress !== 'object') return reply.code(400).send({ error: 'Progresso inválido.' })
+  const { profile: _profile, ...studyData } = progress
   await pool.query(
     `INSERT INTO user_progress (user_id, data, updated_at) VALUES ($1, $2, NOW())
      ON CONFLICT (user_id) DO UPDATE SET data = $2, updated_at = NOW()`,
-    [user.id, progress],
+    [user.id, studyData],
   )
   return { ok: true }
+})
+
+app.patch<{ Body: ProfilePatch }>('/profile', async (req, reply) => {
+  const user = await getUserFromAuth(req.headers.authorization)
+  if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
+  const patch = req.body ?? {}
+  try {
+    const updated = await updateUserProfile(pool, user.id, patch, profileFromUser(user))
+    return { ok: true, profile: profileFromUser(updated), user: userPublic(updated) }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Erro ao salvar perfil.'
+    return reply.code(400).send({ error: msg })
+  }
 })
 
 app.post<{ Body: { mode?: 'full' | 'express' } }>('/simulado/start', async (req, reply) => {

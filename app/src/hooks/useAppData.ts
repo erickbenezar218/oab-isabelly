@@ -1,20 +1,26 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { apiGetProgress, apiSaveProgress } from '../lib/api'
+import { apiGetProgress, apiSaveProgress, apiUpdateProfile } from '../lib/api'
 import { defaultProgress, STORAGE_KEY, type UserProgress } from '../types'
 
 function loadLocalProgress(): UserProgress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return defaultProgress()
-    return { ...defaultProgress(), ...JSON.parse(raw), profile: { ...defaultProgress().profile, ...(JSON.parse(raw).profile ?? {}) } }
+    const parsed = JSON.parse(raw)
+    return { ...defaultProgress(), ...parsed, profile: { ...defaultProgress().profile, ...(parsed.profile ?? {}) } }
   } catch {
     return defaultProgress()
   }
 }
 
+function studyDataOnly(progress: UserProgress): Record<string, unknown> {
+  const { profile: _profile, ...rest } = progress
+  return rest as Record<string, unknown>
+}
+
 export function useProgress() {
-  const { token, setLimits } = useAuth()
+  const { token, setLimits, applyUser } = useAuth()
   const [progress, setProgressState] = useState<UserProgress>(loadLocalProgress)
   const [syncing, setSyncing] = useState(false)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -27,13 +33,14 @@ export function useProgress() {
     setSyncing(true)
     apiGetProgress(token)
       .then(({ progress: remote, limits }) => {
-        setProgressState({
+        const merged = {
           ...defaultProgress(),
           ...remote,
-          profile: { ...defaultProgress().profile, ...(remote.profile ?? {}) },
-        } as UserProgress)
+          profile: { ...defaultProgress().profile, ...(remote.profile as UserProgress['profile'] ?? {}) },
+        } as UserProgress
+        setProgressState(merged)
         setLimits(limits)
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(remote))
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged))
       })
       .catch(() => setProgressState(loadLocalProgress()))
       .finally(() => setSyncing(false))
@@ -44,7 +51,7 @@ export function useProgress() {
     if (!token) return
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(() => {
-      apiSaveProgress(token, progress as unknown as Record<string, unknown>).catch(() => {})
+      apiSaveProgress(token, studyDataOnly(progress)).catch(() => {})
     }, 800)
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current)
@@ -113,23 +120,28 @@ export function useProgress() {
   )
 
   const updateProfile = useCallback(
-    (patch: Partial<UserProgress['profile']>) => {
+    async (patch: Partial<UserProgress['profile']>) => {
       setProgress((prev) => ({
         ...prev,
         profile: { ...prev.profile, ...patch },
       }))
+      if (!token) return
+      const { profile, user } = await apiUpdateProfile(token, patch)
+      setProgress((prev) => {
+        const next = { ...prev, profile }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+        return next
+      })
+      applyUser(user)
     },
-    [setProgress],
+    [token, applyUser],
   )
 
   const registrarPeca = useCallback(
     (entry: UserProgress['pecasRespostas'][0]) => {
       setProgress((prev) => ({
         ...prev,
-        pecasRespostas: [
-          ...prev.pecasRespostas.filter((p) => p.casoId !== entry.casoId),
-          entry,
-        ],
+        pecasRespostas: [...prev.pecasRespostas.filter((p) => p.casoId !== entry.casoId), entry],
       }))
     },
     [setProgress],

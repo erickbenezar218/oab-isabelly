@@ -55,7 +55,7 @@ export interface SimuladoResult {
 }
 
 export interface UserProfile {
-  examDate?: string
+  examDate?: string | null
   area2fase?: string
   onboardingDone?: boolean
   welcomeTourDone?: boolean
@@ -74,8 +74,6 @@ export interface UserProgress {
 }
 
 export const STORAGE_KEY = 'simulaordem-progress-v1'
-/** Fallback quando o usuário ainda não definiu data — 45º exame, fev/2027 */
-export const EXAM_DATE = new Date('2027-02-22T12:00:00')
 export const SIMULADO_TOTAL = 80
 export const SIMULADO_EXPRESS_TOTAL = 40
 export const SIMULADO_TEMPO_TOTAL = 5 * 60 * 60

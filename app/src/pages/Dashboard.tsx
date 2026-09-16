@@ -35,7 +35,7 @@ const modulos: {
   desc: string
   pro?: boolean
 }[] = [
-  { to: '/app/flashcards', Icon: IconZap, title: 'Flashcards rápidos', desc: 'Active recall estilo swipe' },
+  { to: '/app/flashcards', Icon: IconZap, title: 'Flashcards rápidos', desc: 'Toque na alternativa — correção automática' },
   { to: '/app/simulado', Icon: IconClipboard, title: 'Simulado realista', desc: '80 questões · 5 horas' },
   { to: '/app/revisao', Icon: IconRefresh, title: 'Revisão de erros', desc: 'Fila automática + tutor IA' },
   { to: '/app/desempenho', Icon: IconChart, title: 'Desempenho por matéria', desc: 'Gráficos e anotações' },
@@ -50,7 +50,7 @@ export default function Dashboard() {
   const examDate = progress.profile?.examDate
   const countdown = provaCountdown(examDate)
   const rawDias = diasParaProva(new Date(), examDate)
-  const diasMeta = rawDias > 0 ? rawDias : 30
+  const diasMeta = rawDias != null && rawDias > 0 ? rawDias : 30
   const total = meta?.total_questoes ?? questoes.length
   const { metaDiaria } = calcMetaDiaria(total, progress.respostas.length, diasMeta)
   const hoje = questoesRespondidasHoje(progress.respostas)
@@ -80,11 +80,13 @@ export default function Dashboard() {
         <PageHeader
           title={`Olá, ${firstName}`}
           subtitle={
-            countdown.status === 'past'
-              ? 'Atualize a data da prova para ver a contagem correta.'
-              : countdown.status === 'today'
-                ? 'Prova hoje — foco total e boa sorte!'
-                : `${countdown.label}. Meta de hoje: ${pctHoje >= 100 ? 'concluída' : `${hoje}/${metaDiaria} questões`}.`
+            countdown.status === 'unset'
+              ? 'Informe quando será a sua prova para personalizar o app.'
+              : countdown.status === 'past'
+                ? 'Atualize a data da prova para ver a contagem correta.'
+                : countdown.status === 'today'
+                  ? 'Prova hoje — foco total e boa sorte!'
+                  : `${countdown.label}. Meta de hoje: ${pctHoje >= 100 ? 'concluída' : `${hoje}/${metaDiaria} questões`}.`
           }
         />
 
@@ -93,7 +95,9 @@ export default function Dashboard() {
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-brand-200">Sua prova objetiva</p>
               <p className="mt-2 flex items-center gap-2 text-3xl font-extrabold md:text-4xl">
-                {countdown.status === 'past' ? (
+                {countdown.status === 'unset' ? (
+                  'Sem data'
+                ) : countdown.status === 'past' ? (
                   'Data passada'
                 ) : countdown.status === 'today' ? (
                   <>
@@ -107,7 +111,7 @@ export default function Dashboard() {
               <p className="mt-1 text-sm text-white/75">
                 {formatExamDatePt(examDate)} · Nível {level.level} · {xp} XP
               </p>
-              {countdown.status === 'past' && (
+              {(countdown.status === 'past' || countdown.status === 'unset') && (
                 <div className="mt-3 text-ink">
                   <ExamDateEditor compact />
                 </div>

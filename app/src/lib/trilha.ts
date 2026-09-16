@@ -12,9 +12,8 @@ export function gerarTrilha(params: {
   respostas: { materia?: string; correta: boolean; timestamp: number }[]
   examDate?: string
 }): TrilhaDia {
-  const dias = params.examDate
-    ? Math.max(0, Math.ceil((new Date(params.examDate).getTime() - Date.now()) / 86400000))
-    : diasParaProva()
+  const rawDias = params.examDate ? diasParaProva(new Date(), params.examDate) : null
+  const dias = rawDias != null && rawDias > 0 ? rawDias : 30
 
   const respondidas = params.respostas.length
   const { metaDiaria } = calcMetaDiaria(params.totalQuestoes, respondidas, dias)

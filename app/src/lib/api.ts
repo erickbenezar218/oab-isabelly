@@ -1,11 +1,19 @@
 const API_URL = import.meta.env.VITE_API_URL ?? '/api'
 
+export interface UserProfileDto {
+  examDate: string | null
+  area2fase: string
+  onboardingDone: boolean
+  welcomeTourDone: boolean
+}
+
 export interface AuthUser {
   id: string
   email: string
   name: string
   plan: 'free' | 'pro'
   planExpiresAt: string | null
+  profile?: UserProfileDto
 }
 
 export interface PlanLimits {
@@ -107,6 +115,17 @@ export async function apiSaveProgress(token: string, progress: Record<string, un
     headers: authHeaders(token),
     body: JSON.stringify({ progress }),
   })
+}
+
+export async function apiUpdateProfile(token: string, patch: Partial<UserProfileDto>) {
+  const res = await fetch(`${API_URL}/profile`, {
+    method: 'PATCH',
+    headers: authHeaders(token),
+    body: JSON.stringify(patch),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao salvar perfil')
+  return data as { ok: true; profile: UserProfileDto; user: AuthUser }
 }
 
 export async function apiSimuladoStart(token: string, mode: 'full' | 'express' = 'full') {

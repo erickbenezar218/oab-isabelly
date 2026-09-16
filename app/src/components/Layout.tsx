@@ -46,12 +46,12 @@ export default function Layout() {
   const isPro = limits?.plan === 'pro' || user?.plan === 'pro'
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-1 flex-col bg-surface-900 lg:flex-row">
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-surface-900 lg:flex-row">
       <OnboardingModal />
       <WelcomeTour />
 
       {/* Desktop sidebar */}
-      <aside className="app-sidebar hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
+      <aside className="app-sidebar hidden h-full min-h-0 w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
         <div className="flex items-center gap-2.5 px-5 py-6">
           <img src="/logo-icon.svg" alt="" className="h-9 w-9 rounded-xl" />
           <span className="text-lg font-bold tracking-tight text-ink">SimulaOrdem</span>
@@ -101,7 +101,7 @@ export default function Layout() {
           </div>
         </header>
 
-        <main className="app-scroll mx-auto min-h-0 w-full max-w-6xl flex-1 overflow-y-auto px-4 py-5 pb-28 lg:px-8 lg:py-8 lg:pb-8">
+        <main className="app-scroll mx-auto w-full max-w-6xl overflow-y-auto overflow-x-hidden px-4 py-5 pb-28 lg:px-8 lg:py-8 lg:pb-8">
           <Outlet />
         </main>
 

@@ -39,8 +39,8 @@ export default function Cronograma() {
   const examDate = progress.profile?.examDate
   const countdown = provaCountdown(examDate)
   const rawDias = diasParaProva(new Date(), examDate)
-  const diasMeta = rawDias > 0 ? rawDias : 30
-  const dias = rawDias > 0 ? rawDias : 0
+  const diasMeta = rawDias != null && rawDias > 0 ? rawDias : 30
+  const dias = rawDias != null && rawDias > 0 ? rawDias : 0
   const hoje = questoesRespondidasHoje(progress.respostas)
   const { questoesRestantes, metaDiaria } = calcMetaDiaria(total, respondidas, diasMeta)
   const trilha = gerarTrilha({ totalQuestoes: total, respostas: progress.respostas, examDate })
@@ -56,13 +56,15 @@ export default function Cronograma() {
         subtitle={`Prova em ${dataProva} · para passar, acerte pelo menos 40 de 80 questões`}
       />
 
-      {countdown.status === 'past' && <ExamDateEditor />}
+      {(countdown.status === 'past' || countdown.status === 'unset') && <ExamDateEditor />}
 
       <section className="card-featured rounded-3xl p-6 text-white">
         <p className="text-sm font-medium text-brand-100">
-          {countdown.status === 'past'
-            ? 'Atualize a data da prova acima'
-            : countdown.status === 'today'
+          {countdown.status === 'unset'
+            ? 'Cadastre a data da prova acima'
+            : countdown.status === 'past'
+              ? 'Atualize a data da prova acima'
+              : countdown.status === 'today'
               ? 'Prova hoje!'
               : `Faltam ${dias} dias`}
         </p>

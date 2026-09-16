@@ -1,6 +1,6 @@
 import confetti from 'canvas-confetti'
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { IconArrowLeft, IconArrowRight, IconCheck, IconStar, IconStarOutline, IconX } from '../components/icons'
+import { IconArrowRight, IconStar, IconStarOutline } from '../components/icons'
 import PageHeader from '../components/ui/PageHeader'
 import TutorPanel from '../components/TutorPanel'
 import { useApp } from '../context/AppContext'
@@ -17,21 +17,8 @@ export default function Flashcards() {
   const [mostrarGabarito, setMostrarGabarito] = useState(false)
   const [swipeClass, setSwipeClass] = useState('')
   const [selected, setSelected] = useState<string | null>(null)
+  const [acertouUltima, setAcertouUltima] = useState<boolean | null>(null)
   const touchStart = useRef<{ x: number; y: number } | null>(null)
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
-  }
-
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStart.current === null || !mostrarGabarito) return
-    const dx = e.changedTouches[0].clientX - touchStart.current.x
-    const dy = e.changedTouches[0].clientY - touchStart.current.y
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 80) {
-      responder(dx > 0)
-    }
-    touchStart.current = null
-  }
 
   const materias = useMemo(() => [...new Set(questoes.map((q) => q.materia))].sort(), [questoes])
   const exames = useMemo(() => [...new Set(questoes.map((q) => q.exame))].sort(), [questoes])
@@ -57,17 +44,41 @@ export default function Flashcards() {
         setIndex((i) => (i + 1 >= deck.length ? 0 : i + 1))
         setMostrarGabarito(false)
         setSelected(null)
+        setAcertouUltima(null)
         setSwipeClass('')
       }, 280)
     },
     [deck.length],
   )
 
-  const responder = (acertou: boolean) => {
-    if (!atual) return
+  const proximaQuestao = useCallback(() => {
+    if (!mostrarGabarito) return
+    avancar(acertouUltima ? 'right' : 'left')
+  }, [acertouUltima, avancar, mostrarGabarito])
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart.current === null || !mostrarGabarito) return
+    const dx = e.changedTouches[0].clientX - touchStart.current.x
+    const dy = e.changedTouches[0].clientY - touchStart.current.y
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 80) {
+      proximaQuestao()
+    }
+    touchStart.current = null
+  }
+
+  const escolherAlternativa = (letra: string) => {
+    if (!atual || mostrarGabarito) return
+    const acertou = letra === atual.resposta_correta
+    setSelected(letra)
+    setAcertouUltima(acertou)
+    setMostrarGabarito(true)
     registrarResposta({
       questaoId: atual.id,
-      selecionada: selected ?? (acertou ? atual.resposta_correta : 'X'),
+      selecionada: letra,
       correta: acertou,
       modulo: 'flashcard',
       timestamp: Date.now(),
@@ -76,7 +87,6 @@ export default function Flashcards() {
     })
     updateStreak(acertou)
     if (acertou && progress.flashcardStreak + 1 >= 5) fireConfetti()
-    avancar(acertou ? 'right' : 'left')
   }
 
   if (loading) return <Loading />
@@ -85,8 +95,9 @@ export default function Flashcards() {
     <div className="space-y-5">
       <PageHeader
         title="Flashcards"
-        subtitle="Active recall — revele o gabarito e marque se acertou ou errou."
+        subtitle="Escolha a alternativa — o app marca certo ou errado sozinho e mostra a explicação."
       />
+
       <div className="flex gap-2 overflow-x-auto pb-1">
         {(['materia', 'exame', 'revisao'] as FiltroTipo[]).map((t) => (
           <button
@@ -96,6 +107,9 @@ export default function Flashcards() {
               setFiltroTipo(t)
               setFiltroValor('')
               setIndex(0)
+              setMostrarGabarito(false)
+              setSelected(null)
+              setAcertouUltima(null)
             }}
             className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
               filtroTipo === t ? 'bg-brand-600 text-white' : 'bg-surface-700 text-muted'
@@ -112,6 +126,9 @@ export default function Flashcards() {
           onChange={(e) => {
             setFiltroValor(e.target.value)
             setIndex(0)
+            setMostrarGabarito(false)
+            setSelected(null)
+            setAcertouUltima(null)
           }}
           className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-ink outline-none"
         >
@@ -130,6 +147,9 @@ export default function Flashcards() {
           onChange={(e) => {
             setFiltroValor(e.target.value)
             setIndex(0)
+            setMostrarGabarito(false)
+            setSelected(null)
+            setAcertouUltima(null)
           }}
           className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-ink outline-none"
         >
@@ -169,10 +189,8 @@ export default function Flashcards() {
                 <button
                   key={letra}
                   type="button"
-                  onClick={() => {
-                    setSelected(letra)
-                    setMostrarGabarito(true)
-                  }}
+                  disabled={mostrarGabarito}
+                  onClick={() => escolherAlternativa(letra)}
                   className={`w-full rounded-xl border px-3 py-2.5 text-left text-sm transition ${
                     mostrarGabarito && letra === atual.resposta_correta
                       ? 'border-green-500 bg-green-50 text-green-700'
@@ -180,7 +198,7 @@ export default function Flashcards() {
                         ? 'border-red-500 bg-red-50 text-red-700'
                         : selected === letra
                           ? 'border-brand-500 bg-brand-50 text-brand-700'
-                          : 'border-slate-200 bg-white text-ink hover:border-brand-400'
+                          : 'border-slate-200 bg-white text-ink hover:border-brand-400 disabled:hover:border-slate-200'
                   }`}
                 >
                   <span className="mr-2 font-bold text-brand-500">{letra})</span>
@@ -191,29 +209,25 @@ export default function Flashcards() {
           </div>
 
           {mostrarGabarito && selected && (
-            <TutorPanel questao={atual} respostaUsuario={selected} />
+            <>
+              <p
+                className={`rounded-xl px-4 py-3 text-center text-sm font-semibold ${
+                  acertouUltima ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                }`}
+              >
+                {acertouUltima ? 'Resposta correta!' : 'Resposta errada — veja a explicação abaixo.'}
+              </p>
+              <TutorPanel questao={atual} respostaUsuario={selected} />
+              <button
+                type="button"
+                onClick={proximaQuestao}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-3 text-sm font-semibold text-white"
+              >
+                Próxima questão
+                <IconArrowRight size={16} />
+              </button>
+            </>
           )}
-
-          <div className="flex gap-3">
-            <button
-              type="button"
-              disabled={!mostrarGabarito}
-              onClick={() => responder(false)}
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-600/80 py-3 text-sm font-semibold text-white disabled:opacity-40"
-            >
-              <IconX size={16} />
-              Errei / Revisar
-            </button>
-            <button
-              type="button"
-              disabled={!mostrarGabarito}
-              onClick={() => responder(selected === atual.resposta_correta)}
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-green-600/80 py-3 text-sm font-semibold text-white disabled:opacity-40"
-            >
-              <IconCheck size={16} />
-              Acertei / Dominei
-            </button>
-          </div>
 
           <button
             type="button"
@@ -237,13 +251,9 @@ export default function Flashcards() {
             )}
           </button>
 
-          <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-muted-light">
-            Deslize
-            <IconArrowLeft size={12} />
-            erro ·
-            <IconArrowRight size={12} />
-            acerto (após revelar gabarito)
-          </p>
+          {mostrarGabarito && (
+            <p className="text-center text-[11px] text-muted-light">Deslize para a próxima questão</p>
+          )}
         </>
       ) : null}
     </div>

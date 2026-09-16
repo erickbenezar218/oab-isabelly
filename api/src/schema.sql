@@ -58,6 +58,12 @@ CREATE INDEX IF NOT EXISTS idx_login_challenges_user ON login_challenges(user_id
 ALTER TABLE users ADD COLUMN IF NOT EXISTS asaas_customer_id TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS cpf_cnpj TEXT;
 
+-- Perfil de estudo (data da prova, onboarding, tour)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS exam_date DATE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS area_2fase TEXT DEFAULT 'Trabalhista';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_done BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS welcome_tour_done BOOLEAN NOT NULL DEFAULT FALSE;
+
 CREATE TABLE IF NOT EXISTS user_billing (
   user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   plan_product TEXT NOT NULL CHECK (plan_product IN ('pro', 'reta')),

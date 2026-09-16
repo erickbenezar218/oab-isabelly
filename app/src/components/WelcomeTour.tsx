@@ -38,7 +38,7 @@ const STEPS: Step[] = [
     Icon: IconZap,
     title: 'Flashcards — questões rápidas',
     description:
-      'Escolha a matéria, leia a questão, veja a resposta e diga se acertou ou errou. Ideal para revisar em poucos minutos.',
+      'Escolha a matéria, leia a questão e toque na alternativa — o app corrige sozinho e explica. Ideal para revisar em poucos minutos.',
     tip: 'Você pode salvar questões difíceis para ver de novo depois.',
   },
   {
@@ -122,7 +122,7 @@ export default function WelcomeTour() {
   const Icon = current.Icon
 
   const finish = () => {
-    updateProfile({ welcomeTourDone: true })
+    void updateProfile({ welcomeTourDone: true })
   }
 
   const goNext = () => {

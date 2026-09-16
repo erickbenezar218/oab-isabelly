@@ -14,6 +14,7 @@ interface AuthContextType {
   googleLogin: (credential: string) => Promise<void>
   logout: () => void
   setLimits: (limits: PlanLimits) => void
+  applyUser: (user: AuthUser) => void
   refreshUser: () => Promise<void>
 }
 
@@ -36,6 +37,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null)
     setUser(null)
     setLimits(null)
+  }, [])
+
+  const applyUser = useCallback((u: AuthUser) => {
+    setUser(u)
   }, [])
 
   const refreshUser = useCallback(async () => {
@@ -78,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, limits, loading, login, verifyOtp, register, googleLogin, logout, setLimits, refreshUser }}>
+    <AuthContext.Provider value={{ user, token, limits, loading, login, verifyOtp, register, googleLogin, logout, setLimits, applyUser, refreshUser }}>
       {children}
     </AuthContext.Provider>
   )

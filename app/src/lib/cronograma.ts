@@ -1,4 +1,4 @@
-export { diasParaProva, defaultExamDateString, formatExamDatePt, provaCountdown, resolveExamDate } from './examDate'
+export { diasParaProva, formatExamDatePt, provaCountdown, suggestedExamDateString } from './examDate'
 
 export function calcMetaDiaria(totalQuestoes: number, questoesRespondidas: number, diasRestantes: number) {
   const questoesRestantes = Math.max(0, totalQuestoes - questoesRespondidas)
