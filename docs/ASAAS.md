@@ -20,7 +20,8 @@ Integração com **Asaas Sandbox** para testes e **Produção** quando for ao ar
 
 ```env
 ASAAS_ENV=sandbox
-ASAAS_API_KEY=$aact_hmlg_sua_chave_aqui
+# No Coolify/Docker Compose: use $$ no início (senão o $ vira variável)
+ASAAS_API_KEY=$$aact_hmlg_sua_chave_aqui
 ASAAS_WEBHOOK_TOKEN=escolha-uma-string-secreta-longa
 ASAAS_PRO_VALUE=24.90
 ASAAS_RETA_VALUE=59.90
