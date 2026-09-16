@@ -17,7 +17,15 @@ COPY app/ ./
 COPY banco_oab.json ./public/banco_oab.json
 COPY app/public/pecas_oab.json ./public/pecas_oab.json
 
-RUN npm run build
+# Só VITE_* no build — Coolify injeta dezenas de ENV que quebram o Rollup
+RUN env -i \
+  PATH="$PATH" \
+  HOME="$HOME" \
+  NODE_OPTIONS="$NODE_OPTIONS" \
+  CI=true \
+  VITE_API_URL="$VITE_API_URL" \
+  VITE_GOOGLE_CLIENT_ID="$VITE_GOOGLE_CLIENT_ID" \
+  npm run build
 
 # Production stage
 FROM nginx:alpine
