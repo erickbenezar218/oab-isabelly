@@ -92,7 +92,19 @@ export default function GoogleSignInButton({ disabled, onSuccess, onError }: Goo
     if (!Capacitor.isNativePlatform()) return
     setNativeBusy(true)
     try {
-      const user = await GoogleAuth.signIn()
+      const clientId = GOOGLE_IOS_CLIENT_ID || GOOGLE_CLIENT_ID
+      const scopes = ['profile', 'email', 'openid']
+      await GoogleAuth.initialize({
+        clientId,
+        scopes,
+        grantOfflineAccess: false,
+      })
+      const user = await GoogleAuth.signIn({
+        scopes,
+        clientId,
+        serverClientId: GOOGLE_CLIENT_ID,
+        grantOfflineAccess: false,
+      })
       const idToken = user.authentication?.idToken
       if (!idToken) throw new Error('Google não retornou token. Verifique o Client ID iOS no Google Cloud.')
       await onSuccess(idToken)

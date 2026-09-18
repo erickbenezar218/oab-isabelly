@@ -28,12 +28,15 @@
 
 html {
   min-height: 100%;
+  min-height: 100dvh;
   -webkit-text-size-adjust: 100%;
+  background: var(--color-surface-900);
 }
 
 body,
 #root {
   min-height: 100%;
+  min-height: 100dvh;
 }
 
 body {
@@ -43,6 +46,8 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 #root {

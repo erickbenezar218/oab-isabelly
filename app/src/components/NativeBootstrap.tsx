@@ -1,7 +1,7 @@
+import { SplashScreen } from '@capacitor/splash-screen'
 import { useEffect } from 'react'
 import { GoogleAuth } from '@southdevs/capacitor-google-auth'
 import { StatusBar, Style } from '@capacitor/status-bar'
-import { useAuth } from '../context/AuthContext'
 import { useApp } from '../context/AppContext'
 import { initNativeNotifications, syncStudyReminderNotification } from '../lib/nativeNotifications'
 import { isNativeApp } from '../lib/platform'
@@ -15,16 +15,22 @@ export default function NativeBootstrap() {
   useEffect(() => {
     if (!isNativeApp()) return
 
-    void StatusBar.setStyle({ style: Style.Light }).catch(() => {})
-    void initNativeNotifications()
+    void (async () => {
+      await StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {})
+      await StatusBar.setStyle({ style: Style.Dark }).catch(() => {})
+      await initNativeNotifications()
 
-    if (WEB_CLIENT_ID || IOS_CLIENT_ID) {
-      GoogleAuth.initialize({
-        clientId: IOS_CLIENT_ID || WEB_CLIENT_ID,
-        scopes: ['profile', 'email'],
-        grantOfflineAccess: false,
-      })
-    }
+      const clientId = IOS_CLIENT_ID || WEB_CLIENT_ID
+      if (clientId) {
+        await GoogleAuth.initialize({
+          clientId,
+          scopes: ['profile', 'email', 'openid'],
+          grantOfflineAccess: false,
+        }).catch(() => {})
+      }
+
+      await SplashScreen.hide({ fadeOutDuration: 250 }).catch(() => {})
+    })()
   }, [])
 
   useEffect(() => {

@@ -12,12 +12,13 @@ const config: CapacitorConfig = {
     iosScheme: 'capacitor',
   },
   ios: {
-    contentInset: 'automatic',
+    backgroundColor: '#f8fafb',
+    contentInset: 'never',
     scrollEnabled: true,
   },
   plugins: {
     GoogleAuth: {
-      scopes: ['profile', 'email'],
+      scopes: ['profile', 'email', 'openid'],
       serverClientId: webClientId || undefined,
       iosClientId: iosClientId || undefined,
       clientId: iosClientId || webClientId || undefined,
@@ -29,7 +30,7 @@ const config: CapacitorConfig = {
       sound: 'beep.wav',
     },
     SplashScreen: {
-      launchAutoHide: true,
+      launchAutoHide: false,
       backgroundColor: '#1C3F3A',
       showSpinner: false,
     },

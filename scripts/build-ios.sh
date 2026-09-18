@@ -31,6 +31,7 @@ echo "→ VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID:+[definido]}"
 echo "→ VITE_GOOGLE_IOS_CLIENT_ID=${VITE_GOOGLE_IOS_CLIENT_ID:+[definido]}"
 
 cp "$ROOT/banco_oab.json" ./public/banco_oab.json
+node "$ROOT/scripts/generate-ios-splash.mjs"
 DISABLE_PWA=true npm run build
 
 npx cap sync ios
