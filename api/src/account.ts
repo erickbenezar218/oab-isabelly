@@ -16,7 +16,7 @@ export function accountFromUser(u: UserRow): AccountDto {
     hasGoogle: Boolean(u.google_id),
     email2faEnabled: u.email_2fa_enabled ?? true,
     dailyGoalOverride: u.daily_goal_override ?? null,
-    studyReminderEnabled: Boolean(u.study_reminder_enabled),
+    studyReminderEnabled: u.study_reminder_enabled !== false,
   }
 }
 

@@ -31,7 +31,7 @@ export default function Conta() {
   const [area2fase, setArea2fase] = useState(progress.profile?.area2fase ?? 'Trabalhista')
   const [dailyGoal, setDailyGoal] = useState(String(progress.profile?.dailyGoalOverride ?? ''))
   const [email2fa, setEmail2fa] = useState(progress.profile?.email2faEnabled ?? true)
-  const [reminder, setReminder] = useState(progress.profile?.studyReminderEnabled ?? false)
+  const [reminder, setReminder] = useState(progress.profile?.studyReminderEnabled ?? true)
 
   const [currentPw, setCurrentPw] = useState('')
   const [newPw, setNewPw] = useState('')

@@ -34,7 +34,7 @@ export function profileFromUser(u: UserRow): UserProfileDto {
     onboardingDone: Boolean(u.onboarding_done),
     welcomeTourDone: Boolean(u.welcome_tour_done),
     dailyGoalOverride: u.daily_goal_override ?? null,
-    studyReminderEnabled: Boolean(u.study_reminder_enabled),
+    studyReminderEnabled: u.study_reminder_enabled !== false,
     email2faEnabled: u.email_2fa_enabled ?? true,
   }
 }
