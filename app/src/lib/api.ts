@@ -57,6 +57,31 @@ function authHeaders(token: string | null): HeadersInit {
   return token ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' }
 }
 
+async function parseApiResponse<T>(res: Response, fallbackError: string): Promise<T> {
+  let data: { error?: string } = {}
+  try {
+    data = (await res.json()) as { error?: string }
+  } catch {
+    if (!res.ok) throw new Error(`${fallbackError} (${res.status})`)
+  }
+  if (!res.ok) throw new Error(data.error ?? fallbackError)
+  return data as T
+}
+
+async function apiPost<T>(path: string, body: unknown, fallbackError: string): Promise<T> {
+  let res: Response
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+  } catch {
+    throw new Error('Sem conexão com o servidor. Verifique a internet e tente de novo.')
+  }
+  return parseApiResponse<T>(res, fallbackError)
+}
+
 export async function apiRegister(email: string, password: string, name: string) {
   const res = await fetch(`${API_URL}/auth/register`, {
     method: 'POST',
@@ -127,14 +152,11 @@ export async function apiVerifyOtp(challengeId: string, code: string) {
 }
 
 export async function apiGoogleLogin(credential: string) {
-  const res = await fetch(`${API_URL}/auth/google`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ credential }),
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error ?? 'Erro no Google')
-  return data as { token: string; user: AuthUser }
+  return apiPost<{ token: string; user: AuthUser }>(
+    '/auth/google',
+    { credential },
+    'Erro ao entrar com Google',
+  )
 }
 
 export async function apiMe(token: string) {

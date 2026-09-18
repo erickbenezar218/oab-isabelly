@@ -21,6 +21,7 @@ JWT_SECRET=<openssl rand -hex 32>
 
 # Domínio
 CORS_ORIGIN=https://simulaordem.com.br,https://www.simulaordem.com.br
+# App iOS/Android (Capacitor): a API já aceita capacitor://localhost automaticamente após deploy recente
 
 # Google OAuth (login) — opcional
 GOOGLE_CLIENT_ID=<client-id-web>.apps.googleusercontent.com

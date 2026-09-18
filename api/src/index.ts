@@ -36,8 +36,21 @@ import type { UserRow } from './types.js'
 
 const app = Fastify({ logger: true })
 
+/** Origens do app nativo Capacitor (iOS/Android WebView). */
+const NATIVE_APP_ORIGINS = [
+  'capacitor://localhost',
+  'ionic://localhost',
+  'http://localhost',
+  'https://localhost',
+]
+
+const configuredOrigins = process.env.CORS_ORIGIN?.split(',').map((o) => o.trim()).filter(Boolean) ?? []
+const corsOrigins = configuredOrigins.length
+  ? [...new Set([...configuredOrigins, ...NATIVE_APP_ORIGINS])]
+  : true
+
 await app.register(cors, {
-  origin: process.env.CORS_ORIGIN?.split(',') ?? true,
+  origin: corsOrigins,
   credentials: true,
 })
 
