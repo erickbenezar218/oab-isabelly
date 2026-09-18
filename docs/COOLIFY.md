@@ -23,7 +23,8 @@ JWT_SECRET=<openssl rand -hex 32>
 CORS_ORIGIN=https://simulaordem.com.br,https://www.simulaordem.com.br
 
 # Google OAuth (login) — opcional
-GOOGLE_CLIENT_ID=<client-id>.apps.googleusercontent.com
+GOOGLE_CLIENT_ID=<client-id-web>.apps.googleusercontent.com
+GOOGLE_IOS_CLIENT_ID=<client-id-ios>.apps.googleusercontent.com
 
 # Tutor IA (Pro) — obrigatório se quiser IA
 GEMINI_API_KEY=<sua-chave>
@@ -56,7 +57,7 @@ Build local opcional (usa `.env` da raiz se existir):
 
 | Variável | Runtime |
 |----------|---------|
-| `GOOGLE_CLIENT_ID`, `JWT_SECRET`, SMTP, Asaas, Gemini, Postgres… | ✅ |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_IOS_CLIENT_ID` (login Google no app iOS), `JWT_SECRET`, SMTP, Asaas, Gemini, Postgres… | ✅ |
 
 **Asaas:** use `ASAAS_API_KEY_B64` (evita `$` quebrando o Docker Compose):
 

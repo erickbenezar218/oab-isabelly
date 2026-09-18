@@ -5,10 +5,12 @@ import type { JwtPayload, Plan } from './types.js'
 
 const JWT_SECRET = process.env.JWT_SECRET ?? 'dev-secret-change-in-production'
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID?.trim() ?? ''
-const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null
+const GOOGLE_IOS_CLIENT_ID = process.env.GOOGLE_IOS_CLIENT_ID?.trim() ?? ''
+const googleAudiences = [GOOGLE_CLIENT_ID, GOOGLE_IOS_CLIENT_ID].filter(Boolean)
+const googleClient = googleAudiences.length ? new OAuth2Client(GOOGLE_CLIENT_ID || GOOGLE_IOS_CLIENT_ID) : null
 
 export function isGoogleConfigured(): boolean {
-  return Boolean(GOOGLE_CLIENT_ID)
+  return googleAudiences.length > 0
 }
 
 export function signToken(payload: JwtPayload): string {
@@ -28,11 +30,11 @@ export async function comparePassword(password: string, hash: string): Promise<b
 }
 
 export async function verifyGoogleToken(idToken: string): Promise<{ email: string; name: string; sub: string } | null> {
-  if (!googleClient || !GOOGLE_CLIENT_ID || !idToken?.trim()) return null
+  if (!googleClient || !googleAudiences.length || !idToken?.trim()) return null
   try {
     const ticket = await googleClient.verifyIdToken({
       idToken,
-      audience: GOOGLE_CLIENT_ID,
+      audience: googleAudiences,
     })
     const payload = ticket.getPayload()
     if (!payload?.email || !payload.sub) return null

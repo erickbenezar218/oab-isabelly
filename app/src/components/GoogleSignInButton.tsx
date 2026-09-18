@@ -1,6 +1,10 @@
+import { Capacitor } from '@capacitor/core'
+import { GoogleAuth } from '@southdevs/capacitor-google-auth'
 import { useEffect, useRef, useState } from 'react'
+import { isNativeApp } from '../lib/platform'
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined
+const GOOGLE_IOS_CLIENT_ID = import.meta.env.VITE_GOOGLE_IOS_CLIENT_ID as string | undefined
 
 interface GoogleSignInButtonProps {
   disabled?: boolean
@@ -9,17 +13,21 @@ interface GoogleSignInButtonProps {
 }
 
 export function isGoogleSignInEnabled() {
+  if (isNativeApp()) {
+    return Boolean(GOOGLE_IOS_CLIENT_ID?.trim() || GOOGLE_CLIENT_ID?.trim())
+  }
   return Boolean(GOOGLE_CLIENT_ID?.trim())
 }
 
 export default function GoogleSignInButton({ disabled, onSuccess, onError }: GoogleSignInButtonProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const [ready, setReady] = useState(false)
+  const [nativeBusy, setNativeBusy] = useState(false)
   const callbacksRef = useRef({ onSuccess, onError })
   callbacksRef.current = { onSuccess, onError }
 
   useEffect(() => {
-    if (!GOOGLE_CLIENT_ID?.trim() || !hostRef.current) return
+    if (isNativeApp() || !GOOGLE_CLIENT_ID?.trim() || !hostRef.current) return
 
     let cancelled = false
 
@@ -80,7 +88,36 @@ export default function GoogleSignInButton({ disabled, onSuccess, onError }: Goo
     }
   }, [onError])
 
-  if (!GOOGLE_CLIENT_ID?.trim()) return null
+  const nativeSignIn = async () => {
+    if (!Capacitor.isNativePlatform()) return
+    setNativeBusy(true)
+    try {
+      const user = await GoogleAuth.signIn()
+      const idToken = user.authentication?.idToken
+      if (!idToken) throw new Error('Google não retornou token. Verifique o Client ID iOS no Google Cloud.')
+      await onSuccess(idToken)
+    } catch (e) {
+      onError(e instanceof Error ? e.message : 'Erro ao entrar com Google')
+    } finally {
+      setNativeBusy(false)
+    }
+  }
+
+  if (!isGoogleSignInEnabled()) return null
+
+  if (isNativeApp()) {
+    return (
+      <button
+        type="button"
+        disabled={disabled || nativeBusy}
+        onClick={() => void nativeSignIn()}
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white py-3 text-sm font-medium text-ink transition hover:bg-surface-700 disabled:opacity-50"
+      >
+        <GoogleIcon />
+        {nativeBusy ? 'Conectando...' : 'Continuar com Google'}
+      </button>
+    )
+  }
 
   return (
     <div className="relative w-full">

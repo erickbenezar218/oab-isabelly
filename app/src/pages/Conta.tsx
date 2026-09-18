@@ -6,6 +6,8 @@ import { useApp } from '../context/AppContext'
 import { useAuth } from '../context/AuthContext'
 import { suggestedExamDateString } from '../lib/examDate'
 import { apiChangePassword, apiGetAccount, apiSetPassword } from '../lib/api'
+import { syncStudyReminderNotification } from '../lib/nativeNotifications'
+import { isNativeApp } from '../lib/platform'
 import type { AccountInfo } from '../types'
 
 const AREAS_2F = ['Trabalhista', 'Cível', 'Penal', 'Administrativo', 'Tributário', 'Empresarial', 'Constitucional']
@@ -159,11 +161,20 @@ export default function Conta() {
     setErr('')
     try {
       await updateProfile({ studyReminderEnabled: enabled })
-      flash(
-        enabled
-          ? 'Lembrete diário por e-mail ativado (por volta das 8h, horário de Brasília).'
-          : 'Lembrete por e-mail desativado.',
-      )
+      if (isNativeApp()) {
+        await syncStudyReminderNotification(enabled)
+        flash(
+          enabled
+            ? 'Lembrete ativado: e-mail diário + notificação no iPhone às 8h.'
+            : 'Lembretes desativados.',
+        )
+      } else {
+        flash(
+          enabled
+            ? 'Lembrete diário por e-mail ativado (por volta das 8h, horário de Brasília).'
+            : 'Lembrete por e-mail desativado.',
+        )
+      }
     } catch (e) {
       setReminder(!enabled)
       setErr(e instanceof Error ? e.message : 'Erro ao salvar lembrete.')
@@ -296,7 +307,7 @@ export default function Conta() {
                 {account?.hasPassword ? 'Alterar senha' : 'Definir senha'}
               </button>
             </form>
-            <Link to="/redefinir-senha" target="_blank" rel="noopener noreferrer" className="mt-3 block text-center text-xs font-medium text-brand-600 hover:underline">
+            <Link to="/redefinir-senha" className="mt-3 block text-center text-xs font-medium text-brand-600 hover:underline">
               Esqueci a senha — enviar link por e-mail
             </Link>
           </SectionCard>
@@ -339,13 +350,22 @@ export default function Conta() {
             </button>
           </SectionCard>
 
-          <SectionCard title="Lembretes por e-mail">
+          <SectionCard title={isNativeApp() ? 'Lembretes de estudo' : 'Lembretes por e-mail'}>
             <label className="flex cursor-pointer items-start justify-between gap-4 rounded-xl border border-slate-200 px-4 py-3">
               <div>
                 <p className="text-sm font-medium text-ink">Lembrete diário de estudo</p>
                 <p className="mt-1 text-xs text-muted">
-                  Enviado todo dia por volta das <strong>8h</strong> (Brasília) para{' '}
-                  <span className="font-medium text-ink">{user?.email}</span>.
+                  {isNativeApp() ? (
+                    <>
+                      E-mail às <strong>8h</strong> para {user?.email} + <strong>notificação no iPhone</strong> no
+                      mesmo horário.
+                    </>
+                  ) : (
+                    <>
+                      Enviado todo dia por volta das <strong>8h</strong> (Brasília) para{' '}
+                      <span className="font-medium text-ink">{user?.email}</span>.
+                    </>
+                  )}
                 </p>
               </div>
               <input

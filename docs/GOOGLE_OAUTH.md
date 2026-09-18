@@ -76,7 +76,26 @@ Para produção:
 2. Se pedir verificação (escopos sensíveis), envie domínio + política de privacidade
 3. Para `email` + `profile` + `openid`, geralmente publica sem verificação longa
 
-## 6. Comportamento no SimulaOrdem
+## 6. App iOS nativo (Capacitor)
+
+Além do **Client ID Web**, crie um **Client ID iOS**:
+
+| Campo | Valor |
+|-------|--------|
+| Tipo | iOS |
+| Bundle ID | `com.simulaordem.app` |
+
+No `.env`:
+
+```env
+VITE_GOOGLE_IOS_CLIENT_ID=xxxx.apps.googleusercontent.com
+```
+
+Depois: `bash scripts/build-ios.sh` e Run no Xcode.
+
+Detalhes: [docs/IOS.md](./IOS.md)
+
+## 7. Comportamento no SimulaOrdem
 
 - Conta nova via Google → cria usuário `free` + progresso vazio
 - E-mail já cadastrado com senha → vincula `google_id` na conta existente

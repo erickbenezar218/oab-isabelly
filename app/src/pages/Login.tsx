@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import GoogleSignInButton, { isGoogleSignInEnabled } from '../components/GoogleSignInButton'
 import { useAuth } from '../context/AuthContext'
+import { isNativeApp } from '../lib/platform'
 
 const inputClass =
   'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-ink outline-none transition placeholder:text-muted-light focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20'
@@ -97,9 +98,13 @@ export default function Login() {
         {/* Coluna esquerda — formulário */}
         <div className="flex w-full flex-col lg:w-1/2">
           <div className="flex flex-1 flex-col px-6 py-8 sm:px-10 sm:py-10">
-            <Link to="/">
+            {isNativeApp() ? (
               <img src="/logo.svg" alt="SimulaOrdem" className="h-9 w-auto" />
-            </Link>
+            ) : (
+              <Link to="/">
+                <img src="/logo.svg" alt="SimulaOrdem" className="h-9 w-auto" />
+              </Link>
+            )}
 
             <div className="my-8 flex-1">
               <h1 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">
@@ -230,14 +235,9 @@ export default function Login() {
                       />
                       Lembrar de mim
                     </label>
-                    <a
-                      href="/redefinir-senha"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm font-medium text-brand-600 hover:underline"
-                    >
+                    <Link to="/redefinir-senha" className="text-sm font-medium text-brand-600 hover:underline">
                       Esqueceu a senha?
-                    </a>
+                    </Link>
                   </div>
                 )}
 

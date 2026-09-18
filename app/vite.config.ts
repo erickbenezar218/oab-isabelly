@@ -1,11 +1,21 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const enablePwa = process.env.DISABLE_PWA !== 'true'
 
 export default defineConfig({
+  resolve: {
+    alias: enablePwa
+      ? {}
+      : {
+          'virtual:pwa-register': path.resolve(__dirname, 'src/stubs/pwa-register.ts'),
+        },
+  },
   plugins: [
     react(),
     tailwindcss(),

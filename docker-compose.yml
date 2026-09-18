@@ -23,6 +23,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-troque-isso-no-coolify}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_IOS_CLIENT_ID: ${GOOGLE_IOS_CLIENT_ID:-}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GEMINI_API_KEY_B64: ${GEMINI_API_KEY_B64:-}
       GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}

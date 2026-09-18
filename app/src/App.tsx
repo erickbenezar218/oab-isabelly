@@ -1,5 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
+import NativeBootstrap from './components/NativeBootstrap'
+import CatchAllRoute from './components/CatchAllRoute'
+import RootRoute from './components/RootRoute'
 import UpdateBanner from './components/UpdateBanner'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AppProvider } from './context/AppContext'
@@ -10,7 +13,6 @@ import Desempenho from './pages/Desempenho'
 import Flashcards from './pages/Flashcards'
 import Pecas from './pages/Pecas'
 import Revisao from './pages/Revisao'
-import Landing from './pages/Landing'
 import Login from './pages/Login'
 import ResetPassword from './pages/ResetPassword'
 import Checkout from './pages/Checkout'
@@ -26,9 +28,10 @@ export default function App() {
     <AuthProvider>
       <AppProvider>
         <BrowserRouter>
+          <NativeBootstrap />
           <UpdateBanner />
           <Routes>
-            <Route path="/" element={<Landing />} />
+            <Route path="/" element={<RootRoute />} />
             <Route path="/login" element={<Login />} />
             <Route path="/redefinir-senha" element={<ResetPassword />} />
             <Route path="/planos" element={<Planos />} />
@@ -48,7 +51,7 @@ export default function App() {
                 <Route path="conta" element={<Conta />} />
               </Route>
             </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<CatchAllRoute />} />
           </Routes>
         </BrowserRouter>
       </AppProvider>

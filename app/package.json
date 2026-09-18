@@ -6,10 +6,23 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:ios": "DISABLE_PWA=true VITE_API_URL=https://simulaordem.com.br/api vite build",
+    "ios:prepare": "bash ../scripts/build-ios.sh",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cap:sync": "npm run build:ios && npx cap sync ios",
+    "cap:open": "npx cap open ios",
+    "cap:run:ios": "npm run cap:sync && npx cap run ios --target"
   },
   "dependencies": {
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/cli": "^7.6.9",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2",
+    "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.3",
+    "@southdevs/capacitor-google-auth": "^7.0.0",
     "canvas-confetti": "^1.9.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
@@ -22,6 +35,7 @@
     "lightningcss-linux-x64-gnu": "1.33.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@tailwindcss/vite": "^4.3.3",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^24.13.3",
@@ -29,6 +43,7 @@
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^4.3.4",
     "oxlint": "^1.79.0",
+    "sharp": "^0.35.4",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
     "vite": "^6.3.5",
