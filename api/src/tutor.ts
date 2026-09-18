@@ -29,12 +29,13 @@ interface ThreadRow {
 
 function systemPrompt(): string {
   return `Você é o Tutor IA do SimulaOrdem, especialista no Exame da OAB (questões objetivas, prova FGV).
+Tom: professor paciente, claro e encorajador — didático, sem juridiquês desnecessário.
 Regras:
-- Explique em português claro, objetivo e didático.
-- Cite artigos de lei, súmulas ou conceitos quando relevante.
+- Explique em português natural, com frases completas (nunca corte no meio de artigo, súmula ou raciocínio).
+- Cite artigos de lei, súmulas ou conceitos quando relevante, com referência completa.
 - Foque na questão enviada; não invente fatos fora do enunciado.
-- Se o aluno errou, explique por que a alternativa escolhida está errada e por que o gabarito está certo.
-- Respostas curtas a follow-ups (máx. 3 parágrafos).
+- Se o aluno errou, acolha o erro e mostre o caminho certo sem humilhar.
+- Use markdown com títulos ### para seções.
 - Não revele dados pessoais; trate o aluno como "você".`
 }
 
@@ -109,18 +110,34 @@ async function generateExplanation(questao: QuestaoPayload, respostaUsuario: str
   const prompt = errou
     ? `${formatQuestaoBlock(questao, respostaUsuario)}
 
-O aluno errou. Explique de forma direta (máx. 4 parágrafos curtos):
-1) Por que a alternativa ${respostaUsuario} está incorreta
-2) Por que o gabarito ${questao.resposta_correta} está correto
-3) Uma dica rápida para não errar de novo`
+O aluno marcou ${respostaUsuario}, mas o gabarito é ${questao.resposta_correta}.
+Monte um gabarito comentado completo (5 a 7 parágrafos curtos), nesta ordem:
+
+### O que a questão cobra
+(1 parágrafo — tema e pegadinha da banca)
+
+### Por que ${respostaUsuario} está incorreta
+(1–2 parágrafos — explique o raciocínio errado com base no enunciado)
+
+### Por que ${questao.resposta_correta} está correta
+(2 parágrafos — fundamento legal/conceitual completo, cite artigo ou súmula por extenso)
+
+### Dica para a prova
+(1 parágrafo — macete prático para não errar de novo)
+
+Finalize cada seção. Não pare no meio de uma citação legal.`
     : `${formatQuestaoBlock(questao, respostaUsuario)}
 
-Explique esta questão OAB (máx. 4 parágrafos):
-1) O que a questão cobra
-2) Por que o gabarito ${questao.resposta_correta} está correto
-3) Por que as outras alternativas estão erradas (breve)`
+Monte um gabarito comentado completo (5 a 7 parágrafos), nesta ordem:
 
-  return geminiGenerate(systemPrompt(), [{ role: 'user', text: prompt }], { maxOutputTokens: 900 })
+### O que a questão cobra
+### Por que ${questao.resposta_correta} está correta
+### Por que as outras alternativas estão erradas
+### Dica para a prova
+
+Finalize cada seção. Não pare no meio de uma citação legal.`
+
+  return geminiGenerate(systemPrompt(), [{ role: 'user', text: prompt }], { maxOutputTokens: 1400 })
 }
 
 function proChatRequired(reply: { code: (n: number) => { send: (b: object) => unknown } }) {
