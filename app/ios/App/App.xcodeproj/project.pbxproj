@@ -106,6 +106,7 @@
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
 				9592DBEFFC6D2A0C8D5DEB22 /* [CP] Embed Pods Frameworks */,
+				B7E4A1C92F0D4E8A00112233 /* Strip Resource Forks */,
 			);
 			buildRules = (
 			);
@@ -201,6 +202,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App/Pods-App-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B7E4A1C92F0D4E8A00112233 /* Strip Resource Forks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Strip Resource Forks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ -d \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\" ]; then\n  xattr -cr \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\" 2>/dev/null || true\n  dot_clean -m \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\" 2>/dev/null || true\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

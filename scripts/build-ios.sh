@@ -34,5 +34,7 @@ cp "$ROOT/banco_oab.json" ./public/banco_oab.json
 DISABLE_PWA=true npm run build
 
 npx cap sync ios
+# com.apple.provenance nos assets quebra codesign no Xcode
+xattr -cr dist ios/App/App 2>/dev/null || true
 node "$ROOT/scripts/patch-ios-plist.mjs"
 echo "✓ iOS pronto — abra: npm run cap:open (em app/)"
