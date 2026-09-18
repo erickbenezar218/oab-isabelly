@@ -16,6 +16,10 @@ export type AsaasPayment = {
   value: number
   invoiceUrl?: string
   externalReference?: string
+  dueDate?: string
+  paymentDate?: string
+  description?: string
+  billingType?: string
 }
 
 export type AsaasSubscription = {
@@ -125,6 +129,17 @@ export async function createSubscription(input: {
 export async function listSubscriptionPayments(subscriptionId: string): Promise<AsaasPayment[]> {
   const data = await asaasRequest<{ data: AsaasPayment[] }>(`/subscriptions/${subscriptionId}/payments`)
   return data.data ?? []
+}
+
+export async function listCustomerPayments(customerId: string): Promise<AsaasPayment[]> {
+  const data = await asaasRequest<{ data: AsaasPayment[] }>(
+    `/payments?customer=${encodeURIComponent(customerId)}&limit=24&order=desc`,
+  )
+  return data.data ?? []
+}
+
+export async function cancelSubscription(subscriptionId: string): Promise<AsaasSubscription> {
+  return asaasRequest<AsaasSubscription>(`/subscriptions/${subscriptionId}`, { method: 'DELETE' })
 }
 
 export async function createPayment(input: {

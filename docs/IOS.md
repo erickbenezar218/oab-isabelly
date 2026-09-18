@@ -12,6 +12,9 @@ O SimulaOrdem roda como **app iOS nativo** (Capacitor) com a mesma API e progres
 | Esqueci senha | Funciona in-app | **Funciona in-app** (sem abrir Safari) |
 | Lembrete estudo | E-mail 8h | **E-mail + notificação local 8h** |
 | Pagamento Pro | Asaas (PIX/cartão/boleto) | **Asaas in-app + volta automática** |
+| Cancelar assinatura | Conta → Plano | **Mesmo fluxo** |
+| Termômetro OAB | Dashboard + landing | **Dashboard (Início)** |
+| Menu inferior | — | **Início, Cards, Simulado, Revisão, 2ª fase** |
 | Ícone | PWA | **Logo SimulaOrdem** |
 
 ## Pagamento no iPhone (Asaas, sem Apple IAP)

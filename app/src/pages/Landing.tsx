@@ -10,6 +10,7 @@ import {
   useScrolled,
   useTickingTimer,
 } from '../components/landing/motion'
+import { OabTermometroDemo } from '../components/OabTermometro'
 
 const features = [
   {
@@ -53,6 +54,7 @@ export default function Landing() {
       <main>
         <Hero ctaTo={ctaTo} ctaLabel={ctaLabel} />
         <WhySection />
+        <TermometroSection ctaTo={ctaTo} />
         <DesempenhoSection />
         <AiLearningSection />
         <DarkFeature />
@@ -246,6 +248,39 @@ function WhySection() {
             </Reveal>
           ))}
         </div>
+      </div>
+    </section>
+  )
+}
+
+function TermometroSection({ ctaTo }: { ctaTo: string }) {
+  return (
+    <section id="termometro" className="border-y border-slate-100 bg-white px-4 py-16 md:px-8 md:py-20">
+      <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
+        <Reveal direction="left">
+          <OabTermometroDemo />
+        </Reveal>
+        <Reveal direction="right" delay={100}>
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-400">Termômetro OAB</p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink md:text-4xl">
+            Você passaria hoje?
+          </h2>
+          <p className="mt-4 leading-relaxed text-muted">
+            Com base no seu último simulado (ou no desempenho geral), o termômetro projeta quantos acertos você teria em
+            80 questões — a meta oficial da OAB é <strong className="text-ink">40 acertos</strong>.
+          </p>
+          <ul className="mt-6 space-y-2 text-sm text-muted">
+            <li>• Atualiza automaticamente após cada simulado</li>
+            <li>• Disponível no plano grátis, web e app iOS</li>
+            <li>• Mostra se você está frio, esquentando ou aprovado</li>
+          </ul>
+          <Link
+            to={ctaTo}
+            className="btn-primary mt-8 inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold"
+          >
+            Ver meu termômetro
+          </Link>
+        </Reveal>
       </div>
     </section>
   )

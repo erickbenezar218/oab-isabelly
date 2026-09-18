@@ -9,6 +9,8 @@ PODS:
     - CapacitorCordova
   - CapacitorApp (8.1.1):
     - Capacitor
+  - CapacitorBrowser (8.0.4):
+    - Capacitor
   - CapacitorCordova (8.5.2)
   - CapacitorLocalNotifications (8.3.1):
     - Capacitor
@@ -31,6 +33,7 @@ PODS:
 DEPENDENCIES:
   - "Capacitor (from `../../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../../node_modules/@capacitor/app`)"
+  - "CapacitorBrowser (from `../../../node_modules/@capacitor/browser`)"
   - "CapacitorCordova (from `../../../node_modules/@capacitor/ios`)"
   - "CapacitorLocalNotifications (from `../../../node_modules/@capacitor/local-notifications`)"
   - "CapacitorSplashScreen (from `../../../node_modules/@capacitor/splash-screen`)"
@@ -49,6 +52,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/@capacitor/ios"
   CapacitorApp:
     :path: "../../../node_modules/@capacitor/app"
+  CapacitorBrowser:
+    :path: "../../../node_modules/@capacitor/browser"
   CapacitorCordova:
     :path: "../../../node_modules/@capacitor/ios"
   CapacitorLocalNotifications:
@@ -64,6 +69,7 @@ SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   Capacitor: 89067779e14fb7ea56af07b4817f45d1f0c2a269
   CapacitorApp: 305bd13c44f6f9d164e2ee66a4faa956ed8c0e06
+  CapacitorBrowser: 752e0208aa07c7aa63d1f7cde895a3e9519b2656
   CapacitorCordova: 5bec5648cbd09a176ce34ce5e7b6cdabb2c8a327
   CapacitorLocalNotifications: e0747a329ddde3074d52dc74a003688af90e42be
   CapacitorSplashScreen: 7bf61c2001557ff9e195e601c6b87344480d3c65
@@ -73,6 +79,6 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 3a63d75eecd6aa32c2fc79f578064e1214dfdec2
   SouthdevsCapacitorGoogleAuth: 6488c21faed47c2cf72404bfbfc0fe0e9af766bc
 
-PODFILE CHECKSUM: 60bfb723d66003316620c84b0aceda5c12f42f4d
+PODFILE CHECKSUM: 388fab226e86f537f224460fef522869dca78648
 
 COCOAPODS: 1.16.2

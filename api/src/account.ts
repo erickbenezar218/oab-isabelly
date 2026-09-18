@@ -1,4 +1,5 @@
 import type { Pool } from 'pg'
+import { cancelSubscription, isAsaasConfigured } from './asaas.js'
 import { comparePassword, hashPassword } from './auth.js'
 import type { UserRow } from './types.js'
 
@@ -105,4 +106,48 @@ export async function updateAccountPrefs(
   const user = rows[0]
   if (!user) throw new Error('Usuário não encontrado.')
   return user
+}
+
+async function cancelActiveSubscription(pool: Pool, userId: string): Promise<void> {
+  const { rows } = await pool.query<{ asaas_subscription_id: string | null; subscription_cancelled_at: Date | null }>(
+    `SELECT asaas_subscription_id, subscription_cancelled_at FROM user_billing WHERE user_id = $1`,
+    [userId],
+  )
+  const billing = rows[0]
+  if (!billing?.asaas_subscription_id || billing.subscription_cancelled_at) return
+
+  if (isAsaasConfigured()) {
+    try {
+      await cancelSubscription(billing.asaas_subscription_id)
+    } catch (err) {
+      console.warn('[account] cancel subscription:', err)
+    }
+  }
+
+  await pool.query(
+    `UPDATE user_billing SET subscription_cancelled_at = NOW(), updated_at = NOW() WHERE user_id = $1`,
+    [userId],
+  )
+}
+
+export async function deleteUserAccount(
+  pool: Pool,
+  user: UserRow,
+  input: { password?: string; confirmEmail?: string },
+): Promise<void> {
+  const confirmEmail = input.confirmEmail?.trim().toLowerCase()
+
+  if (user.password_hash) {
+    if (!input.password) throw new Error('Informe sua senha para excluir a conta.')
+    if (!(await comparePassword(input.password, user.password_hash))) {
+      throw new Error('Senha incorreta.')
+    }
+  } else {
+    if (!confirmEmail || confirmEmail !== user.email.toLowerCase()) {
+      throw new Error('Digite seu e-mail exatamente como cadastrado para confirmar a exclusão.')
+    }
+  }
+
+  await cancelActiveSubscription(pool, user.id)
+  await pool.query('DELETE FROM users WHERE id = $1', [user.id])
 }

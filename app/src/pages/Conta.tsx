@@ -5,9 +5,20 @@ import SectionCard from '../components/ui/SectionCard'
 import { useApp } from '../context/AppContext'
 import { useAuth } from '../context/AuthContext'
 import { suggestedExamDateString } from '../lib/examDate'
-import { apiChangePassword, apiGetAccount, apiSetPassword } from '../lib/api'
+import {
+  apiBillingCancel,
+  apiBillingPayments,
+  apiBillingStatus,
+  apiChangePassword,
+  apiDeleteAccount,
+  apiGetAccount,
+  apiSetPassword,
+  type BillingPaymentRow,
+  type BillingStatus,
+} from '../lib/api'
 import { syncStudyReminderNotification } from '../lib/nativeNotifications'
 import { isNativeApp } from '../lib/platform'
+import { appVersionLabel } from '../lib/version'
 import type { AccountInfo } from '../types'
 
 const AREAS_2F = ['Trabalhista', 'Cível', 'Penal', 'Administrativo', 'Tributário', 'Empresarial', 'Constitucional']
@@ -22,7 +33,7 @@ const TABS = [
 type TabId = (typeof TABS)[number]['id']
 
 export default function Conta() {
-  const { user, token, limits, refreshUser } = useAuth()
+  const { user, token, limits, refreshUser, logout } = useAuth()
   const { progress, updateProfile } = useApp()
   const [tab, setTab] = useState<TabId>('perfil')
   const [account, setAccount] = useState<AccountInfo | null>(null)
@@ -38,6 +49,14 @@ export default function Conta() {
   const [currentPw, setCurrentPw] = useState('')
   const [newPw, setNewPw] = useState('')
   const [confirmPw, setConfirmPw] = useState('')
+
+  const [billingStatus, setBillingStatus] = useState<BillingStatus | null>(null)
+  const [payments, setPayments] = useState<BillingPaymentRow[]>([])
+  const [loadingBilling, setLoadingBilling] = useState(false)
+
+  const [deletePw, setDeletePw] = useState('')
+  const [deleteEmail, setDeleteEmail] = useState('')
+  const [deleteConfirm, setDeleteConfirm] = useState(false)
 
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
@@ -61,6 +80,18 @@ export default function Conta() {
     setExamDate(progress.profile?.examDate ?? suggestedExamDateString())
     setArea2fase(progress.profile?.area2fase ?? 'Trabalhista')
   }, [progress.profile?.examDate, progress.profile?.area2fase])
+
+  useEffect(() => {
+    if (!token || tab !== 'plano') return
+    setLoadingBilling(true)
+    Promise.all([apiBillingStatus(token), apiBillingPayments(token)])
+      .then(([status, hist]) => {
+        setBillingStatus(status)
+        setPayments(hist.payments)
+      })
+      .catch(() => {})
+      .finally(() => setLoadingBilling(false))
+  }, [token, tab, user?.plan])
 
   const flash = (success: string) => {
     setMsg(success)
@@ -179,6 +210,58 @@ export default function Conta() {
       setReminder(!enabled)
       setErr(e instanceof Error ? e.message : 'Erro ao salvar lembrete.')
     }
+  }
+
+  const cancelSubscription = async () => {
+    if (!token) return
+    if (!window.confirm('Cancelar renovação automática? Você mantém o Pro até o fim do período já pago.')) return
+    setBusy(true)
+    setErr('')
+    try {
+      const data = await apiBillingCancel(token)
+      flash(data.message)
+      const status = await apiBillingStatus(token)
+      setBillingStatus(status)
+      await refreshUser()
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Erro ao cancelar.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const submitDeleteAccount = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!token) return
+    if (!deleteConfirm) {
+      setErr('Marque a confirmação para excluir a conta.')
+      return
+    }
+    if (!window.confirm('Excluir conta permanentemente? Esta ação não pode ser desfeita.')) return
+    setBusy(true)
+    setErr('')
+    try {
+      await apiDeleteAccount(token, {
+        password: account?.hasPassword ? deletePw : undefined,
+        confirmEmail: !account?.hasPassword ? deleteEmail : undefined,
+      })
+      logout()
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Erro ao excluir conta.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const formatPaymentStatus = (status: string) => {
+    const map: Record<string, string> = {
+      CONFIRMED: 'Confirmado',
+      RECEIVED: 'Recebido',
+      PENDING: 'Pendente',
+      OVERDUE: 'Vencido',
+      REFUNDED: 'Estornado',
+    }
+    return map[status] ?? status
   }
 
   const isPro = limits?.plan === 'pro' || user?.plan === 'pro'
@@ -311,25 +394,115 @@ export default function Conta() {
               Esqueci a senha — enviar link por e-mail
             </Link>
           </SectionCard>
+
+          <SectionCard title="Excluir conta">
+            <p className="text-sm text-muted">
+              Remove permanentemente sua conta, progresso e assinatura. Conforme LGPD — art. 18.
+            </p>
+            <form onSubmit={submitDeleteAccount} className="mt-4 space-y-3">
+              {account?.hasPassword ? (
+                <input
+                  type="password"
+                  placeholder="Sua senha"
+                  className="input-field"
+                  value={deletePw}
+                  onChange={(e) => setDeletePw(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                />
+              ) : (
+                <input
+                  type="email"
+                  placeholder="Confirme seu e-mail"
+                  className="input-field"
+                  value={deleteEmail}
+                  onChange={(e) => setDeleteEmail(e.target.value)}
+                  autoComplete="email"
+                  required
+                />
+              )}
+              <label className="flex cursor-pointer items-start gap-3 text-sm text-muted">
+                <input
+                  type="checkbox"
+                  checked={deleteConfirm}
+                  onChange={(e) => setDeleteConfirm(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-slate-300 text-red-600"
+                />
+                <span>Entendo que todos os meus dados serão apagados e não poderei recuperar a conta.</span>
+              </label>
+              <button
+                type="submit"
+                disabled={busy}
+                className="w-full rounded-xl border border-red-200 bg-red-50 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-100 disabled:opacity-50"
+              >
+                Excluir minha conta
+              </button>
+            </form>
+          </SectionCard>
         </>
       )}
 
       {tab === 'plano' && (
-        <SectionCard title="Seu plano">
-          <div className="rounded-xl bg-surface-700 px-4 py-3">
-            <p className="text-lg font-bold text-ink">{isPro ? 'Pro' : 'Grátis'}</p>
-            {planExpires && <p className="text-xs text-muted">Válido até {planExpires}</p>}
-          </div>
-          <ul className="mt-4 space-y-2 text-sm text-muted">
-            <li>{isPro ? 'Simulados ilimitados' : '1 simulado completo por mês'}</li>
-            <li>{isPro ? 'Cronograma e meta diária' : 'Cronograma no plano Pro'}</li>
-            <li>{isPro ? 'Chat ilimitado com Professor IA' : '20 explicações IA/dia'}</li>
-          </ul>
-          <Link to="/planos" className="btn-primary mt-4 block py-2.5 text-center text-sm">
-            {isPro ? 'Gerenciar plano' : 'Fazer upgrade para Pro'}
-          </Link>
-          <p className="mt-3 text-center text-xs text-muted">Histórico de pagamentos em breve (Asaas).</p>
-        </SectionCard>
+        <>
+          <SectionCard title="Seu plano">
+            <div className="rounded-xl bg-surface-700 px-4 py-3">
+              <p className="text-lg font-bold text-ink">{isPro ? 'Pro' : 'Grátis'}</p>
+              {planExpires && <p className="text-xs text-muted">Válido até {planExpires}</p>}
+              {billingStatus?.subscriptionCancelled && (
+                <p className="mt-1 text-xs font-medium text-amber-700">
+                  Renovação cancelada — acesso Pro até {planExpires ?? 'o vencimento'}
+                </p>
+              )}
+              {billingStatus?.sandbox && (
+                <p className="mt-1 text-xs text-muted">Ambiente Asaas: sandbox (testes)</p>
+              )}
+            </div>
+            <ul className="mt-4 space-y-2 text-sm text-muted">
+              <li>{isPro ? 'Simulados ilimitados' : '1 simulado completo por mês'}</li>
+              <li>{isPro ? 'Cronograma e meta diária' : 'Cronograma no plano Pro'}</li>
+              <li>{isPro ? 'Chat ilimitado com Professor IA' : '20 explicações IA/dia'}</li>
+            </ul>
+            <Link to="/planos" className="btn-primary mt-4 block py-2.5 text-center text-sm">
+              {isPro ? 'Ver planos' : 'Fazer upgrade para Pro'}
+            </Link>
+            {billingStatus?.canCancel && (
+              <button
+                type="button"
+                onClick={() => void cancelSubscription()}
+                disabled={busy}
+                className="btn-secondary mt-3 w-full py-2.5 text-sm text-red-700 disabled:opacity-50"
+              >
+                Cancelar renovação automática
+              </button>
+            )}
+          </SectionCard>
+
+          <SectionCard title="Histórico de pagamentos">
+            {loadingBilling ? (
+              <p className="text-sm text-muted">Carregando…</p>
+            ) : payments.length === 0 ? (
+              <p className="text-sm text-muted">Nenhum pagamento registrado ainda.</p>
+            ) : (
+              <ul className="divide-y divide-slate-100">
+                {payments.map((p) => (
+                  <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
+                    <div>
+                      <p className="font-medium text-ink">{p.description}</p>
+                      <p className="text-xs text-muted">
+                        {new Date(p.date).toLocaleDateString('pt-BR')} · {formatPaymentStatus(p.status)}
+                      </p>
+                    </div>
+                    {p.value != null && (
+                      <span className="font-semibold tabular-nums text-ink">
+                        {p.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </SectionCard>
+        </>
       )}
 
       {tab === 'estudo' && (
@@ -416,7 +589,7 @@ export default function Conta() {
                 Privacidade
               </Link>
             </div>
-            <p className="pt-2 text-xs text-muted-light">SimulaOrdem · versão web 2026.03</p>
+            <p className="pt-2 text-xs text-muted-light">{appVersionLabel()}</p>
           </div>
         </SectionCard>
       )}

@@ -309,6 +309,63 @@ export async function apiBillingCheckout(
   return data as { checkoutUrl: string; sandbox: boolean }
 }
 
+export interface BillingStatus {
+  plan: 'free' | 'pro'
+  planProduct: 'pro' | 'reta' | null
+  planExpiresAt: string | null
+  subscriptionActive: boolean
+  subscriptionCancelled: boolean
+  canCancel: boolean
+  sandbox: boolean
+}
+
+export interface BillingPaymentRow {
+  id: string
+  planProduct: string
+  value: number | null
+  status: string
+  date: string
+  description: string
+}
+
+export async function apiBillingStatus(token: string) {
+  const res = await fetch(`${API_URL}/billing/status`, { headers: authHeaders(token) })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao carregar plano')
+  return data as BillingStatus
+}
+
+export async function apiBillingPayments(token: string) {
+  const res = await fetch(`${API_URL}/billing/payments`, { headers: authHeaders(token) })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao carregar pagamentos')
+  return data as { payments: BillingPaymentRow[]; sandbox: boolean }
+}
+
+export async function apiBillingCancel(token: string) {
+  const res = await fetch(`${API_URL}/billing/cancel`, {
+    method: 'POST',
+    headers: authHeaders(token),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao cancelar assinatura')
+  return data as { ok: boolean; message: string; planExpiresAt: string | null }
+}
+
+export async function apiDeleteAccount(
+  token: string,
+  input: { password?: string; confirmEmail?: string },
+) {
+  const res = await fetch(`${API_URL}/account`, {
+    method: 'DELETE',
+    headers: authHeaders(token),
+    body: JSON.stringify(input),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao excluir conta')
+  return data as { ok: boolean; message: string }
+}
+
 export async function apiTutorChat(
   token: string,
   questao: TutorQuestaoPayload,

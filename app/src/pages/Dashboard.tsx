@@ -28,6 +28,7 @@ import { levelFromXp, calcXp, passariaHoje } from '../lib/gamification'
 import { gerarTrilha } from '../lib/trilha'
 import { computeBadges } from '../lib/achievements'
 import { continueWhereLeftOff, dashboardAlerts, recentActivityItems } from '../lib/dashboardInsights'
+import OabTermometro from '../components/OabTermometro'
 import type { ComponentType } from 'react'
 
 const modulos: {
@@ -127,6 +128,14 @@ export default function Dashboard() {
             ))}
           </div>
         )}
+
+        <SectionCard title="Termômetro OAB" subtitle="Projeção de aprovação com base no seu desempenho">
+          <OabTermometro
+            ultimoSimulado={ultimoSim}
+            totalRespondidas={totalRespondidas}
+            acertos={acertos}
+          />
+        </SectionCard>
 
         {continueHint && (
           <Link

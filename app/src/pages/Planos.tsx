@@ -28,7 +28,7 @@ const plans: {
       '1 simulado completo/mês + express ilimitado',
       'Professor IA — 20 explicações/dia',
       '2ª fase — adivinhe a peça',
-      'Termômetro OAB na landing',
+      'Termômetro OAB (projeção de aprovação)',
     ],
     cta: 'Começar grátis',
   },

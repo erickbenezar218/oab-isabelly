@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify'
 import type pg from 'pg'
 import {
   AsaasError,
+  cancelSubscription,
   createCustomer,
   createPayment,
   createSubscription,
@@ -9,6 +10,7 @@ import {
   formatDueDate,
   isAsaasConfigured,
   isAsaasSandbox,
+  listCustomerPayments,
   listSubscriptionPayments,
   parseExternalRef,
   planPrices,
@@ -16,6 +18,7 @@ import {
   type AsaasWebhookEvent,
 } from './asaas.js'
 import { appUrl } from './email.js'
+import { effectivePlan } from './auth.js'
 import { activateProPlan } from './subscriptions.js'
 import type { UserRow } from './types.js'
 
@@ -255,6 +258,132 @@ export async function registerBillingRoutes(app: FastifyInstance, deps: BillingD
       if (err instanceof AsaasError) {
         console.error('[billing] Asaas:', err.body)
         return reply.code(502).send({ error: 'Erro ao criar cobrança. Verifique os dados ou tente mais tarde.' })
+      }
+      throw err
+    }
+  })
+
+  app.get('/billing/status', async (req, reply) => {
+    const user = await getUser(req.headers.authorization)
+    if (!user) return reply.code(401).send({ error: 'Faça login.' })
+
+    const plan = effectivePlan(user.plan, user.plan_expires_at)
+    const { rows } = await pool.query<{
+      plan_product: string
+      asaas_subscription_id: string | null
+      subscription_cancelled_at: Date | null
+    }>('SELECT plan_product, asaas_subscription_id, subscription_cancelled_at FROM user_billing WHERE user_id = $1', [
+      user.id,
+    ])
+    const billing = rows[0]
+    const subscriptionCancelled = Boolean(billing?.subscription_cancelled_at)
+    const hasSubscription = Boolean(billing?.asaas_subscription_id)
+    const canCancel = plan === 'pro' && hasSubscription && !subscriptionCancelled && billing?.plan_product === 'pro'
+
+    return {
+      plan,
+      planProduct: billing?.plan_product ?? null,
+      planExpiresAt: user.plan_expires_at?.toISOString() ?? null,
+      subscriptionActive: hasSubscription && !subscriptionCancelled,
+      subscriptionCancelled,
+      canCancel,
+      sandbox: isAsaasSandbox(),
+    }
+  })
+
+  app.get('/billing/payments', async (req, reply) => {
+    const user = await getUser(req.headers.authorization)
+    if (!user) return reply.code(401).send({ error: 'Faça login.' })
+
+    const local = await pool.query<{ payment_id: string; plan_product: string; processed_at: Date }>(
+      `SELECT payment_id, plan_product, processed_at FROM asaas_processed_payments
+       WHERE user_id = $1 ORDER BY processed_at DESC LIMIT 24`,
+      [user.id],
+    )
+
+    const byId = new Map<
+      string,
+      { id: string; planProduct: string; value: number | null; status: string; date: string; description: string }
+    >()
+
+    for (const row of local.rows) {
+      byId.set(row.payment_id, {
+        id: row.payment_id,
+        planProduct: row.plan_product,
+        value: null,
+        status: 'CONFIRMED',
+        date: row.processed_at.toISOString(),
+        description: row.plan_product === 'reta' ? 'Reta Final — 3 meses' : 'Pro mensal',
+      })
+    }
+
+    if (user.asaas_customer_id && isAsaasConfigured()) {
+      try {
+        const remote = await listCustomerPayments(user.asaas_customer_id)
+        for (const p of remote) {
+          const parsed = parseExternalRef(p.externalReference)
+          const planProduct = parsed?.plan ?? (p.subscription ? 'pro' : 'reta')
+          const date = p.paymentDate ?? p.dueDate ?? new Date().toISOString()
+          byId.set(p.id, {
+            id: p.id,
+            planProduct,
+            value: p.value,
+            status: p.status,
+            date,
+            description: p.description ?? (planProduct === 'reta' ? 'Reta Final' : 'Pro mensal'),
+          })
+        }
+      } catch (err) {
+        console.warn('[billing] list payments:', err)
+      }
+    }
+
+    const payments = [...byId.values()].sort((a, b) => b.date.localeCompare(a.date))
+    return { payments, sandbox: isAsaasSandbox() }
+  })
+
+  app.post('/billing/cancel', async (req, reply) => {
+    if (!isAsaasConfigured()) {
+      return reply.code(503).send({ error: 'Pagamentos não configurados.' })
+    }
+
+    const user = await getUser(req.headers.authorization)
+    if (!user) return reply.code(401).send({ error: 'Faça login.' })
+
+    const { rows } = await pool.query<{
+      plan_product: string
+      asaas_subscription_id: string | null
+      subscription_cancelled_at: Date | null
+    }>('SELECT plan_product, asaas_subscription_id, subscription_cancelled_at FROM user_billing WHERE user_id = $1', [
+      user.id,
+    ])
+    const billing = rows[0]
+
+    if (!billing?.asaas_subscription_id) {
+      return reply.code(400).send({ error: 'Nenhuma assinatura mensal ativa para cancelar.' })
+    }
+    if (billing.subscription_cancelled_at) {
+      return reply.code(400).send({ error: 'Assinatura já cancelada. Seu Pro permanece até a data de vencimento.' })
+    }
+    if (billing.plan_product !== 'pro') {
+      return reply.code(400).send({ error: 'Plano Reta Final não tem renovação — o acesso expira automaticamente.' })
+    }
+
+    try {
+      await cancelSubscription(billing.asaas_subscription_id)
+      await pool.query(
+        `UPDATE user_billing SET subscription_cancelled_at = NOW(), updated_at = NOW() WHERE user_id = $1`,
+        [user.id],
+      )
+      return {
+        ok: true,
+        message: 'Assinatura cancelada. Você mantém o Pro até o fim do período já pago.',
+        planExpiresAt: user.plan_expires_at?.toISOString() ?? null,
+      }
+    } catch (err) {
+      if (err instanceof AsaasError) {
+        console.error('[billing] cancel:', err.body)
+        return reply.code(502).send({ error: 'Não foi possível cancelar agora. Tente de novo ou contate suporte.' })
       }
       throw err
     }

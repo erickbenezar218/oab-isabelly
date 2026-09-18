@@ -16,6 +16,7 @@ import { registerTutorRoutes } from './tutor.js'
 import {
   accountFromUser,
   changePassword,
+  deleteUserAccount,
   setPassword,
   updateUserName,
 } from './account.js'
@@ -346,6 +347,21 @@ app.post<{ Body: { newPassword: string } }>('/auth/set-password', async (req, re
     return { ok: true, message: 'Senha definida. Agora você também pode entrar com e-mail e senha.' }
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Erro ao definir senha.'
+    return reply.code(400).send({ error: msg })
+  }
+})
+
+app.delete<{ Body: { password?: string; confirmEmail?: string } }>('/account', async (req, reply) => {
+  const user = await getUserFromAuth(req.headers.authorization)
+  if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
+  try {
+    await deleteUserAccount(pool, user, {
+      password: req.body?.password,
+      confirmEmail: req.body?.confirmEmail,
+    })
+    return { ok: true, message: 'Conta excluída permanentemente.' }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Erro ao excluir conta.'
     return reply.code(400).send({ error: msg })
   }
 })

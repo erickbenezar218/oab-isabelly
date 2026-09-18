@@ -86,8 +86,11 @@ CREATE TABLE IF NOT EXISTS user_billing (
   user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   plan_product TEXT NOT NULL CHECK (plan_product IN ('pro', 'reta')),
   asaas_subscription_id TEXT,
+  subscription_cancelled_at TIMESTAMPTZ,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE user_billing ADD COLUMN IF NOT EXISTS subscription_cancelled_at TIMESTAMPTZ;
 
 CREATE TABLE IF NOT EXISTS asaas_billing_events (
   event_id TEXT PRIMARY KEY,
