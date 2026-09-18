@@ -11,7 +11,18 @@ O SimulaOrdem roda como **app iOS nativo** (Capacitor) com a mesma API e progres
 | Google login | Botão GSI web | **Login nativo Google** |
 | Esqueci senha | Funciona in-app | **Funciona in-app** (sem abrir Safari) |
 | Lembrete estudo | E-mail 8h | **E-mail + notificação local 8h** |
+| Pagamento Pro | Asaas (PIX/cartão/boleto) | **Asaas in-app + volta automática** |
 | Ícone | PWA | **Logo SimulaOrdem** |
+
+## Pagamento no iPhone (Asaas, sem Apple IAP)
+
+1. Planos → Checkout → **Ir para pagamento**
+2. Abre o **Asaas dentro do app** (browser nativo)
+3. Paga com PIX, cartão ou boleto
+4. Asaas redireciona → app abre em **Pagamento recebido**
+5. Plano **Pro** atualiza na mesma conta (web + iOS)
+
+**Deploy necessário:** API (`returnTo=app`) + **web** (`/payment/return`) + rebuild iOS (`@capacitor/browser` + deep link).
 
 ## Build e instalar no iPhone
 

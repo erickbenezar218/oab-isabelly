@@ -1,5 +1,15 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
-import { apiGoogleLogin, apiLogin, apiMe, apiRegister, apiVerifyOtp, type AuthUser, type LoginResult, type PlanLimits } from '../lib/api'
+import {
+  apiGetProgress,
+  apiGoogleLogin,
+  apiLogin,
+  apiMe,
+  apiRegister,
+  apiVerifyOtp,
+  type AuthUser,
+  type LoginResult,
+  type PlanLimits,
+} from '../lib/api'
 
 const TOKEN_KEY = 'simulaordem-token'
 
@@ -16,6 +26,7 @@ interface AuthContextType {
   setLimits: (limits: PlanLimits) => void
   applyUser: (user: AuthUser) => void
   refreshUser: () => Promise<void>
+  refreshSession: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -47,6 +58,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!token) return
     const { user: u } = await apiMe(token)
     setUser(u)
+  }, [token])
+
+  const refreshSession = useCallback(async () => {
+    if (!token) return
+    try {
+      const [{ user: u }, progress] = await Promise.all([
+        apiMe(token),
+        apiGetProgress(token).catch(() => null),
+      ])
+      setUser(u)
+      if (progress?.limits) setLimits(progress.limits)
+    } catch {
+      /* sessão expirada — ignore em background refresh */
+    }
   }, [token])
 
   useEffect(() => {
@@ -83,7 +108,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, limits, loading, login, verifyOtp, register, googleLogin, logout, setLimits, applyUser, refreshUser }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        limits,
+        loading,
+        login,
+        verifyOtp,
+        register,
+        googleLogin,
+        logout,
+        setLimits,
+        applyUser,
+        refreshUser,
+        refreshSession,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )

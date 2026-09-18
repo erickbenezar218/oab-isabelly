@@ -2,6 +2,8 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { apiBillingCheckout, apiBillingConfig, type BillingConfig } from '../lib/api'
+import { openPaymentCheckout } from '../lib/nativeBilling'
+import { isNativeApp } from '../lib/platform'
 
 function maskCpf(value: string): string {
   const d = value.replace(/\D/g, '').slice(0, 11)
@@ -48,10 +50,13 @@ export default function Checkout() {
     setError('')
     setBusy(true)
     try {
-      const { checkoutUrl } = await apiBillingCheckout(token, plan!, cpf)
-      window.location.href = checkoutUrl
+      const { checkoutUrl } = await apiBillingCheckout(token, plan!, cpf, {
+        returnTo: isNativeApp() ? 'app' : 'web',
+      })
+      await openPaymentCheckout(checkoutUrl)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao iniciar pagamento')
+    } finally {
       setBusy(false)
     }
   }
@@ -101,6 +106,12 @@ export default function Checkout() {
 
             <p className="mt-2 text-xs text-muted">
               Pagamento via Asaas · Cartão, PIX ou boleto · Cobrança em nome de R E BENEZAR DE SOUZA LTDA
+              {isNativeApp() && (
+                <>
+                  <br />
+                  Você paga na tela segura do Asaas e volta automaticamente ao app.
+                </>
+              )}
             </p>
 
             <form onSubmit={handleSubmit} className="mt-8 space-y-4">

@@ -67,6 +67,42 @@ if (iosClientId.includes('.apps.googleusercontent.com')) {
   console.warn('→ VITE_GOOGLE_IOS_CLIENT_ID não definido — crie Client ID iOS no Google Cloud (ver docs/IOS.md)')
 }
 
+const appScheme = 'com.simulaordem.app'
+if (!plist.includes(`<string>${appScheme}</string>`)) {
+  if (plist.includes('CFBundleURLTypes')) {
+    plist = plist.replace(
+      /(<key>CFBundleURLTypes<\/key>\s*<array>\s*<dict>[\s\S]*?<\/dict>)(\s*<\/array>)/,
+      `$1
+\t\t<dict>
+\t\t\t<key>CFBundleURLName</key>
+\t\t\t<string>SimulaOrdem</string>
+\t\t\t<key>CFBundleURLSchemes</key>
+\t\t\t<array>
+\t\t\t\t<string>${appScheme}</string>
+\t\t\t</array>
+\t\t</dict>$2`,
+    )
+  } else {
+    plist = plist.replace(
+      '</dict>\n</plist>',
+      `\t<key>CFBundleURLTypes</key>
+\t<array>
+\t\t<dict>
+\t\t\t<key>CFBundleURLName</key>
+\t\t\t<string>SimulaOrdem</string>
+\t\t\t<key>CFBundleURLSchemes</key>
+\t\t\t<array>
+\t\t\t\t<string>${appScheme}</string>
+\t\t\t</array>
+\t\t</dict>
+\t</array>
+</dict>
+</plist>`,
+    )
+  }
+  console.log('→ Info.plist: deep link com.simulaordem.app adicionado')
+}
+
 fs.writeFileSync(plistPath, plist)
 
 if (fs.existsSync(capConfigPath) && (webClientId || iosClientId)) {

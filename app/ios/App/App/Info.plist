@@ -55,6 +55,14 @@
 				<string>com.googleusercontent.apps.266921366485-kius83c7a94jad7lg0dl09bhnhaj0g4m</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>SimulaOrdem</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.simulaordem.app</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

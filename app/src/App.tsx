@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
+import NativeAppBridge from './components/NativeAppBridge'
 import NativeBootstrap from './components/NativeBootstrap'
 import CatchAllRoute from './components/CatchAllRoute'
 import RootRoute from './components/RootRoute'
@@ -17,6 +18,7 @@ import Login from './pages/Login'
 import ResetPassword from './pages/ResetPassword'
 import Checkout from './pages/Checkout'
 import Planos from './pages/Planos'
+import PaymentReturn from './pages/PaymentReturn'
 import PlanosSucesso from './pages/PlanosSucesso'
 import Privacidade from './pages/Privacidade'
 import Simulado from './pages/Simulado'
@@ -29,6 +31,7 @@ export default function App() {
       <AppProvider>
         <BrowserRouter>
           <NativeBootstrap />
+          <NativeAppBridge />
           <UpdateBanner />
           <Routes>
             <Route path="/" element={<RootRoute />} />
@@ -36,6 +39,7 @@ export default function App() {
             <Route path="/redefinir-senha" element={<ResetPassword />} />
             <Route path="/planos" element={<Planos />} />
             <Route path="/planos/checkout" element={<Checkout />} />
+            <Route path="/payment/return" element={<PaymentReturn />} />
             <Route path="/planos/sucesso" element={<PlanosSucesso />} />
             <Route path="/termos" element={<Termos />} />
             <Route path="/privacidade" element={<Privacidade />} />

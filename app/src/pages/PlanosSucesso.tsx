@@ -3,15 +3,15 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function PlanosSucesso() {
-  const { refreshUser, user } = useAuth()
+  const { refreshSession, user } = useAuth()
   const [params] = useSearchParams()
   const plan = params.get('plan')
 
   useEffect(() => {
-    refreshUser().catch(() => {})
-    const t = setInterval(() => refreshUser().catch(() => {}), 5000)
+    refreshSession().catch(() => {})
+    const t = setInterval(() => refreshSession().catch(() => {}), 5000)
     return () => clearInterval(t)
-  }, [refreshUser])
+  }, [refreshSession])
 
   const isPro = user?.plan === 'pro'
 

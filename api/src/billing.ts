@@ -174,7 +174,7 @@ export async function registerBillingRoutes(app: FastifyInstance, deps: BillingD
     },
   }))
 
-  app.post<{ Body: { plan?: string; cpfCnpj?: string } }>('/billing/checkout', async (req, reply) => {
+  app.post<{ Body: { plan?: string; cpfCnpj?: string; returnTo?: string } }>('/billing/checkout', async (req, reply) => {
     if (!isAsaasConfigured()) {
       return reply.code(503).send({ error: 'Pagamentos não configurados. Tente mais tarde.' })
     }
@@ -194,7 +194,10 @@ export async function registerBillingRoutes(app: FastifyInstance, deps: BillingD
 
     try {
       const customerId = await ensureAsaasCustomer(pool, user, cpf)
-      const successUrl = `${appUrl()}/planos/sucesso?plan=${plan}`
+      const returnToApp = req.body?.returnTo === 'app'
+      const successUrl = returnToApp
+        ? `${appUrl()}/payment/return?plan=${plan}`
+        : `${appUrl()}/planos/sucesso?plan=${plan}`
       const callback = { successUrl, autoRedirect: true }
 
       if (plan === 'pro') {

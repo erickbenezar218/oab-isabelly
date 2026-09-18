@@ -293,11 +293,16 @@ export async function apiBillingConfig() {
   return (await res.json()) as BillingConfig
 }
 
-export async function apiBillingCheckout(token: string, plan: 'pro' | 'reta', cpfCnpj: string) {
+export async function apiBillingCheckout(
+  token: string,
+  plan: 'pro' | 'reta',
+  cpfCnpj: string,
+  options?: { returnTo?: 'web' | 'app' },
+) {
   const res = await fetch(`${API_URL}/billing/checkout`, {
     method: 'POST',
     headers: authHeaders(token),
-    body: JSON.stringify({ plan, cpfCnpj }),
+    body: JSON.stringify({ plan, cpfCnpj, returnTo: options?.returnTo ?? 'web' }),
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.error ?? 'Erro ao criar checkout')
