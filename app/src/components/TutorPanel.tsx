@@ -44,13 +44,15 @@ function MessageBubble({ message }: { message: TutorMessage }) {
 export default function TutorPanel({
   questao,
   respostaUsuario,
-  autoExplain = true,
+  autoExplain = false,
 }: {
   questao: Questao
   respostaUsuario: string | null
+  /** @deprecated mantido por compatibilidade; padrão é opt-in manual */
   autoExplain?: boolean
 }) {
   const { token, limits, user } = useAuth()
+  const [open, setOpen] = useState(autoExplain)
   const [explanation, setExplanation] = useState<string | null>(null)
   const [messages, setMessages] = useState<TutorMessage[]>([])
   const [remaining, setRemaining] = useState(0)
@@ -66,15 +68,17 @@ export default function TutorPanel({
   const acertou = respostaUsuario === questao.resposta_correta
 
   useEffect(() => {
+    setOpen(autoExplain)
     setExplanation(null)
     setMessages([])
     setError('')
     setInput('')
     setLoaded(false)
     autoRequested.current = false
-  }, [questao.id])
+  }, [questao.id, autoExplain])
 
   useEffect(() => {
+    if (!open) return
     if (!token) {
       setLoaded(true)
       return
@@ -99,7 +103,7 @@ export default function TutorPanel({
         })
         .catch(() => {})
     }
-  }, [token, canChat, questao.id, respostaUsuario])
+  }, [open, token, canChat, questao.id, respostaUsuario])
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -147,6 +151,19 @@ export default function TutorPanel({
     }
   }
 
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm font-semibold text-brand-700 transition hover:bg-brand-100"
+      >
+        <IconSparkles size={16} />
+        {acertou ? 'Ver explicação do Professor IA' : 'Por que errei? — Perguntar ao Professor IA'}
+      </button>
+    )
+  }
+
   if (!loaded) {
     return (
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -158,7 +175,7 @@ export default function TutorPanel({
         </div>
         <div className="flex items-center gap-2 p-4 text-sm text-muted">
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
-          Carregando IA...
+          Preparando...
         </div>
       </div>
     )
@@ -210,8 +227,10 @@ export default function TutorPanel({
           <>
             <p className="text-sm text-muted">
               {explaining
-                ? 'Analisando a questão e montando o gabarito comentado…'
-                : 'Gabarito comentado por IA — explicação automática após responder.'}
+                ? 'Analisando a questão…'
+                : acertou
+                  ? 'Quer entender o raciocínio por trás do gabarito? Toque abaixo.'
+                  : 'Quer saber por que errou e qual alternativa está certa? Toque abaixo.'}
             </p>
             {limits?.iaExplicacoesDia != null && (
               <p className="mt-1 text-xs text-muted-light">
@@ -224,7 +243,7 @@ export default function TutorPanel({
                 onClick={() => void explain()}
                 className="btn-primary mt-4 w-full py-2.5 text-sm"
               >
-                Ver explicação IA
+                {acertou ? 'Gerar explicação' : 'Explicar meu erro'}
               </button>
             ) : (
               <div className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-brand-50 py-4 text-sm font-medium text-brand-700">

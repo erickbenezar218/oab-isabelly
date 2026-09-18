@@ -215,9 +215,11 @@ export default function Flashcards() {
                   acertouUltima ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
                 }`}
               >
-                {acertouUltima ? 'Resposta correta!' : 'Resposta errada — veja a explicação abaixo.'}
+                {acertouUltima
+                  ? 'Resposta correta!'
+                  : `Resposta errada — gabarito ${atual.resposta_correta}.`}
               </p>
-              <TutorPanel questao={atual} respostaUsuario={selected} />
+              {!acertouUltima && <TutorPanel questao={atual} respostaUsuario={selected} />}
               <button
                 type="button"
                 onClick={proximaQuestao}

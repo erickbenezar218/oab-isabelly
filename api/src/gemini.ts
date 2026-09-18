@@ -33,6 +33,7 @@ async function callGeminiModel(
   model: string,
   systemPrompt: string,
   messages: GeminiMessage[],
+  maxOutputTokens = 2048,
 ): Promise<string> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
 
@@ -56,8 +57,8 @@ async function callGeminiModel(
       systemInstruction: { parts: [{ text: systemPrompt }] },
       contents,
       generationConfig: {
-        temperature: 0.4,
-        maxOutputTokens: 2048,
+        temperature: 0.35,
+        maxOutputTokens,
       },
       safetySettings: [
         { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
@@ -92,18 +93,23 @@ async function callGeminiModel(
   throw new Error(`Resposta vazia do Gemini (${reason})`)
 }
 
-export async function geminiGenerate(systemPrompt: string, messages: GeminiMessage[]): Promise<string> {
+export async function geminiGenerate(
+  systemPrompt: string,
+  messages: GeminiMessage[],
+  options?: { maxOutputTokens?: number },
+): Promise<string> {
   const apiKey = getGeminiApiKey()
   if (!apiKey) {
     throw new Error('GEMINI_NOT_CONFIGURED')
   }
 
   const models = modelsToTry()
+  const maxOutputTokens = options?.maxOutputTokens ?? 2048
   let lastError: Error | null = null
 
   for (const model of models) {
     try {
-      return await callGeminiModel(apiKey, model, systemPrompt, messages)
+      return await callGeminiModel(apiKey, model, systemPrompt, messages, maxOutputTokens)
     } catch (e) {
       lastError = e instanceof Error ? e : new Error(String(e))
       const status = (lastError as Error & { status?: number }).status

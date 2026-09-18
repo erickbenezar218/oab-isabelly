@@ -105,15 +105,22 @@ async function saveCachedExplanation(pool: pg.Pool, questaoId: string, explanati
 }
 
 async function generateExplanation(questao: QuestaoPayload, respostaUsuario: string | null): Promise<string> {
-  const prompt = `${formatQuestaoBlock(questao, respostaUsuario)}
+  const errou = respostaUsuario != null && respostaUsuario !== questao.resposta_correta
+  const prompt = errou
+    ? `${formatQuestaoBlock(questao, respostaUsuario)}
 
-Explique esta questão OAB como um professor faria (gabarito comentado). Estruture:
+O aluno errou. Explique de forma direta (máx. 4 parágrafos curtos):
+1) Por que a alternativa ${respostaUsuario} está incorreta
+2) Por que o gabarito ${questao.resposta_correta} está correto
+3) Uma dica rápida para não errar de novo`
+    : `${formatQuestaoBlock(questao, respostaUsuario)}
+
+Explique esta questão OAB (máx. 4 parágrafos):
 1) O que a questão cobra
 2) Por que o gabarito ${questao.resposta_correta} está correto
-3) Por que as outras alternativas estão erradas (breve)
-4) Dica de revisão para a prova`
+3) Por que as outras alternativas estão erradas (breve)`
 
-  return geminiGenerate(systemPrompt(), [{ role: 'user', text: prompt }])
+  return geminiGenerate(systemPrompt(), [{ role: 'user', text: prompt }], { maxOutputTokens: 900 })
 }
 
 function proChatRequired(reply: { code: (n: number) => { send: (b: object) => unknown } }) {
