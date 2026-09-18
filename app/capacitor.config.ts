@@ -1,7 +1,17 @@
 import type { CapacitorConfig } from '@capacitor/cli'
 
-const webClientId = process.env.VITE_GOOGLE_CLIENT_ID ?? process.env.GOOGLE_CLIENT_ID ?? ''
-const iosClientId = process.env.VITE_GOOGLE_IOS_CLIENT_ID ?? process.env.GOOGLE_IOS_CLIENT_ID ?? ''
+/** Client IDs públicos — fallback se env não estiver carregado no cap sync. */
+const DEFAULT_WEB_CLIENT_ID = '266921366485-92fdan4a9sqmb563ke5mdcn1prru2u1i.apps.googleusercontent.com'
+const DEFAULT_IOS_CLIENT_ID = '266921366485-kius83c7a94jad7lg0dl09bhnhaj0g4m.apps.googleusercontent.com'
+
+const webClientId =
+  process.env.VITE_GOOGLE_CLIENT_ID?.trim() ||
+  process.env.GOOGLE_CLIENT_ID?.trim() ||
+  DEFAULT_WEB_CLIENT_ID
+const iosClientId =
+  process.env.VITE_GOOGLE_IOS_CLIENT_ID?.trim() ||
+  process.env.GOOGLE_IOS_CLIENT_ID?.trim() ||
+  DEFAULT_IOS_CLIENT_ID
 
 const config: CapacitorConfig = {
   appId: 'com.simulaordem.app',
@@ -19,9 +29,9 @@ const config: CapacitorConfig = {
   plugins: {
     GoogleAuth: {
       scopes: ['profile', 'email', 'openid'],
-      serverClientId: webClientId || undefined,
-      iosClientId: iosClientId || undefined,
-      clientId: iosClientId || webClientId || undefined,
+      serverClientId: webClientId,
+      iosClientId,
+      clientId: iosClientId,
       forceCodeForRefreshToken: false,
     },
     LocalNotifications: {

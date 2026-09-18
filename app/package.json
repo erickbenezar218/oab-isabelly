@@ -10,7 +10,7 @@
     "ios:prepare": "bash ../scripts/build-ios.sh",
     "lint": "oxlint",
     "preview": "vite preview",
-    "cap:sync": "npm run build:ios && npx cap sync ios",
+    "cap:sync": "npm run build:ios && npx cap sync ios && node ../scripts/patch-ios-plist.mjs",
     "cap:open": "npx cap open ios",
     "cap:run:ios": "npm run cap:sync && npx cap run ios --target"
   },

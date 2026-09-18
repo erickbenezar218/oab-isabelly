@@ -1,10 +1,9 @@
 import { Capacitor } from '@capacitor/core'
-import { GoogleAuth } from '@southdevs/capacitor-google-auth'
 import { useEffect, useRef, useState } from 'react'
+import { GOOGLE_IOS_CLIENT_ID, GOOGLE_WEB_CLIENT_ID, nativeGoogleSignIn } from '../lib/googleNativeAuth'
 import { isNativeApp } from '../lib/platform'
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined
-const GOOGLE_IOS_CLIENT_ID = import.meta.env.VITE_GOOGLE_IOS_CLIENT_ID as string | undefined
+const GOOGLE_CLIENT_ID = GOOGLE_WEB_CLIENT_ID
 
 interface GoogleSignInButtonProps {
   disabled?: boolean
@@ -14,7 +13,7 @@ interface GoogleSignInButtonProps {
 
 export function isGoogleSignInEnabled() {
   if (isNativeApp()) {
-    return Boolean(GOOGLE_IOS_CLIENT_ID?.trim() || GOOGLE_CLIENT_ID?.trim())
+    return Boolean(GOOGLE_IOS_CLIENT_ID && GOOGLE_WEB_CLIENT_ID)
   }
   return Boolean(GOOGLE_CLIENT_ID?.trim())
 }
@@ -92,21 +91,7 @@ export default function GoogleSignInButton({ disabled, onSuccess, onError }: Goo
     if (!Capacitor.isNativePlatform()) return
     setNativeBusy(true)
     try {
-      const clientId = GOOGLE_IOS_CLIENT_ID || GOOGLE_CLIENT_ID
-      const scopes = ['profile', 'email', 'openid']
-      await GoogleAuth.initialize({
-        clientId,
-        scopes,
-        grantOfflineAccess: false,
-      })
-      const user = await GoogleAuth.signIn({
-        scopes,
-        clientId,
-        serverClientId: GOOGLE_CLIENT_ID,
-        grantOfflineAccess: false,
-      })
-      const idToken = user.authentication?.idToken
-      if (!idToken) throw new Error('Google não retornou token. Verifique o Client ID iOS no Google Cloud.')
+      const idToken = await nativeGoogleSignIn()
       await onSuccess(idToken)
     } catch (e) {
       onError(e instanceof Error ? e.message : 'Erro ao entrar com Google')
