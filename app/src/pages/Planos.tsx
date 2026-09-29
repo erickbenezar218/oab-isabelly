@@ -24,11 +24,11 @@ const plans: {
     period: '',
     description: 'Ideal para conhecer a plataforma antes da prova.',
     features: [
-      'Flashcards ilimitados',
-      '1 simulado completo/mês + express ilimitado',
-      'Professor IA — 20 explicações/dia',
+      '20 flashcards por dia',
+      '1 simulado completo/mês + 1 express/mês',
+      'Professor IA — 5 explicações/dia',
+      'Termômetro OAB (visão básica)',
       '2ª fase — após passar na 1ª fase oficial',
-      'Termômetro OAB (projeção de aprovação)',
     ],
     cta: 'Começar grátis',
   },
@@ -64,14 +64,14 @@ const plans: {
 ]
 
 const comparison = [
-  { label: 'Flashcards', free: 'Ilimitados', pro: 'Ilimitados', reta: 'Ilimitados' },
+  { label: 'Flashcards', free: '20/dia', pro: 'Ilimitados', reta: 'Ilimitados' },
   { label: 'Simulados completos', free: '1/mês', pro: 'Ilimitados', reta: 'Ilimitados' },
-  { label: 'Simulado express (40q)', free: 'Ilimitado', pro: 'Ilimitado', reta: 'Ilimitado' },
-  { label: 'Professor IA (explicações)', free: '20/dia', pro: 'Ilimitado', reta: 'Ilimitado' },
+  { label: 'Simulado express (40q)', free: '1/mês', pro: 'Ilimitado', reta: 'Ilimitado' },
+  { label: 'Professor IA (explicações)', free: '5/dia', pro: 'Ilimitado', reta: 'Ilimitado' },
   { label: 'Chat IA por questão', free: '—', pro: '✓', reta: '✓' },
   { label: 'Histórico', free: 'Último simulado', pro: 'Completo', reta: 'Completo' },
   { label: 'Revisão de erros', free: '—', pro: '✓', reta: '✓' },
-  { label: 'Desempenho por matéria', free: 'Básico', pro: 'Completo', reta: 'Completo' },
+  { label: 'Desempenho por matéria', free: '—', pro: 'Completo', reta: 'Completo' },
   { label: '2ª fase — peças', free: '✓', pro: '✓', reta: '✓' },
   { label: 'Cronograma diário', free: '—', pro: '✓', reta: '✓' },
 ]

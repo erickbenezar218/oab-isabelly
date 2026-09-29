@@ -73,9 +73,12 @@ export function useProgress() {
   )
 
   const toggleSalvarRevisao = useCallback(
-    (questaoId: string) => {
+    (questaoId: string, maxSalvos?: number | null) => {
       setProgress((prev) => {
         const exists = prev.salvosRevisao.includes(questaoId)
+        if (!exists && maxSalvos != null && prev.salvosRevisao.length >= maxSalvos) {
+          return prev
+        }
         return {
           ...prev,
           salvosRevisao: exists ? prev.salvosRevisao.filter((id) => id !== questaoId) : [...prev.salvosRevisao, questaoId],

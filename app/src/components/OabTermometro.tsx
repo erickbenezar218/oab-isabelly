@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { calcTermometroOab, termometroCor } from '../lib/termometroOab'
 import { NOTA_APROVACAO, SIMULADO_TOTAL } from '../types'
 
@@ -7,9 +8,18 @@ type Props = {
   acertos: number
   compact?: boolean
   className?: string
+  /** Plano grátis: esconde projeção numérica. */
+  locked?: boolean
 }
 
-export default function OabTermometro({ ultimoSimulado, totalRespondidas, acertos, compact, className = '' }: Props) {
+export default function OabTermometro({
+  ultimoSimulado,
+  totalRespondidas,
+  acertos,
+  compact,
+  className = '',
+  locked,
+}: Props) {
   const t = calcTermometroOab({ ultimoSimulado, totalRespondidas, acertos })
   const fill = termometroCor(t.pct, t.passaria)
 
@@ -27,7 +37,7 @@ export default function OabTermometro({ ultimoSimulado, totalRespondidas, acerto
           className="absolute left-1/2 -translate-x-1/2 text-[9px] font-bold tabular-nums text-muted"
           style={{ bottom: `${Math.min(t.pct, 92)}%` }}
         >
-          {t.fonte === 'sem_dados' ? '—' : t.score}
+          {t.fonte === 'sem_dados' || locked ? '?' : t.score}
         </span>
       </div>
 
@@ -37,7 +47,7 @@ export default function OabTermometro({ ultimoSimulado, totalRespondidas, acerto
         {!compact && (
           <p className="mt-1 text-sm text-muted">
             Meta de aprovação: <strong className="text-ink">{NOTA_APROVACAO}/{SIMULADO_TOTAL}</strong>
-            {t.fonte !== 'sem_dados' && (
+            {t.fonte !== 'sem_dados' && !locked && (
               <>
                 {' '}
                 · Projeção: <strong className="text-ink">{t.score}/{SIMULADO_TOTAL}</strong>
@@ -45,7 +55,16 @@ export default function OabTermometro({ ultimoSimulado, totalRespondidas, acerto
             )}
           </p>
         )}
-        <p className="mt-1.5 text-xs leading-relaxed text-muted">{t.detail}</p>
+        <p className="mt-1.5 text-xs leading-relaxed text-muted">
+          {locked && t.fonte !== 'sem_dados'
+            ? 'Projeção completa e histórico no plano Pro.'
+            : t.detail}
+        </p>
+        {locked && (
+          <Link to="/planos" className="mt-2 inline-block text-xs font-semibold text-brand-600 hover:underline">
+            Ver projeção completa no Pro →
+          </Link>
+        )}
       </div>
     </div>
   )

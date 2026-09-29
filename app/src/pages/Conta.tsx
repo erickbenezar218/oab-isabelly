@@ -472,9 +472,10 @@ export default function Conta() {
               )}
             </div>
             <ul className="mt-4 space-y-2 text-sm text-muted">
-              <li>{isPro ? 'Simulados ilimitados' : '1 simulado completo por mês'}</li>
+              <li>{isPro ? 'Simulados ilimitados' : '1 completo + 1 express/mês'}</li>
+              <li>{isPro ? 'Flashcards ilimitados' : '20 flashcards/dia'}</li>
               <li>{isPro ? 'Cronograma e meta diária' : 'Cronograma no plano Pro'}</li>
-              <li>{isPro ? 'Chat ilimitado com Professor IA' : '20 explicações IA/dia'}</li>
+              <li>{isPro ? 'Chat ilimitado com Professor IA' : '5 explicações IA/dia'}</li>
             </ul>
             <Link to="/planos" className="btn-primary mt-4 block py-2.5 text-center text-sm">
               {isPro ? 'Ver planos' : 'Fazer upgrade para Pro'}
@@ -590,8 +591,9 @@ export default function Conta() {
               <summary className="cursor-pointer font-medium text-ink">Perguntas frequentes</summary>
               <ul className="mt-3 list-disc space-y-2 pl-5">
                 <li>Flashcards corrigem sozinhos ao tocar na alternativa.</li>
-                <li>Simulado grátis: 1 completo por mês; Express é ilimitado.</li>
-                <li>Professor IA explica erros — 20/dia no grátis.</li>
+                <li>Simulado grátis: 1 completo e 1 express por mês.</li>
+                <li>Flashcards grátis: 20 por dia.</li>
+                <li>Professor IA — 5 explicações/dia no grátis.</li>
                 <li>Data da prova ajusta cronograma e contagem regressiva.</li>
               </ul>
             </details>

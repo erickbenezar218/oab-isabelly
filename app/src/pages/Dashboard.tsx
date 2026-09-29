@@ -42,8 +42,8 @@ const modulos: {
 }[] = [
   { to: '/app/flashcards', Icon: IconZap, title: 'Flashcards rápidos', desc: 'Toque na alternativa — correção automática' },
   { to: '/app/simulado', Icon: IconClipboard, title: 'Simulado realista', desc: '80 questões · 5 horas' },
-  { to: '/app/revisao', Icon: IconRefresh, title: 'Revisão de erros', desc: 'Fila automática + tutor IA' },
-  { to: '/app/desempenho', Icon: IconChart, title: 'Desempenho por matéria', desc: 'Gráficos e anotações' },
+  { to: '/app/revisao', Icon: IconRefresh, title: 'Revisão de erros', desc: 'Fila automática + tutor IA', pro: true },
+  { to: '/app/desempenho', Icon: IconChart, title: 'Desempenho por matéria', desc: 'Gráficos e anotações', pro: true },
   { to: '/app/cronograma', Icon: IconCalendar, title: 'Meta diária', desc: 'Cronograma até a prova', pro: true },
   { to: '/app/pecas', Icon: IconScale, title: '2ª fase — peças', desc: 'Adivinhe a peça processual', fase2: true },
 ]
@@ -149,6 +149,7 @@ export default function Dashboard() {
             ultimoSimulado={ultimoSim}
             totalRespondidas={totalRespondidas}
             acertos={acertos}
+            locked={!isPro}
           />
         </SectionCard>
 
@@ -267,7 +268,18 @@ export default function Dashboard() {
           </SectionCard>
         )}
 
-        <PerformanceChart respostas={progress.respostas} />
+        {isPro ? (
+          <PerformanceChart respostas={progress.respostas} />
+        ) : (
+          <SectionCard title="Gráfico por matéria" subtitle="Disponível no plano Pro">
+            <p className="text-sm text-muted">
+              Veja onde você erra mais com gráficos detalhados.{' '}
+              <Link to="/planos" className="font-semibold text-brand-600 hover:underline">
+                Fazer upgrade
+              </Link>
+            </p>
+          </SectionCard>
+        )}
 
         <SectionCard
           title="Trilha de hoje"

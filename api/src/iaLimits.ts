@@ -2,7 +2,9 @@ import { pool } from './db.js'
 import { isPro } from './plans.js'
 import type { Plan } from './types.js'
 
-const FREE_IA_DAILY = 20
+import { FREE_LIMITS } from './freeLimits.js'
+
+const FREE_IA_DAILY = FREE_LIMITS.iaExplicacoesDia
 
 function todayKey() {
   return new Date().toISOString().slice(0, 10)

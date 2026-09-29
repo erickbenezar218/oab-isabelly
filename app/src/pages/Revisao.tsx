@@ -1,19 +1,32 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { IconArrowRight, IconTarget } from '../components/icons'
+import { IconArrowRight, IconRefresh, IconTarget } from '../components/icons'
+import ProGate from '../components/ProGate'
 import PageHeader from '../components/ui/PageHeader'
 import TutorPanel from '../components/TutorPanel'
 import { useApp } from '../context/AppContext'
+import { useAuth } from '../context/AuthContext'
 import { questoesParaRevisao } from '../lib/revisao'
 import type { Questao } from '../types'
 
 export default function Revisao() {
+  const { limits } = useAuth()
   const { questoes, progress, loading, registrarResposta } = useApp()
   const [idx, setIdx] = useState(0)
   const [selected, setSelected] = useState<string | null>(null)
   const [revelado, setRevelado] = useState(false)
 
   const fila = useMemo(() => questoesParaRevisao(questoes, progress.respostas), [questoes, progress.respostas])
+
+  if (!limits?.revisaoErrosCompleta) {
+    return (
+      <ProGate
+        Icon={IconRefresh}
+        title="Revisão de erros — plano Pro"
+        description="A fila inteligente de questões erradas, com tutor IA, é exclusiva do Pro. No grátis, continue com flashcards e simulados."
+      />
+    )
+  }
   const atual = fila[idx]
 
   const confirmar = (letra: string) => {

@@ -38,6 +38,10 @@ export default function Simulado() {
   const [provaQuestoes, setProvaQuestoes] = useState<Questao[]>([])
   const config = SIMULADO_MODOS[modo]
   const provaTotal = config.total
+  const salvarRevisao = useCallback(
+    (id: string) => toggleSalvarRevisao(id, limits?.salvosRevisaoMax),
+    [toggleSalvarRevisao, limits?.salvosRevisaoMax],
+  )
   const provaTempo = config.tempo
   const [indice, setIndice] = useState(0)
   const [respostas, setRespostas] = useState<Record<string, string>>({})
@@ -191,7 +195,8 @@ export default function Simulado() {
 
         {limits && limits.plan === 'free' && (
           <p className="rounded-xl bg-brand-50 px-3 py-2 text-xs text-brand-700">
-            Plano grátis: {limits.simuladosRestantesMes ?? 0} simulado(s) restante(s) este mês.{' '}
+            Plano grátis: {limits.simuladosRestantesMes ?? 0} completo(s) e{' '}
+            {limits.simuladosExpressRestantesMes ?? 0} express restante(s) este mês.{' '}
             <Link to="/planos" className="text-brand-600 underline">
               Ver Pro
             </Link>
@@ -243,7 +248,7 @@ export default function Simulado() {
         sim={historicoSelecionado}
         questoes={questoes}
         salvosRevisao={progress.salvosRevisao}
-        toggleSalvarRevisao={toggleSalvarRevisao}
+        toggleSalvarRevisao={salvarRevisao}
         onVoltar={() => {
           setHistoricoSelecionado(null)
           setFase('setup')
@@ -259,7 +264,7 @@ export default function Simulado() {
           sim={resultado}
           questoes={questoes}
           salvosRevisao={progress.salvosRevisao}
-          toggleSalvarRevisao={toggleSalvarRevisao}
+          toggleSalvarRevisao={salvarRevisao}
           onVoltar={() => {
             setResultado(null)
             setFase('setup')
@@ -365,7 +370,7 @@ export default function Simulado() {
               else n.add(questaoAtual.id)
               return n
             })
-            toggleSalvarRevisao(questaoAtual.id)
+            salvarRevisao(questaoAtual.id)
           }}
           className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm ${marcadas.has(questaoAtual.id) ? 'bg-yellow-100 text-yellow-800' : 'bg-surface-700 text-muted'}`}
         >

@@ -31,12 +31,16 @@ export interface AuthUser {
 export interface PlanLimits {
   plan: 'free' | 'pro'
   simuladosRestantesMes: number | null
+  simuladosExpressRestantesMes: number | null
+  flashcardsRestantesHoje: number | null
   historicoCompleto: boolean
   revisaoErrosCompleta: boolean
+  desempenhoCompleto: boolean
   tutorIa: boolean
   cronograma: boolean
   iaExplicacoesDia: number | null
   tutorChat: boolean
+  salvosRevisaoMax: number | null
 }
 
 export interface TutorMessage {

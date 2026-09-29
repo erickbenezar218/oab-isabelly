@@ -1,13 +1,16 @@
 import { useMemo, useState } from 'react'
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { IconChart, IconClose, IconPencil } from '../components/icons'
+import ProGate from '../components/ProGate'
 import PageHeader from '../components/ui/PageHeader'
 import SectionCard from '../components/ui/SectionCard'
 import { useApp } from '../context/AppContext'
+import { useAuth } from '../context/AuthContext'
 
 const CORES = ['#3C8F92', '#2A606B', '#1C3F3A', '#5EEAD4', '#0F766E', '#134E4A']
 
 export default function Desempenho() {
+  const { limits } = useAuth()
   const { progress, questoes, loading, addCustomCard, removeCustomCard } = useApp()
   const [aba, setAba] = useState<'grafico' | 'custom'>('grafico')
   const [titulo, setTitulo] = useState('')
@@ -56,6 +59,16 @@ export default function Desempenho() {
       <div className="flex h-64 items-center justify-center">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
       </div>
+    )
+  }
+
+  if (!limits?.desempenhoCompleto) {
+    return (
+      <ProGate
+        Icon={IconChart}
+        title="Desempenho completo — plano Pro"
+        description="Gráficos por matéria e anotações personalizadas são Pro. No grátis, use flashcards e o termômetro no Início."
+      />
     )
   }
 

@@ -4,13 +4,22 @@ import { IconArrowRight, IconStar, IconStarOutline } from '../components/icons'
 import PageHeader from '../components/ui/PageHeader'
 import TutorPanel from '../components/TutorPanel'
 import { useApp } from '../context/AppContext'
+import { useAuth } from '../context/AuthContext'
+import { Link } from 'react-router-dom'
+import { FREE_TIER, flashcardsRespondidosHoje } from '../lib/freeTier'
 import { shuffle } from '../hooks/useAppData'
 import type { Questao } from '../types'
 
 type FiltroTipo = 'materia' | 'exame' | 'revisao'
 
 export default function Flashcards() {
+  const { limits } = useAuth()
   const { questoes, progress, loading, registrarResposta, toggleSalvarRevisao, updateStreak } = useApp()
+  const isPro = limits?.plan === 'pro'
+  const flashHoje = flashcardsRespondidosHoje(progress.respostas)
+  const flashRestantes =
+    limits?.flashcardsRestantesHoje ?? (isPro ? null : Math.max(0, FREE_TIER.flashcardsDia - flashHoje))
+  const limiteFlashAtingido = !isPro && flashRestantes !== null && flashRestantes <= 0
   const [filtroTipo, setFiltroTipo] = useState<FiltroTipo>('materia')
   const [filtroValor, setFiltroValor] = useState('')
   const [index, setIndex] = useState(0)
@@ -71,7 +80,7 @@ export default function Flashcards() {
   }
 
   const escolherAlternativa = (letra: string) => {
-    if (!atual || mostrarGabarito) return
+    if (!atual || mostrarGabarito || limiteFlashAtingido) return
     const acertou = letra === atual.resposta_correta
     setSelected(letra)
     setAcertouUltima(acertou)
@@ -97,6 +106,23 @@ export default function Flashcards() {
         title="Flashcards"
         subtitle="Escolha a alternativa — o app marca certo ou errado sozinho e mostra a explicação."
       />
+
+      {!isPro && flashRestantes !== null && (
+        <p
+          className={`rounded-xl px-3 py-2 text-xs ${limiteFlashAtingido ? 'bg-amber-50 text-amber-900' : 'bg-brand-50 text-brand-800'}`}
+        >
+          Plano grátis: {flashRestantes} de {FREE_TIER.flashcardsDia} flashcards restantes hoje.
+          {limiteFlashAtingido && (
+            <>
+              {' '}
+              <Link to="/planos" className="font-semibold underline">
+                Assine o Pro
+              </Link>{' '}
+              para ilimitado.
+            </>
+          )}
+        </p>
+      )}
 
       <div className="flex gap-2 overflow-x-auto pb-1">
         {(['materia', 'exame', 'revisao'] as FiltroTipo[]).map((t) => (
@@ -233,7 +259,7 @@ export default function Flashcards() {
 
           <button
             type="button"
-            onClick={() => toggleSalvarRevisao(atual.id)}
+            onClick={() => toggleSalvarRevisao(atual.id, limits?.salvosRevisaoMax)}
             className={`flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium ${
               progress.salvosRevisao.includes(atual.id)
                 ? 'bg-brand-50 text-brand-600'

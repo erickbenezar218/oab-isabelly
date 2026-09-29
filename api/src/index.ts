@@ -3,7 +3,20 @@ import cors from '@fastify/cors'
 import { initDb, pool } from './db.js'
 import { comparePassword, effectivePlan, hashPassword, isGoogleConfigured, signToken, verifyGoogleToken, verifyToken } from './auth.js'
 import { iaDailyLimit } from './iaLimits.js'
-import { canStartSimulado, canUseCronograma, canUseTutor, currentYearMonth, filterProgressForPlan, isPro, recordSimuladoUsage } from './plans.js'
+import {
+  canStartSimulado,
+  canUseCronograma,
+  canUseDesempenhoCompleto,
+  canUseRevisaoErros,
+  canUseTutor,
+  clampProgressForFreePlan,
+  currentYearMonth,
+  filterProgressForPlan,
+  flashcardsRemainingToday,
+  isPro,
+  recordSimuladoUsage,
+} from './plans.js'
+import { FREE_LIMITS } from './freeLimits.js'
 import { isEmail2faEnabled, isEmailConfigured } from './email.js'
 import { sendLoginOtpEmail, sendPasswordResetEmail, sendWelcomeEmail } from './emails.js'
 import { appUrl } from './email.js'
@@ -257,23 +270,30 @@ app.get('/progress', async (req, reply) => {
   const profile = profileFromUser(user)
   const pro = isPro(user.plan, user.plan_expires_at)
   const ym = currentYearMonth()
-  const usage = await pool.query<{ count: string }>(
-    'SELECT count FROM simulado_usage WHERE user_id = $1 AND year_month = $2',
+  const usage = await pool.query<{ count: string; express_count: string }>(
+    'SELECT count, express_count FROM simulado_usage WHERE user_id = $1 AND year_month = $2',
     [user.id, ym],
   )
+  const fullUsed = Number(usage.rows[0]?.count ?? 0)
+  const expressUsed = Number(usage.rows[0]?.express_count ?? 0)
   const filtered = filterProgressForPlan(raw, pro) as Record<string, unknown>
   const { profile: _legacy, ...studyData } = filtered
+  const flashRestantes = await flashcardsRemainingToday(user.id, user.plan, user.plan_expires_at)
   return {
     progress: { ...studyData, profile },
     limits: {
       plan: effectivePlan(user.plan, user.plan_expires_at),
-      simuladosRestantesMes: pro ? null : Math.max(0, 1 - Number(usage.rows[0]?.count ?? 0)),
+      simuladosRestantesMes: pro ? null : Math.max(0, FREE_LIMITS.simuladosCompletosMes - fullUsed),
+      simuladosExpressRestantesMes: pro ? null : Math.max(0, FREE_LIMITS.simuladosExpressMes - expressUsed),
+      flashcardsRestantesHoje: flashRestantes,
       historicoCompleto: pro,
-      revisaoErrosCompleta: pro,
+      revisaoErrosCompleta: canUseRevisaoErros(user.plan, user.plan_expires_at),
+      desempenhoCompleto: canUseDesempenhoCompleto(user.plan, user.plan_expires_at),
       tutorIa: canUseTutor(user.plan, user.plan_expires_at),
       cronograma: canUseCronograma(user.plan, user.plan_expires_at),
       iaExplicacoesDia: iaDailyLimit(user.plan, user.plan_expires_at),
       tutorChat: canUseTutor(user.plan, user.plan_expires_at),
+      salvosRevisaoMax: pro ? null : FREE_LIMITS.salvosRevisaoMax,
     },
   }
 })
@@ -283,9 +303,13 @@ app.put<{ Body: { progress: Record<string, unknown> } }>('/progress', async (req
   if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
   const progress = req.body?.progress
   if (!progress || typeof progress !== 'object') return reply.code(400).send({ error: 'Progresso inválido.' })
-  const { profile: _profile, ...studyData } = progress
+  let { profile: _profile, ...studyData } = progress
   if (!user.fase1_aprovada) {
     delete studyData.pecasRespostas
+  }
+  const pro = isPro(user.plan, user.plan_expires_at)
+  if (!pro) {
+    studyData = clampProgressForFreePlan(studyData)
   }
   await pool.query(
     `INSERT INTO user_progress (user_id, data, updated_at) VALUES ($1, $2, NOW())
@@ -373,17 +397,21 @@ app.post<{ Body: { mode?: 'full' | 'express' } }>('/simulado/start', async (req,
   const user = await getUserFromAuth(req.headers.authorization)
   if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
   const mode = req.body?.mode ?? 'full'
-  if (mode === 'express') return { ok: true, mode: 'express' }
   const plan = effectivePlan(user.plan, user.plan_expires_at)
-  const allowed = await canStartSimulado(user.id, plan, user.plan_expires_at)
+  const apiMode = mode === 'express' ? 'express' : 'full'
+  const allowed = await canStartSimulado(user.id, plan, user.plan_expires_at, apiMode)
   if (!allowed) {
+    const msg =
+      apiMode === 'express'
+        ? `Limite do plano grátis: ${FREE_LIMITS.simuladosExpressMes} simulado express por mês. Assine o Pro para ilimitado.`
+        : `Limite do plano grátis: ${FREE_LIMITS.simuladosCompletosMes} simulado completo por mês. Assine o Pro para ilimitado.`
     return reply.code(403).send({
-      error: 'Limite do plano grátis: 1 simulado por mês. Assine o Pro para simulados ilimitados.',
+      error: msg,
       code: 'SIMULADO_LIMIT',
     })
   }
-  if (plan === 'free') await recordSimuladoUsage(user.id)
-  return { ok: true }
+  if (plan === 'free') await recordSimuladoUsage(user.id, apiMode)
+  return { ok: true, mode: apiMode }
 })
 
 await registerTutorRoutes(app, { pool, getUser: getUserFromAuth })

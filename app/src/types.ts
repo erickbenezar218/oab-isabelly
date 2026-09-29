@@ -110,7 +110,7 @@ export const SIMULADO_MODOS: Record<
     total: SIMULADO_EXPRESS_TOTAL,
     tempo: SIMULADO_EXPRESS_TEMPO,
     label: 'Express',
-    desc: '40 questões · 1 hora · não conta no limite mensal',
+    desc: '40 questões · 1 hora · 1/mês no grátis',
     apiMode: 'express',
   },
   prova: {

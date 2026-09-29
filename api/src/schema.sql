@@ -22,8 +22,11 @@ CREATE TABLE IF NOT EXISTS simulado_usage (
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   year_month TEXT NOT NULL,
   count INT NOT NULL DEFAULT 0,
+  express_count INT NOT NULL DEFAULT 0,
   PRIMARY KEY (user_id, year_month)
 );
+
+ALTER TABLE simulado_usage ADD COLUMN IF NOT EXISTS express_count INT NOT NULL DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS tutor_threads (
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
