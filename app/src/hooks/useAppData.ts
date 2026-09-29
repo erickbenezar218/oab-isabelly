@@ -139,10 +139,13 @@ export function useProgress() {
 
   const registrarPeca = useCallback(
     (entry: UserProgress['pecasRespostas'][0]) => {
-      setProgress((prev) => ({
-        ...prev,
-        pecasRespostas: [...prev.pecasRespostas.filter((p) => p.casoId !== entry.casoId), entry],
-      }))
+      setProgress((prev) => {
+        if (!prev.profile?.fase1Aprovada) return prev
+        return {
+          ...prev,
+          pecasRespostas: [...prev.pecasRespostas.filter((p) => p.casoId !== entry.casoId), entry],
+        }
+      })
     },
     [setProgress],
   )

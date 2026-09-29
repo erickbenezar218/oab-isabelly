@@ -57,6 +57,7 @@ export interface SimuladoResult {
 export interface UserProfile {
   examDate?: string | null
   area2fase?: string
+  fase1Aprovada?: boolean
   onboardingDone?: boolean
   welcomeTourDone?: boolean
   dailyGoalOverride?: number | null

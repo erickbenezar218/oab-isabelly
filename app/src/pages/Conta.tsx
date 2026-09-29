@@ -42,6 +42,7 @@ export default function Conta() {
   const [name, setName] = useState(user?.name ?? '')
   const [examDate, setExamDate] = useState(progress.profile?.examDate ?? suggestedExamDateString())
   const [area2fase, setArea2fase] = useState(progress.profile?.area2fase ?? 'Trabalhista')
+  const [fase1Aprovada, setFase1Aprovada] = useState(progress.profile?.fase1Aprovada ?? false)
   const [dailyGoal, setDailyGoal] = useState(String(progress.profile?.dailyGoalOverride ?? ''))
   const [email2fa, setEmail2fa] = useState(progress.profile?.email2faEnabled ?? true)
   const [reminder, setReminder] = useState(progress.profile?.studyReminderEnabled ?? true)
@@ -79,7 +80,8 @@ export default function Conta() {
   useEffect(() => {
     setExamDate(progress.profile?.examDate ?? suggestedExamDateString())
     setArea2fase(progress.profile?.area2fase ?? 'Trabalhista')
-  }, [progress.profile?.examDate, progress.profile?.area2fase])
+    setFase1Aprovada(progress.profile?.fase1Aprovada ?? false)
+  }, [progress.profile?.examDate, progress.profile?.area2fase, progress.profile?.fase1Aprovada])
 
   useEffect(() => {
     if (!token || tab !== 'plano') return
@@ -103,7 +105,7 @@ export default function Conta() {
     setBusy(true)
     setErr('')
     try {
-      await updateProfile({ name, examDate, area2fase })
+      await updateProfile({ name, examDate, area2fase, fase1Aprovada })
       await refreshUser()
       flash('Perfil salvo.')
     } catch (e) {
@@ -325,6 +327,18 @@ export default function Conta() {
                   </option>
                 ))}
               </select>
+            </label>
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 px-4 py-3">
+              <input
+                type="checkbox"
+                checked={fase1Aprovada}
+                onChange={(e) => setFase1Aprovada(e.target.checked)}
+                className="mt-1 h-5 w-5 shrink-0 rounded border-slate-300 text-brand-600"
+              />
+              <div>
+                <p className="text-sm font-medium text-ink">Passei na 1ª fase oficial da OAB</p>
+                <p className="mt-1 text-xs text-muted">Desbloqueia o módulo 2ª fase (peças). Marque só após resultado oficial.</p>
+              </div>
             </label>
             <button type="button" onClick={() => void saveProfile()} disabled={busy} className="btn-primary w-full py-2.5 text-sm disabled:opacity-50">
               Salvar perfil

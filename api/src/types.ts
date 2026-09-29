@@ -18,6 +18,7 @@ export interface UserRow {
   daily_goal_override: number | null
   study_reminder_enabled: boolean
   study_reminder_last_sent: Date | null
+  fase1_aprovada: boolean
   created_at: Date
   updated_at?: Date
 }

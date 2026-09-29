@@ -27,7 +27,7 @@ const plans: {
       'Flashcards ilimitados',
       '1 simulado completo/mês + express ilimitado',
       'Professor IA — 20 explicações/dia',
-      '2ª fase — adivinhe a peça',
+      '2ª fase — após passar na 1ª fase oficial',
       'Termômetro OAB (projeção de aprovação)',
     ],
     cta: 'Começar grátis',

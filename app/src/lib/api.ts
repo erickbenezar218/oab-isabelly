@@ -3,6 +3,7 @@ const API_URL = import.meta.env.VITE_API_URL ?? '/api'
 export interface UserProfileDto {
   examDate: string | null
   area2fase: string
+  fase1Aprovada: boolean
   onboardingDone: boolean
   welcomeTourDone: boolean
   dailyGoalOverride: number | null

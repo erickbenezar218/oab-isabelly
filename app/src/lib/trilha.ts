@@ -12,6 +12,7 @@ export function gerarTrilha(params: {
   respostas: { materia?: string; correta: boolean; timestamp: number }[]
   examDate?: string
   dailyGoalOverride?: number | null
+  fase1Aprovada?: boolean
 }): TrilhaDia {
   const rawDias = params.examDate ? diasParaProva(new Date(), params.examDate) : null
   const dias = rawDias != null && rawDias > 0 ? rawDias : 30
@@ -53,7 +54,9 @@ export function gerarTrilha(params: {
       : []),
     { tipo: 'revisao', label: 'Revisar erros', qtd: revisao, link: '/app/revisao' },
     ...(simuladoExpress ? [{ tipo: 'sim', label: 'Simulado express', qtd: 40, link: '/app/simulado' }] : []),
-    { tipo: 'peca', label: 'Peça 2ª fase', qtd: 2, link: '/app/pecas' },
+    ...(params.fase1Aprovada
+      ? [{ tipo: 'peca', label: 'Peça 2ª fase', qtd: 2, link: '/app/pecas' }]
+      : []),
   ]
 
   return { metaQuestoes: metaDiaria, feitasHoje, tarefas, materiaFraca }

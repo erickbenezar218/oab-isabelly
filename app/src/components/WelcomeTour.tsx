@@ -80,7 +80,7 @@ const STEPS: Step[] = [
     title: '2ª fase — adivinhe a peça',
     description:
       'Leia o caso da prova prática e escolha qual peça o advogado deve escrever (contestação, recurso, etc.).',
-    tip: 'Treino essencial para quem vai fazer a segunda fase.',
+    tip: 'Desbloqueia depois que você confirmar aprovação na 1ª fase oficial da OAB.',
   },
   {
     route: '/app',

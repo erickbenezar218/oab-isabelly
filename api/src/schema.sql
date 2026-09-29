@@ -81,6 +81,7 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS study_reminder_enabled BOOLEAN NOT NU
 ALTER TABLE users ALTER COLUMN study_reminder_enabled SET DEFAULT TRUE;
 UPDATE users SET study_reminder_enabled = TRUE WHERE study_reminder_enabled IS NOT TRUE;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS study_reminder_last_sent DATE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS fase1_aprovada BOOLEAN NOT NULL DEFAULT FALSE;
 
 CREATE TABLE IF NOT EXISTS user_billing (
   user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,

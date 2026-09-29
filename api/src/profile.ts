@@ -4,6 +4,7 @@ import type { UserRow } from './types.js'
 export type UserProfileDto = {
   examDate: string | null
   area2fase: string
+  fase1Aprovada: boolean
   onboardingDone: boolean
   welcomeTourDone: boolean
   dailyGoalOverride: number | null
@@ -14,6 +15,7 @@ export type UserProfileDto = {
 export type ProfilePatch = Partial<{
   examDate: string | null
   area2fase: string
+  fase1Aprovada: boolean
   onboardingDone: boolean
   welcomeTourDone: boolean
   dailyGoalOverride: number | null
@@ -31,6 +33,7 @@ export function profileFromUser(u: UserRow): UserProfileDto {
   return {
     examDate: toIsoDate(u.exam_date),
     area2fase: u.area_2fase ?? 'Trabalhista',
+    fase1Aprovada: Boolean(u.fase1_aprovada),
     onboardingDone: Boolean(u.onboarding_done),
     welcomeTourDone: Boolean(u.welcome_tour_done),
     dailyGoalOverride: u.daily_goal_override ?? null,
@@ -113,6 +116,11 @@ export async function updateUserProfile(
   if (patch.area2fase !== undefined) {
     sets.push(`area_2fase = $${i}`)
     values.push(patch.area2fase)
+    i++
+  }
+  if (patch.fase1Aprovada !== undefined) {
+    sets.push(`fase1_aprovada = $${i}`)
+    values.push(patch.fase1Aprovada)
     i++
   }
   if (patch.onboardingDone !== undefined) {

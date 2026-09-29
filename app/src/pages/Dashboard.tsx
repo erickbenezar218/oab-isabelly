@@ -29,6 +29,7 @@ import { gerarTrilha } from '../lib/trilha'
 import { computeBadges } from '../lib/achievements'
 import { continueWhereLeftOff, dashboardAlerts, recentActivityItems } from '../lib/dashboardInsights'
 import OabTermometro from '../components/OabTermometro'
+import { canAccessFase2 } from '../lib/fase2Access'
 import type { ComponentType } from 'react'
 
 const modulos: {
@@ -37,14 +38,22 @@ const modulos: {
   title: string
   desc: string
   pro?: boolean
+  fase2?: boolean
 }[] = [
   { to: '/app/flashcards', Icon: IconZap, title: 'Flashcards rápidos', desc: 'Toque na alternativa — correção automática' },
   { to: '/app/simulado', Icon: IconClipboard, title: 'Simulado realista', desc: '80 questões · 5 horas' },
   { to: '/app/revisao', Icon: IconRefresh, title: 'Revisão de erros', desc: 'Fila automática + tutor IA' },
   { to: '/app/desempenho', Icon: IconChart, title: 'Desempenho por matéria', desc: 'Gráficos e anotações' },
   { to: '/app/cronograma', Icon: IconCalendar, title: 'Meta diária', desc: 'Cronograma até a prova', pro: true },
-  { to: '/app/pecas', Icon: IconScale, title: '2ª fase — peças', desc: 'Adivinhe a peça processual' },
+  { to: '/app/pecas', Icon: IconScale, title: '2ª fase — peças', desc: 'Adivinhe a peça processual', fase2: true },
 ]
+
+function modulosVisiveis(fase1Aprovada?: boolean) {
+  return modulos.map((m) => ({
+    ...m,
+    locked: m.fase2 ? !canAccessFase2({ fase1Aprovada }) : false,
+  }))
+}
 
 const alertStyles = {
   info: 'border-blue-200 bg-blue-50 text-blue-900',
@@ -66,7 +75,13 @@ export default function Dashboard() {
   const hoje = questoesRespondidasHoje(progress.respostas)
   const xp = calcXp(progress)
   const level = levelFromXp(xp)
-  const trilha = gerarTrilha({ totalQuestoes: total, respostas: progress.respostas, examDate, dailyGoalOverride: goalOverride })
+  const trilha = gerarTrilha({
+    totalQuestoes: total,
+    respostas: progress.respostas,
+    examDate,
+    dailyGoalOverride: goalOverride,
+    fase1Aprovada: progress.profile?.fase1Aprovada,
+  })
   const ultimoSim = progress.simulados[0]
   const passaria = ultimoSim ? passariaHoje(ultimoSim.acertos, ultimoSim.total) : null
 
@@ -284,7 +299,7 @@ export default function Dashboard() {
 
         <SectionCard title="Módulos de estudo" subtitle="Escolha como estudar agora">
           <div className="space-y-2">
-            {modulos.map(({ to, Icon, title, desc, pro }) => (
+            {modulosVisiveis(progress.profile?.fase1Aprovada).map(({ to, Icon, title, desc, pro, locked }) => (
               <Link
                 key={to}
                 to={to}
@@ -298,6 +313,11 @@ export default function Dashboard() {
                     <p className="font-semibold text-ink">{title}</p>
                     {pro && !isPro && (
                       <span className="rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-bold text-brand-700">PRO</span>
+                    )}
+                    {locked && (
+                      <span className="rounded-full bg-surface-700 px-2 py-0.5 text-[10px] font-bold text-muted">
+                        Após 1ª fase
+                      </span>
                     )}
                   </div>
                   <p className="text-xs text-muted">{desc}</p>

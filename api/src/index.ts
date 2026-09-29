@@ -284,6 +284,9 @@ app.put<{ Body: { progress: Record<string, unknown> } }>('/progress', async (req
   const progress = req.body?.progress
   if (!progress || typeof progress !== 'object') return reply.code(400).send({ error: 'Progresso inválido.' })
   const { profile: _profile, ...studyData } = progress
+  if (!user.fase1_aprovada) {
+    delete studyData.pecasRespostas
+  }
   await pool.query(
     `INSERT INTO user_progress (user_id, data, updated_at) VALUES ($1, $2, NOW())
      ON CONFLICT (user_id) DO UPDATE SET data = $2, updated_at = NOW()`,

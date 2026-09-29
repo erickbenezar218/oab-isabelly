@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { IconArrowRight, IconChart, IconCheck, IconClipboard } from '../components/icons'
+import Fase2Gate from '../components/Fase2Gate'
 import PageHeader from '../components/ui/PageHeader'
 import StatCard from '../components/ui/StatCard'
 import { useApp } from '../context/AppContext'
@@ -78,17 +79,24 @@ export default function Pecas() {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
-      </div>
+      <Fase2Gate>
+        <div className="flex h-64 items-center justify-center">
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+        </div>
+      </Fase2Gate>
     )
   }
 
   if (!banco || !caso) {
-    return <p className="text-center text-muted">Nenhum caso disponível.</p>
+    return (
+      <Fase2Gate>
+        <p className="text-center text-muted">Nenhum caso disponível.</p>
+      </Fase2Gate>
+    )
   }
 
   return (
+    <Fase2Gate>
     <div className="space-y-6">
       <PageHeader
         title="Adivinhe a peça"
@@ -196,6 +204,7 @@ export default function Pecas() {
         </div>
       </article>
     </div>
+    </Fase2Gate>
   )
 }
 
