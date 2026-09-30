@@ -76,7 +76,7 @@ export default function KitOab() {
                   rel="noopener noreferrer"
                   className="mt-4 inline-block text-sm font-semibold text-brand-600 hover:underline"
                 >
-                  Abrir material →
+                  Abrir guia · Salvar como PDF →
                 </a>
               ) : (
                 <p className="mt-4 text-xs text-muted-light">Disponível no plano Pro</p>

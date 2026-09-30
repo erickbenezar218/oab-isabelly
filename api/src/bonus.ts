@@ -25,22 +25,22 @@ export function getBonusKitConfig() {
 
   const pdfs: BonusPdfItem[] = [
     {
-      id: 'roteiro-1a',
-      title: 'Roteiro de Estudo — 1ª Fase OAB',
-      description: 'O que priorizar nos dias que antecedem a prova objetiva.',
-      url: pdfUrl('BONUS_PDF_ROTEIRO_1', '/bonus/roteiro-1a-fase.html'),
+      id: 'roteiro-estrategico',
+      title: 'Roteiro estratégico — 1ª Fase OAB',
+      description: 'Matemática da aprovação, blocos de matérias, ciclo semanal e simulados no SimulaOrdem.',
+      url: pdfUrl('BONUS_PDF_ROTEIRO_1', '/bonus/roteiro-estrategico-1a-fase.html'),
     },
     {
       id: 'assuntos-1a',
-      title: 'Assuntos mais cobrados — 1ª Fase',
-      description: 'Direcionamento por matéria (visão geral).',
-      url: pdfUrl('BONUS_PDF_ASSUNTOS_1', '/bonus/assuntos-1a-fase.html'),
+      title: 'Mapa de assuntos prioritários',
+      description: 'Eixos por disciplina + como personalizar pelo Desempenho no app.',
+      url: pdfUrl('BONUS_PDF_ASSUNTOS_1', '/bonus/assuntos-mais-cobrados-1a-fase.html'),
     },
     {
-      id: 'gestao-tempo',
-      title: 'Gestão do tempo na prova objetiva',
-      description: 'Estratégia de 5 horas e marcação inteligente.',
-      url: pdfUrl('BONUS_PDF_GESTAO_TEMPO', '/bonus/gestao-tempo-1a-fase.html'),
+      id: 'artigos-1a',
+      title: 'Artigos e dispositivos de alta recorrência',
+      description: 'Lei seca direcionada para revisão com simulados e Professor IA.',
+      url: pdfUrl('BONUS_PDF_ARTIGOS_1', '/bonus/artigos-mais-cobrados-1a-fase.html'),
     },
   ]
 

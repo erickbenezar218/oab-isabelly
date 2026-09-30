@@ -27,4 +27,4 @@ export const PROMO_PRICING: Record<
 }
 
 export const PRO_BONUS_TEASER =
-  'Bônus Pro: Kit PDF de estudos OAB + convite ao grupo Dicas OAB no WhatsApp (entrega por e-mail após confirmação do pagamento).'
+  'Bônus Pro: Kit Aprovador (3 guias para salvar em PDF) + convite ao grupo Dicas OAB no WhatsApp após confirmação do pagamento.'
