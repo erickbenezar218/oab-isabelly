@@ -29,7 +29,7 @@ export default function VslSection({ variant = 'landing' }: VslSectionProps) {
           </h2>
           {!compact && (
             <p className="mx-auto mt-4 max-w-2xl text-muted">
-              Em poucos minutos: o método, o simulado real de 5 horas e a oferta de lançamento do Pro.
+              Assista em 3 minutos: método, simulado de 5 horas e oferta de lançamento do Pro.
             </p>
           )}
         </Reveal>

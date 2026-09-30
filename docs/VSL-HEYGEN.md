@@ -1,6 +1,52 @@
-# VSL SimulaOrdem — HeyGen (PAS · ~10 min)
+# VSL SimulaOrdem — HeyGen
 
-Roteiro para gravar no **HeyGen** (avatar + voz) e publicar no site (`/` e `/planos`).
+Roteiro para avatar + voz no **HeyGen** e embed no site (`/` e `/planos`).
+
+---
+
+## Plano HeyGen: 3 vídeos × 1 minuto (use este)
+
+**Não precisa de 10 minutos para lançar.** Muita landing converte bem com **VSL de 3 minutos** (PAS enxuto). Use os **3 créditos** assim:
+
+| Vídeo HeyGen | Papel PAS | Depois |
+|--------------|-----------|--------|
+| **1/3** | Gancho + Problema | export MP4 |
+| **2/3** | Solução (SimulaOrdem) | export MP4 |
+| **3/3** | Oferta + CTA | export MP4 |
+
+**Montagem (grátis):** CapCut, DaVinci ou iMovie → juntar na ordem 1→2→3 → export **um** MP4 de ~3 min → YouTube não listado → `VITE_VSL_EMBED_URL`.
+
+**Dica:** gere **prévia** antes de gastar crédito; texto já está no limite de ~1 min por bloco (~130 palavras).
+
+### Vídeo 1/3 — Problema (~55–60 s) · cole no HeyGen
+
+Você estuda para a OAB, mas se a prova fosse amanhã: você **passaria hoje**? Se você não sabe, o problema não é falta de vontade — é falta de **prova simulada de verdade**: oitenta questões, **cinco horas**, cronômetro, cansaço, igual FGV. Sem isso você não sabe se está acima dos quarenta acertos, qual matéria derruba sua nota, ou se erra por conteúdo ou tempo. Na véspera vira ansiedade: revisa tudo no escuro. Reprovar de novo custa meses, dinheiro e energia. O que falta é **sistema**: simular, medir, corrigir.
+
+### Vídeo 2/3 — Solução (~55–60 s)
+
+**SimulaOrdem** é a plataforma web para treinar como na prova real. Simulado completo no tempo FGV, **Termômetro OAB** — você vê se passaria hoje — desempenho por matéria, **Professor IA** explicando cada erro, revisão e cronograma no plano Pro. Mais de mil cento e vinte questões oficiais, progresso na nuvem. Comece **grátis**, sem cartão: flashcards e simulados com limite. No **Pro**, simulados ilimitados e IA sem teto. Prova em noventa dias? **Reta Final**: três meses com melhor custo.
+
+### Vídeo 3/3 — Oferta + CTA (~55–60 s)
+
+**Oferta de lançamento:** Pro de quarenta e nove noventa por **vinte e quatro noventa por mês**. Reta Final de cento e dezenove setenta por **cinquenta e nove noventa** em três meses. Quem assina leva o **Kit Aprovador** — três PDFs no e-mail. PIX, cartão ou boleto via Asaas; cancela o Pro quando quiser. Acesse **simulaordem.com.br**, crie conta grátis, faça um simulado. Se fizer sentido, em **Planos** assine Pro. **Simule hoje. Meça hoje.** Te vejo dentro.
+
+---
+
+## Quer VSL longa (8–12 min)?
+
+| Caminho | Custo |
+|---------|--------|
+| **Upgrade HeyGen** (Creator) | paga, gera tudo em avatar |
+| **Híbrido (recomendado barato)** | 3 min HeyGen (acima) + **5–8 min screencast** do site com sua voz (QuickTime / OBS) colado no CapCut |
+| **Sem avatar** | só screencast + narração — funciona igual na landing |
+
+O site aceita **qualquer duração** no YouTube embed; 3 min já ativa a seção de vídeo.
+
+---
+
+## Versão longa PAS (~10 min) — se tiver créditos/plano maior
+
+Cole **uma cena por vez** no HeyGen. Pausas: `[PAUSA 2s]`.
 
 ## Antes de gerar no HeyGen
 
@@ -19,12 +65,6 @@ VITE_VSL_EMBED_URL=https://www.youtube.com/watch?v=SEU_ID
 # ou embed direto; retrato HeyGen:
 VITE_VSL_ASPECT=portrait
 ```
-
----
-
-## Estrutura PAS (~10 min · ~1.350 palavras)
-
-Cole **uma cena por vez** no HeyGen (limite de caracteres por cena). Pausas: `[PAUSA 2s]`.
 
 ---
 
