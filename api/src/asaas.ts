@@ -98,6 +98,33 @@ export async function asaasRequest<T>(path: string, init?: RequestInit): Promise
   return text ? (JSON.parse(text) as T) : ({} as T)
 }
 
+export async function getCustomer(customerId: string): Promise<AsaasCustomer> {
+  return asaasRequest<AsaasCustomer>(`/customers/${encodeURIComponent(customerId)}`)
+}
+
+export async function findCustomerByCpf(cpfCnpj: string): Promise<AsaasCustomer | null> {
+  const cpf = cpfCnpj.replace(/\D/g, '')
+  const data = await asaasRequest<{ data: AsaasCustomer[] }>(
+    `/customers?cpfCnpj=${encodeURIComponent(cpf)}&limit=1`,
+  )
+  return data.data?.[0] ?? null
+}
+
+/** Mensagem legível a partir do JSON de erro do Asaas. */
+export function asaasErrorMessage(body: string, fallback: string): string {
+  try {
+    const parsed = JSON.parse(body) as { errors?: { description?: string; code?: string }[] }
+    const desc = parsed.errors?.map((e) => e.description).filter(Boolean).join(' ')
+    if (desc) return desc
+  } catch {
+    /* ignore */
+  }
+  if (body.includes('invalid_access_token') || body.includes('access_token')) {
+    return 'Pagamentos temporariamente indisponíveis. Contate suporte@simulaordem.com.br.'
+  }
+  return fallback
+}
+
 export async function createCustomer(input: {
   name: string
   email: string

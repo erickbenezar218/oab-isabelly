@@ -17,6 +17,9 @@ import {
   planPrices,
   type AsaasPayment,
   type AsaasWebhookEvent,
+  asaasErrorMessage,
+  findCustomerByCpf,
+  getCustomer,
 } from './asaas.js'
 import { appUrl } from './email.js'
 import { effectivePlan } from './auth.js'
@@ -74,25 +77,55 @@ async function getUserBySubscription(pool: pg.Pool, subscriptionId: string): Pro
   return rows[0] ?? null
 }
 
-async function ensureAsaasCustomer(pool: pg.Pool, user: UserRow, cpfCnpj: string): Promise<string> {
-  const cpf = normalizeCpf(cpfCnpj)
-  if (user.asaas_customer_id) {
-    await pool.query('UPDATE users SET cpf_cnpj = $1, updated_at = NOW() WHERE id = $2', [cpf, user.id])
-    return user.asaas_customer_id
-  }
-
-  const customer = await createCustomer({
-    name: user.name,
-    email: user.email,
-    cpfCnpj: cpf,
-    externalReference: user.id,
-  })
-
+async function linkAsaasCustomer(pool: pg.Pool, userId: string, customerId: string, cpf: string): Promise<string> {
   await pool.query(
     'UPDATE users SET asaas_customer_id = $1, cpf_cnpj = $2, updated_at = NOW() WHERE id = $3',
-    [customer.id, cpf, user.id],
+    [customerId, cpf, userId],
   )
-  return customer.id
+  return customerId
+}
+
+async function ensureAsaasCustomer(pool: pg.Pool, user: UserRow, cpfCnpj: string): Promise<string> {
+  const cpf = normalizeCpf(cpfCnpj)
+
+  if (user.asaas_customer_id) {
+    try {
+      await getCustomer(user.asaas_customer_id)
+      await pool.query('UPDATE users SET cpf_cnpj = $1, updated_at = NOW() WHERE id = $2', [cpf, user.id])
+      return user.asaas_customer_id
+    } catch (err) {
+      if (err instanceof AsaasError && (err.status === 404 || err.status === 403)) {
+        console.warn('[billing] cliente Asaas inválido no ambiente atual, recriando:', user.asaas_customer_id)
+        await pool.query('UPDATE users SET asaas_customer_id = NULL, updated_at = NOW() WHERE id = $1', [user.id])
+        user = { ...user, asaas_customer_id: null }
+      } else {
+        throw err
+      }
+    }
+  }
+
+  const existing = await findCustomerByCpf(cpf)
+  if (existing?.id) {
+    return linkAsaasCustomer(pool, user.id, existing.id, cpf)
+  }
+
+  try {
+    const customer = await createCustomer({
+      name: user.name,
+      email: user.email,
+      cpfCnpj: cpf,
+      externalReference: user.id,
+    })
+    return linkAsaasCustomer(pool, user.id, customer.id, cpf)
+  } catch (err) {
+    if (err instanceof AsaasError) {
+      const existingAfter = await findCustomerByCpf(cpf)
+      if (existingAfter?.id) {
+        return linkAsaasCustomer(pool, user.id, existingAfter.id, cpf)
+      }
+    }
+    throw err
+  }
 }
 
 async function saveBillingLink(
@@ -267,8 +300,12 @@ export async function registerBillingRoutes(app: FastifyInstance, deps: BillingD
       }
     } catch (err) {
       if (err instanceof AsaasError) {
-        console.error('[billing] Asaas:', err.body)
-        return reply.code(502).send({ error: 'Erro ao criar cobrança. Verifique os dados ou tente mais tarde.' })
+        console.error('[billing] Asaas:', err.status, err.body)
+        const message = asaasErrorMessage(
+          err.body,
+          'Erro ao criar cobrança. Verifique os dados ou tente mais tarde.',
+        )
+        return reply.code(502).send({ error: message })
       }
       throw err
     }
