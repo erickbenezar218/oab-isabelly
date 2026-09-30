@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { PromoPrice } from '../components/PromoPrice'
 import { apiBillingConfig, type BillingConfig } from '../lib/api'
+import VslSection from '../components/landing/VslSection'
 import { LAUNCH_OFFER_LABEL, PRO_BONUS_TEASER, type PaidPlanId } from '../lib/pricing'
 
 type PlanId = 'free' | 'pro' | 'reta'
@@ -144,6 +145,8 @@ export default function Planos() {
               {LAUNCH_OFFER_LABEL} — valores de referência riscados; você paga o preço promocional
             </p>
           </div>
+
+          <VslSection variant="planos" />
 
           <div className="mx-auto mt-14 grid max-w-6xl gap-6 lg:grid-cols-3 lg:items-stretch">
             {plans.map((plan) => (
