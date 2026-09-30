@@ -87,6 +87,41 @@ PGPASSWORD='sua_senha' psql -U simulaordem -d simulaordem -c "UPDATE users SET p
 
 ---
 
+## Conta “cheia” para gravar vídeo (simulados, termômetro, badges)
+
+O histórico fica em **`user_progress.data`** (JSON). Dá para popular pelo script (IDs reais do `banco_oab.json`):
+
+### Local (Docker)
+
+```bash
+cd "/Users/erickbenezar/Documents/Prova OAB/api"
+npm run demo:seed -- seu@email.com
+```
+
+Ou com compose na raiz:
+
+```bash
+docker compose exec api sh -c 'cd /app && node scripts/seed-demo-progress.mjs seu@email.com'
+```
+
+(só funciona se o container tiver o script montado — em dev com volume; em produção use `--print-sql` ou `DATABASE_URL`.)
+
+### Coolify (só terminal do **db**)
+
+Na sua máquina, gere o SQL (não precisa de banco):
+
+```bash
+cd api && node scripts/seed-demo-progress.mjs --print-sql seu@email.com > /tmp/demo.sql
+```
+
+Abra `/tmp/demo.sql`, copie tudo, cole no `psql` do container **db**.
+
+O script define também **Pro**, data da prova, onboarding concluído, ~5 simulados (último ~44/80 → termômetro “Aprovado!”), flashcards, revisão e peças da 2ª fase.
+
+Depois: **F5** no site. O kit PDF **não** é reenviado — use `/kit-oab` logado.
+
+---
+
 ## Reta Final (90 dias)
 
 Mesmo efeito Pro no app; só muda a data:
