@@ -89,51 +89,11 @@ Só use se for **Photo Avatar / upload de foto sua** no HeyGen (não inventar ro
 
 **Dica:** gere **prévia** antes de gastar crédito; ouça a voz — se travar em sigla, use a tabela **Corrige pronúncia** abaixo ou troque no texto (ex.: “tutor” no lugar de “Professor IA”).
 
-### Voz robótica? (leia isto antes de gastar mais crédito)
+### Roteiro para IA (HeyGen)
 
-O **texto perfeito não conserta** a voz sintética do HeyGen em português — ela costuma soar **plana e de locutor**, não conversa de WhatsApp.
+Cada bloco é **um parágrafo contínuo**: contexto → problema → o que é o produto → como usa → grátis → Pro → Reta. **Não** quebre em frases soltas (a entrega fica truncada). Limite HeyGen: **840 caracteres** por vídeo — textos abaixo já cabem.
 
-**Melhor saída (recomendada): aba Áudio, não Roteiro**
-
-1. No HeyGen, na etapa do script, troque **Roteiro** → **Áudio**.
-2. Grave no **celular** (Gravador / Memos) lendo o **roteiro oral** abaixo — quarto quieto, fone com mic se tiver, **como se falasse pra um amigo** (não “lendo slide”).
-3. Fale **devagar**, **pausas** entre frases; respira.
-4. Envie o MP3/M4A no HeyGen → o Rafael **só sincroniza a boca** com **sua** entonação.
-5. Exporta.
-
-**Plano B (zero robô):** esquece avatar no vídeo 2. Grava **tela do site** (OBS / QuickTime) + **sua voz** explicando — cola no CapCut com o vídeo 1 do Rafael (só gancho). Fica mais natural que 100% IA.
-
-**Se insistir no TTS HeyGen:** frases **curtas** (roteiro “oral” abaixo), velocidade **~0,9**, troque de voz PT-BR (teste 2–3 vozes), evite siglas no meio da frase.
-
-### Vídeo 2/3 — roteiro ORAL (para gravar áudio · ~1 min)
-
-Leia **linha por linha**, pausa entre blocos:
-
-```
-Olha só...
-
-Se você tá na OAB e nunca sentou cinco horas, oitenta questões... você fica chutando a nota.
-
-No Simula Ordem você treina igual o dia da prova. Tempo de FGV.
-
-Aí abre o termômetro.
-
-Passaria hoje?
-
-Errou? O tutor explica. Direto.
-
-No plano Pro tem revisão do erro e cronograma.
-
-Mais de mil questões oficiais. Tudo na nuvem.
-
-Testa de graça. Sem cartão. Flashcards e simulado com limite.
-
-Gostou? Assina o Pro — simulado e explicação liberados.
-
-Prova daqui uns noventa dias? A Reta Final, três meses, costuma compensar.
-```
-
-*(Fale “Simula Ordem” em duas palavras — grava melhor que “SimulaOrdem” colado.)*
+Opcional: aba **Áudio** + gravação humana lendo o mesmo texto, se a voz TTS ainda incomodar.
 
 ### Corrige pronúncia (HeyGen) — cole em “Soles como se pronuncia”
 
@@ -155,15 +115,15 @@ No roteiro abaixo evitamos “Professor IA” e “IA” solto — soa mais huma
 
 ### Vídeo 1/3 — Problema (~55–60 s) · cole no HeyGen
 
-Me diz uma coisa: se a prova da OAB fosse amanhã, você passaria hoje? Se travou no “não sei”, não é falta de esforço — é que você quase nunca senta cinco horas, oitenta questões, cronômetro ligado, no esquema FGV. Aí você não sabe se tá nos quarenta acertos, qual matéria te derruba, se é conteúdo ou tempo. Na véspera vira correria no escuro. Reprovar de novo dói no bolso e na cabeça. O caminho é simples: simular, medir, corrigir e repetir.
+Vou te fazer uma pergunta direta: se a prova da OAB fosse amanhã, você saberia dizer se passaria? Muita gente trava aqui, e não é porque estuda pouco — é porque estuda sem medir. Você lê, assiste aula, faz questão solta, mas quase nunca encara cinco horas seguidas, oitenta questões, cronômetro ligado, do jeito que a FGV cobra. Sem esse teste, você não sabe se está nos quarenta acertos, qual matéria puxa a nota para baixo, nem se o problema é conteúdo ou tempo. Quando chega a véspera, vira ansiedade e revisão no escuro. Reprovar de novo custa meses e dinheiro. Por isso quem leva a sério segue um ciclo: simular, ver a nota, corrigir o erro e repetir.
 
-### Vídeo 2/3 — Solução (~55–60 s)
+### Vídeo 2/3 — Solução (~55–60 s) · cole no HeyGen
 
-Olha só: quem estuda pra OAB e não faz simulado de oitenta questões, cinco horas, fica chutando a nota. No SimulaOrdem você treina igual o dia da prova, no ritmo da FGV. Abre o termômetro e vê: passaria hoje? Errou? O tutor explica na hora, sem enrolação. No plano Pro entra revisão dos erros e cronograma. Mais de mil questões oficiais, progresso salvo na nuvem. Começa de graça, sem cartão — flashcards e simulado com limite, ali no site mesmo. Curtiu? Assina o Pro: simulado e explicação liberados. Prova daqui uns noventa dias? A Reta Final, três meses, costuma valer mais a pena no bolso.
+Imagina o seguinte: você estuda pra OAB faz tempo, mas quase nunca sentou cinco horas seguidas fazendo oitenta questões, igual no dia da prova. Por isso você não tem um número na cabeça — fica no achismo. O Simula Ordem foi feito pra fechar essa lacuna. Lá dentro você faz o simulado no tempo da FGV; quando termina, abre o termômetro e vê se passaria hoje e onde precisa reforçar. Errou? Tem explicação na hora. No plano Pro entram revisão de erros e cronograma, com mais de mil questões oficiais e progresso na nuvem. Antes de pagar, testa grátis, sem cartão — flashcards e simulado com limite. Se fizer sentido, assina o Pro e libera simulado e explicação. Faltam uns noventa dias pra prova? Olha a Reta Final: três meses, costuma compensar no bolso.
 
-### Vídeo 3/3 — Oferta + CTA (~55–60 s)
+### Vídeo 3/3 — Oferta + CTA (~55–60 s) · cole no HeyGen
 
-Tá rolando oferta de lançamento: o Pro sai de quarenta e nove noventa por vinte e quatro noventa por mês. A Reta Final, três meses, de cento e dezenove setenta por cinquenta e nove noventa. Assinou? Ganha o Kit Aprovador — três PDFs no e-mail. Paga no Pix, cartão ou boleto; cancela o Pro quando quiser. Entra no simulaordem.com.br, abre conta grátis, faz um simulado. Fez sentido? Lá em Planos você assina. Bora simular hoje e medir de verdade. Te espero lá dentro.
+Se você chegou até aqui, provavelmente quer treinar com método — então vou te contar como entrar. Estamos na oferta de lançamento: o plano Pro sai de quarenta e nove noventa por vinte e quatro noventa por mês, e a Reta Final, três meses, de cento e dezenove setenta por cinquenta e nove noventa. Quem assina o Pro recebe ainda o Kit Aprovador, três PDFs de estudo direto no e-mail. O pagamento é no Pix, cartão ou boleto, e você cancela o Pro quando quiser pela própria conta. O caminho é simples: acessa simulaordem.com.br, cria sua conta grátis, faz um simulado para sentir a plataforma e, se fizer sentido, escolhe Pro ou Reta em Planos. O objetivo é você saber hoje se passaria — não só na véspera. Te espero lá dentro.
 
 ---
 
