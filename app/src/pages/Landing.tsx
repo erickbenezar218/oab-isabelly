@@ -12,7 +12,6 @@ import {
 } from '../components/landing/motion'
 import { OabTermometroDemo } from '../components/OabTermometro'
 import TestimonialsSection from '../components/landing/TestimonialsSection'
-import VslSection from '../components/landing/VslSection'
 import { LAUNCH_OFFER_LABEL, PROMO_PRICING } from '../lib/pricing'
 
 const features = [
@@ -62,7 +61,6 @@ export default function Landing() {
         <AiLearningSection />
         <DarkFeature />
         <TrustSection />
-        <VslSection variant="landing" />
         <TestimonialsSection />
         <CtaSection ctaTo={ctaTo} ctaLabel={ctaLabel} />
       </main>

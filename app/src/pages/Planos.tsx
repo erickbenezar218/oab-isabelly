@@ -146,8 +146,6 @@ export default function Planos() {
             </p>
           </div>
 
-          <VslSection variant="planos" />
-
           <div className="mx-auto mt-14 grid max-w-6xl gap-6 lg:grid-cols-3 lg:items-stretch">
             {plans.map((plan) => (
               <PlanCard
@@ -224,6 +222,8 @@ export default function Planos() {
             </div>
           </div>
         </section>
+
+        <VslSection variant="planos" />
 
         <section className="bg-brand-600 px-4 py-16 md:px-8 md:py-20">
           <div className="mx-auto max-w-3xl text-center">
