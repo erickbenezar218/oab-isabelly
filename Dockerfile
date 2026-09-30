@@ -14,7 +14,7 @@ COPY banco_oab.json ./public/banco_oab.json
 
 ARG VITE_API_URL=/api
 ARG VITE_GOOGLE_CLIENT_ID=
-ARG VITE_VSL_EMBED_URL=https://www.youtube.com/shorts/VSWAhgEwFQo
+ARG VITE_VSL_EMBED_URL=https://www.youtube.com/shorts/A_7UgvwFEK8
 ARG VITE_VSL_ASPECT=portrait
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID

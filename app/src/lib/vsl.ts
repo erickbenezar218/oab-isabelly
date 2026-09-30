@@ -1,5 +1,5 @@
 /** VSL oficial (YouTube Short). Override: VITE_VSL_EMBED_URL no build. */
-export const DEFAULT_VSL_WATCH_URL = 'https://www.youtube.com/shorts/VSWAhgEwFQo'
+export const DEFAULT_VSL_WATCH_URL = 'https://www.youtube.com/shorts/A_7UgvwFEK8'
 
 function youtubeEmbedId(raw: string): string | null {
   if (raw.includes('youtube.com/watch')) {
