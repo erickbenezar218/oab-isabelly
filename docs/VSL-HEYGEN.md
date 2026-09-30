@@ -87,19 +87,37 @@ Só use se for **Photo Avatar / upload de foto sua** no HeyGen (não inventar ro
 
 **Montagem (grátis):** CapCut, DaVinci ou iMovie → juntar na ordem 1→2→3 → export **um** MP4 de ~3 min → YouTube não listado → `VITE_VSL_EMBED_URL`.
 
-**Dica:** gere **prévia** antes de gastar crédito; texto já está no limite de ~1 min por bloco (~130 palavras).
+**Dica:** gere **prévia** antes de gastar crédito; ouça a voz — se travar em sigla, use a tabela **Corrige pronúncia** abaixo ou troque no texto (ex.: “tutor” no lugar de “Professor IA”).
+
+### Corrige pronúncia (HeyGen) — cole em “Soles como se pronuncia”
+
+| Palavra no roteiro | Soles assim (PT-BR) |
+|--------------------|---------------------|
+| SimulaOrdem | si-mu-la-ÓR-dem |
+| FGV | éfi-gê-vê |
+| OAB | ó-a-bê |
+| Termômetro OAB | ter-mô-metro ó-a-bê |
+| Pro (plano) | pró |
+| Reta Final | rê-ta fi-NAL |
+| simulaordem.com.br | si-mu-la-ÓR-dem ponto com ponto br |
+| IA (se usar) | i-á |
+| Kit Aprovador | kit a-pro-va-DOR |
+
+No roteiro abaixo evitamos “Professor IA” e “IA” solto — soa mais humano e a voz erra menos.
+
+---
 
 ### Vídeo 1/3 — Problema (~55–60 s) · cole no HeyGen
 
-Você estuda para a OAB, mas se a prova fosse amanhã: você **passaria hoje**? Se você não sabe, o problema não é falta de vontade — é falta de **prova simulada de verdade**: oitenta questões, **cinco horas**, cronômetro, cansaço, igual FGV. Sem isso você não sabe se está acima dos quarenta acertos, qual matéria derruba sua nota, ou se erra por conteúdo ou tempo. Na véspera vira ansiedade: revisa tudo no escuro. Reprovar de novo custa meses, dinheiro e energia. O que falta é **sistema**: simular, medir, corrigir.
+Me diz uma coisa: se a prova da OAB fosse amanhã, você passaria hoje? Se travou no “não sei”, não é falta de esforço — é que você quase nunca senta cinco horas, oitenta questões, cronômetro ligado, no esquema FGV. Aí você não sabe se tá nos quarenta acertos, qual matéria te derruba, se é conteúdo ou tempo. Na véspera vira correria no escuro. Reprovar de novo dói no bolso e na cabeça. O caminho é simples: simular, medir, corrigir e repetir.
 
 ### Vídeo 2/3 — Solução (~55–60 s)
 
-Olha, o SimulaOrdem é a plataforma online pra você treinar do jeito que a prova cobra. Simulado de oitenta questões, cinco horas, no ritmo da FGV. Tem o Termômetro OAB: você vê na hora se passaria hoje. Vê por matéria onde você tá fraco, e quando erra, o Professor IA explica na hora. No Pro ainda tem revisão de erros e cronograma. São mais de mil questões oficiais, tudo salvo na nuvem. Dá pra começar de graça, sem cartão — flashcards e simulado com limite. Assinando o Pro, simulado e IA liberados. Prova perto, em uns noventa dias? O plano Reta Final, três meses, costuma sair mais em conta.
+Olha só: quem estuda pra OAB e não faz simulado de oitenta questões, cinco horas, fica chutando a nota. No SimulaOrdem você treina igual o dia da prova, no ritmo da FGV. Abre o termômetro e vê: passaria hoje? Errou? O tutor explica na hora, sem enrolação. No plano Pro entra revisão dos erros e cronograma. Mais de mil questões oficiais, progresso salvo na nuvem. Começa de graça, sem cartão — flashcards e simulado com limite, ali no site mesmo. Curtiu? Assina o Pro: simulado e explicação liberados. Prova daqui uns noventa dias? A Reta Final, três meses, costuma valer mais a pena no bolso.
 
 ### Vídeo 3/3 — Oferta + CTA (~55–60 s)
 
-**Oferta de lançamento:** Pro de quarenta e nove noventa por **vinte e quatro noventa por mês**. Reta Final de cento e dezenove setenta por **cinquenta e nove noventa** em três meses. Quem assina leva o **Kit Aprovador** — três PDFs no e-mail. PIX, cartão ou boleto via Asaas; cancela o Pro quando quiser. Acesse **simulaordem.com.br**, crie conta grátis, faça um simulado. Se fizer sentido, em **Planos** assine Pro. **Simule hoje. Meça hoje.** Te vejo dentro.
+Tá rolando oferta de lançamento: o Pro sai de quarenta e nove noventa por vinte e quatro noventa por mês. A Reta Final, três meses, de cento e dezenove setenta por cinquenta e nove noventa. Assinou? Ganha o Kit Aprovador — três PDFs no e-mail. Paga no Pix, cartão ou boleto; cancela o Pro quando quiser. Entra no simulaordem.com.br, abre conta grátis, faz um simulado. Fez sentido? Lá em Planos você assina. Bora simular hoje e medir de verdade. Te espero lá dentro.
 
 ---
 
