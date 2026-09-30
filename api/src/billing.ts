@@ -8,6 +8,7 @@ import {
   createSubscription,
   externalRef,
   formatDueDate,
+  getPayment,
   isAsaasConfigured,
   isAsaasSandbox,
   listCustomerPayments,
@@ -111,6 +112,11 @@ async function saveBillingLink(
   )
 }
 
+function paymentValueMatchesPlan(payment: AsaasPayment, planProduct: 'pro' | 'reta'): boolean {
+  const expected = planPrices()[planProduct]
+  return Math.abs(Number(payment.value) - expected) <= 0.02
+}
+
 async function processPaymentConfirmed(pool: pg.Pool, payment: AsaasPayment): Promise<void> {
   const okStatus = payment.status === 'CONFIRMED' || payment.status === 'RECEIVED'
   if (!okStatus) return
@@ -149,6 +155,11 @@ async function processPaymentConfirmed(pool: pg.Pool, payment: AsaasPayment): Pr
 
   if (!userId || !planProduct) {
     console.warn('[billing] pagamento sem usuário mapeado:', payment.id)
+    return
+  }
+
+  if (!paymentValueMatchesPlan(payment, planProduct)) {
+    console.warn('[billing] valor do pagamento não confere com o plano:', payment.id, payment.value, planProduct)
     return
   }
 
@@ -390,12 +401,18 @@ export async function registerBillingRoutes(app: FastifyInstance, deps: BillingD
   })
 
   app.post('/billing/webhook', async (req, reply) => {
+    if (!isAsaasConfigured()) {
+      return reply.code(503).send({ error: 'Pagamentos não configurados.' })
+    }
+
     const token = process.env.ASAAS_WEBHOOK_TOKEN?.trim()
-    if (token) {
-      const header = req.headers['asaas-access-token']
-      if (header !== token) {
-        return reply.code(401).send({ error: 'Webhook não autorizado.' })
-      }
+    if (!token) {
+      console.error('[billing] ASAAS_WEBHOOK_TOKEN ausente com Asaas ativo')
+      return reply.code(503).send({ error: 'Webhook não configurado.' })
+    }
+    const header = req.headers['asaas-access-token']
+    if (header !== token) {
+      return reply.code(401).send({ error: 'Webhook não autorizado.' })
     }
 
     const body = req.body as AsaasWebhookEvent
@@ -407,11 +424,20 @@ export async function registerBillingRoutes(app: FastifyInstance, deps: BillingD
     )
 
     try {
-      if (body.payment && (body.event === 'PAYMENT_CONFIRMED' || body.event === 'PAYMENT_RECEIVED')) {
-        await processPaymentConfirmed(pool, body.payment)
+      if (body.event === 'PAYMENT_CONFIRMED' || body.event === 'PAYMENT_RECEIVED') {
+        const paymentId = body.payment?.id
+        if (!paymentId) {
+          return reply.code(400).send({ error: 'Pagamento ausente no evento.' })
+        }
+
+        const remote = await getPayment(paymentId)
+        await processPaymentConfirmed(pool, remote)
       }
     } catch (err) {
       console.error('[billing] webhook erro:', err)
+      if (err instanceof AsaasError && err.status === 404) {
+        return reply.code(400).send({ error: 'Pagamento não encontrado no Asaas.' })
+      }
     }
 
     return { received: true }

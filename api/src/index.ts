@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
+import rateLimit from '@fastify/rate-limit'
 import { initDb, pool } from './db.js'
 import { comparePassword, effectivePlan, hashPassword, isGoogleConfigured, signToken, verifyGoogleToken, verifyToken } from './auth.js'
 import { iaDailyLimit } from './iaLimits.js'
@@ -22,6 +23,7 @@ import { sendLoginOtpEmail, sendPasswordResetEmail, sendWelcomeEmail } from './e
 import { appUrl } from './email.js'
 import { createPasswordResetToken, resetPasswordWithToken, validatePasswordResetToken } from './passwordReset.js'
 import { isAsaasConfigured, isAsaasSandbox } from './asaas.js'
+import { assertProductionConfig, AUTH_RATE_LIMIT } from './security.js'
 import { registerBillingRoutes } from './billing.js'
 import { isGeminiConfigured } from './gemini.js'
 import { createLoginChallenge, maskEmail, verifyLoginChallenge } from './otp.js'
@@ -69,6 +71,13 @@ await app.register(cors, {
 })
 
 await initDb()
+assertProductionConfig()
+
+await app.register(rateLimit, {
+  global: true,
+  max: 240,
+  timeWindow: '1 minute',
+})
 
 function userPublic(u: UserRow) {
   const plan = effectivePlan(u.plan, u.plan_expires_at)
@@ -93,25 +102,34 @@ async function getUserFromAuth(header?: string): Promise<UserRow | null> {
   }
 }
 
-app.get('/health', async () => ({
-  ok: true,
-  service: 'simulaordem-api',
-  google: isGoogleConfigured(),
-  gemini: isGeminiConfigured(),
-  email: isEmailConfigured(),
-  email2fa: isEmail2faEnabled(),
-  studyReminderCron: isStudyReminderCronEnabled(),
-  studyReminderHour: studyReminderHourLabel(),
-  asaas: isAsaasConfigured(),
-  asaasSandbox: isAsaasSandbox(),
-}))
-
 function verifyCronSecret(header?: string): boolean {
   const secret = process.env.CRON_SECRET?.trim()
   if (!secret) return false
   if (!header?.startsWith('Bearer ')) return false
   return header.slice(7) === secret
 }
+
+app.get<{ Querystring: { detail?: string } }>('/health', async (req, reply) => {
+  const wantDetail = req.query.detail === '1'
+  if (wantDetail && verifyCronSecret(req.headers.authorization)) {
+    return {
+      ok: true,
+      service: 'simulaordem-api',
+      google: isGoogleConfigured(),
+      gemini: isGeminiConfigured(),
+      email: isEmailConfigured(),
+      email2fa: isEmail2faEnabled(),
+      studyReminderCron: isStudyReminderCronEnabled(),
+      studyReminderHour: studyReminderHourLabel(),
+      asaas: isAsaasConfigured(),
+      asaasSandbox: isAsaasSandbox(),
+    }
+  }
+  if (wantDetail) {
+    return reply.code(401).send({ error: 'Não autorizado.' })
+  }
+  return { ok: true }
+})
 
 app.post('/internal/cron/study-reminders', async (req, reply) => {
   if (!verifyCronSecret(req.headers.authorization)) {
@@ -121,7 +139,7 @@ app.post('/internal/cron/study-reminders', async (req, reply) => {
   return { ok: true, ...result }
 })
 
-app.post<{ Body: { email: string; password: string; name: string } }>('/auth/register', async (req, reply) => {
+app.post<{ Body: { email: string; password: string; name: string } }>('/auth/register', AUTH_RATE_LIMIT, async (req, reply) => {
   const { email, password, name } = req.body ?? {}
   if (!email?.includes('@') || !password || password.length < 6 || !name?.trim()) {
     return reply.code(400).send({ error: 'Dados inválidos. Senha mínima: 6 caracteres.' })
@@ -142,7 +160,7 @@ app.post<{ Body: { email: string; password: string; name: string } }>('/auth/reg
   return { token, user: userPublic(user) }
 })
 
-app.post<{ Body: { email: string; password: string } }>('/auth/login', async (req, reply) => {
+app.post<{ Body: { email: string; password: string } }>('/auth/login', AUTH_RATE_LIMIT, async (req, reply) => {
   const { email, password } = req.body ?? {}
   if (!email || !password) return reply.code(400).send({ error: 'E-mail e senha obrigatórios.' })
   const { rows } = await pool.query<UserRow>('SELECT * FROM users WHERE email = $1', [email.trim().toLowerCase()])
@@ -170,7 +188,7 @@ app.post<{ Body: { email: string; password: string } }>('/auth/login', async (re
 const FORGOT_PASSWORD_MSG =
   'Se existir uma conta com este e-mail, enviamos um link para redefinir a senha. Verifique a caixa de entrada e o spam.'
 
-app.post<{ Body: { email: string } }>('/auth/forgot-password', async (req, reply) => {
+app.post<{ Body: { email: string } }>('/auth/forgot-password', AUTH_RATE_LIMIT, async (req, reply) => {
   const email = req.body?.email?.trim().toLowerCase()
   if (!email?.includes('@')) return reply.code(400).send({ error: 'Informe um e-mail válido.' })
   if (!isEmailConfigured()) {
@@ -195,7 +213,7 @@ app.get<{ Querystring: { token?: string } }>('/auth/reset-password/validate', as
   return { valid: true, email: result.email }
 })
 
-app.post<{ Body: { token: string; password: string } }>('/auth/reset-password', async (req, reply) => {
+app.post<{ Body: { token: string; password: string } }>('/auth/reset-password', AUTH_RATE_LIMIT, async (req, reply) => {
   const { token, password } = req.body ?? {}
   if (!token?.trim()) return reply.code(400).send({ error: 'Link inválido.' })
   const result = await resetPasswordWithToken(token, password ?? '')
@@ -203,7 +221,7 @@ app.post<{ Body: { token: string; password: string } }>('/auth/reset-password', 
   return { ok: true, message: 'Senha alterada com sucesso. Você já pode entrar.' }
 })
 
-app.post<{ Body: { challengeId: string; code: string } }>('/auth/verify-otp', async (req, reply) => {
+app.post<{ Body: { challengeId: string; code: string } }>('/auth/verify-otp', AUTH_RATE_LIMIT, async (req, reply) => {
   const { challengeId, code } = req.body ?? {}
   if (!challengeId || !code?.trim()) {
     return reply.code(400).send({ error: 'Código obrigatório.' })
@@ -225,7 +243,7 @@ app.post<{ Body: { challengeId: string; code: string } }>('/auth/verify-otp', as
   return { token, user: userPublic(user) }
 })
 
-app.post<{ Body: { credential: string } }>('/auth/google', async (req, reply) => {
+app.post<{ Body: { credential: string } }>('/auth/google', AUTH_RATE_LIMIT, async (req, reply) => {
   const googleUser = await verifyGoogleToken(req.body?.credential ?? '')
   if (!googleUser) {
     return reply.code(503).send({ error: 'Login com Google não configurado ou token inválido.' })
@@ -304,6 +322,7 @@ app.put<{ Body: { progress: Record<string, unknown> } }>('/progress', async (req
   const progress = req.body?.progress
   if (!progress || typeof progress !== 'object') return reply.code(400).send({ error: 'Progresso inválido.' })
   let { profile: _profile, ...studyData } = progress
+  delete studyData.iaUsageToday
   if (!user.fase1_aprovada) {
     delete studyData.pecasRespostas
   }

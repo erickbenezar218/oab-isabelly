@@ -112,6 +112,7 @@ export function clampProgressForFreePlan(studyData: Record<string, unknown>): Re
   next.customCards = []
   const simulados = Array.isArray(next.simulados) ? next.simulados : []
   next.simulados = simulados.slice(0, 1)
+  delete next.iaUsageToday
   return next
 }
 

@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify'
 import type pg from 'pg'
 import { geminiGenerate, type GeminiMessage } from './gemini.js'
 import { canGenerateIa, recordIaGeneration } from './iaLimits.js'
-import { canUseTutor } from './plans.js'
+import { canUseTutor, isPro } from './plans.js'
 import type { UserRow } from './types.js'
 
 export const MAX_TUTOR_USER_MESSAGES = 10
@@ -147,13 +147,46 @@ function proChatRequired(reply: { code: (n: number) => { send: (b: object) => un
   })
 }
 
+/** Plano grátis: ver cache global conta no limite diário de IA (uma vez por questão). */
+async function ensureCacheAccess(
+  pool: pg.Pool,
+  user: UserRow,
+  questaoId: string,
+  cached: string,
+): Promise<{ ok: true } | { ok: false; reason: string }> {
+  if (isPro(user.plan, user.plan_expires_at)) return { ok: true }
+  const thread = await getThread(pool, user.id, questaoId)
+  if (thread?.explanation) return { ok: true }
+
+  const allowed = await canGenerateIa(user.id, user.plan, user.plan_expires_at)
+  if (!allowed.ok) return allowed
+  await recordIaGeneration(user.id)
+  const stamp = new Date().toISOString()
+  await saveThread(pool, user.id, questaoId, cached, [{ role: 'assistant', content: cached, createdAt: stamp }])
+  return { ok: true }
+}
+
 export async function registerTutorRoutes(
   app: FastifyInstance,
   deps: { pool: pg.Pool; getUser: (header?: string) => Promise<UserRow | null> },
 ) {
   app.get<{ Params: { questaoId: string } }>('/tutor/comment/:questaoId', async (req, reply) => {
-    const cached = await getCachedExplanation(deps.pool, req.params.questaoId)
-    return { explanation: cached, cached: Boolean(cached) }
+    const user = await deps.getUser(req.headers.authorization)
+    if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
+
+    const questaoId = req.params.questaoId
+    const thread = await getThread(deps.pool, user.id, questaoId)
+    if (thread?.explanation) {
+      return { explanation: thread.explanation, cached: true }
+    }
+
+    const cached = await getCachedExplanation(deps.pool, questaoId)
+    if (!cached) return { explanation: null, cached: false }
+
+    const access = await ensureCacheAccess(deps.pool, user, questaoId, cached)
+    if (!access.ok) return reply.code(429).send({ error: access.reason, code: 'IA_LIMIT' })
+
+    return { explanation: cached, cached: true }
   })
 
   app.post<{
@@ -167,6 +200,8 @@ export async function registerTutorRoutes(
 
     const cached = await getCachedExplanation(deps.pool, questao.id)
     if (cached) {
+      const access = await ensureCacheAccess(deps.pool, user, questao.id, cached)
+      if (!access.ok) return reply.code(429).send({ error: access.reason, code: 'IA_LIMIT' })
       return { explanation: cached, cached: true, remainingMessages: canUseTutor(user.plan, user.plan_expires_at) ? MAX_TUTOR_USER_MESSAGES : 0 }
     }
 
@@ -225,6 +260,8 @@ export async function registerTutorRoutes(
 
     const cached = await getCachedExplanation(deps.pool, questao.id)
     if (cached) {
+      const access = await ensureCacheAccess(deps.pool, user, questao.id, cached)
+      if (!access.ok) return reply.code(429).send({ error: access.reason })
       const thread = await getThread(deps.pool, user.id, questao.id)
       return {
         explanation: cached,

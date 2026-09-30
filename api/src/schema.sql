@@ -109,3 +109,10 @@ CREATE TABLE IF NOT EXISTS asaas_processed_payments (
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_asaas_customer ON users(asaas_customer_id);
+
+CREATE TABLE IF NOT EXISTS ia_daily_usage (
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  usage_date DATE NOT NULL,
+  count INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (user_id, usage_date)
+);

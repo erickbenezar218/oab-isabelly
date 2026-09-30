@@ -83,7 +83,7 @@ export default function TutorPanel({
       setLoaded(true)
       return
     }
-    apiTutorCommentCached(questao.id)
+    apiTutorCommentCached(token, questao.id)
       .then((data) => {
         if (data.explanation) {
           setExplanation(data.explanation)

@@ -3,7 +3,11 @@ import jwt from 'jsonwebtoken'
 import { OAuth2Client } from 'google-auth-library'
 import type { JwtPayload, Plan } from './types.js'
 
-const JWT_SECRET = process.env.JWT_SECRET ?? 'dev-secret-change-in-production'
+import { DEV_JWT_SECRET } from './security.js'
+
+function jwtSecret(): string {
+  return process.env.JWT_SECRET?.trim() || DEV_JWT_SECRET
+}
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID?.trim() ?? ''
 const GOOGLE_IOS_CLIENT_ID = process.env.GOOGLE_IOS_CLIENT_ID?.trim() ?? ''
 const googleAudiences = [GOOGLE_CLIENT_ID, GOOGLE_IOS_CLIENT_ID].filter(Boolean)
@@ -14,11 +18,11 @@ export function isGoogleConfigured(): boolean {
 }
 
 export function signToken(payload: JwtPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '30d' })
+  return jwt.sign(payload, jwtSecret(), { expiresIn: '30d', algorithm: 'HS256' })
 }
 
 export function verifyToken(token: string): JwtPayload {
-  return jwt.verify(token, JWT_SECRET) as JwtPayload
+  return jwt.verify(token, jwtSecret(), { algorithms: ['HS256'] }) as JwtPayload
 }
 
 export async function hashPassword(password: string): Promise<string> {

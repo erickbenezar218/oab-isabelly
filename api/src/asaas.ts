@@ -131,6 +131,10 @@ export async function listSubscriptionPayments(subscriptionId: string): Promise<
   return data.data ?? []
 }
 
+export async function getPayment(paymentId: string): Promise<AsaasPayment> {
+  return asaasRequest<AsaasPayment>(`/payments/${encodeURIComponent(paymentId)}`)
+}
+
 export async function listCustomerPayments(customerId: string): Promise<AsaasPayment[]> {
   const data = await asaasRequest<{ data: AsaasPayment[] }>(
     `/payments?customer=${encodeURIComponent(customerId)}&limit=24&order=desc`,

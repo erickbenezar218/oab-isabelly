@@ -47,6 +47,8 @@ No painel Asaas → **Integrações → Webhooks → Adicionar**
 
 O Asaas envia o header `asaas-access-token` — a API valida contra `ASAAS_WEBHOOK_TOKEN`.
 
+Em **produção** (`ASAAS_ENV=production`), a API **não sobe** sem `ASAAS_WEBHOOK_TOKEN` (mín. 16 caracteres) e `JWT_SECRET` forte (mín. 32 caracteres). No webhook, cada cobrança é **reconfirmada** com `GET /payments/{id}` no Asaas antes de ativar o plano; valores fora de `ASAAS_PRO_VALUE` / `ASAAS_RETA_VALUE` são ignorados.
+
 ## 4. Fluxo do usuário
 
 1. `/planos` → Assinar Pro ou Reta Final

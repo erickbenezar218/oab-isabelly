@@ -238,8 +238,10 @@ export async function apiSimuladoStart(token: string, mode: 'full' | 'express' =
   return data
 }
 
-export async function apiTutorCommentCached(questaoId: string) {
-  const res = await fetch(`${API_URL}/tutor/comment/${encodeURIComponent(questaoId)}`)
+export async function apiTutorCommentCached(token: string, questaoId: string) {
+  const res = await fetch(`${API_URL}/tutor/comment/${encodeURIComponent(questaoId)}`, {
+    headers: authHeaders(token),
+  })
   if (!res.ok) return { explanation: null as string | null, cached: false }
   return (await res.json()) as { explanation: string | null; cached: boolean }
 }
