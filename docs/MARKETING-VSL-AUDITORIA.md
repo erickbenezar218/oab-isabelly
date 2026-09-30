@@ -34,7 +34,7 @@ Não invente feature. Se não está na seção 2, não pode prometer.
 
 ### Proposta central (o que somos)
 
-Plataforma **web** para treinar **1ª fase OAB** com simulados no formato da prova, acompanhamento de desempenho, explicações por IA e evolução para **2ª fase** (peças) após o usuário marcar aprovação na 1ª.
+Plataforma **web** de preparação OAB (**1ª + 2ª fase**): **termômetro**, desempenho por matéria, flashcards, simulados (completo/express/oficial), **professor IA** (chat no Pro), revisão, cronograma e Kit PDF. Simulado de 5h é **parte** do método — **não** é o único argumento de venda.
 
 ### Banco e formato
 

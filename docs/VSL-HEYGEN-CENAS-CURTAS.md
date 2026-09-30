@@ -1,63 +1,57 @@
 # HeyGen — uma cena única (curta)
 
-**Um vídeo só** (~45–55 s · ~570 caracteres). Pausas: ` - `  
-Avatar Rafael · voz PT-BR · paisagem para landing.
+**Um vídeo** (~50 s). Pausas: ` - ` · Rafael · PT-BR · paisagem.
 
 ---
 
-## Análise comercial / marketing (produto real)
+## Análise comercial — o que **realmente** vende o SimulaOrdem
 
-### O que estamos vendendo (1 frase)
+### Posicionamento (não é só “5 horas de prova”)
 
-Treino **mensurável** para 1ª fase OAB: simulado no tempo FGV + **termômetro** + explicação de erro + upgrade Pro para volume e método.
+SimulaOrdem é **plataforma de preparação OAB** (1ª + 2ª fase): **medir**, **entender erro**, **priorizar matéria** e **treinar com IA** — simulado longo é **uma ferramenta**, não o produto inteiro.
 
-### Diferenciais que **convertem** (prioridade)
+### Ganchos que **prendem** (ordem de força)
 
-1. **Simulado 80q / 5h** — medo #1 do aluno é “não saber a nota”.  
-2. **Termômetro “passaria hoje?”** — tangível, shareável, único na headline.  
-3. **Grátis sem cartão** — remove fricção (com limites honestos).  
-4. **Pro** — ilimitado + chat IA + revisão + cronograma + **Kit PDF** (valor percebido).  
-5. **Preço lançamento 24,90** — ancoragem vs cursinho.
+| # | Gancho | Por quê |
+|---|--------|---------|
+| 1 | **Termômetro — passaria hoje?** | Resposta emocional imediata |
+| 2 | **Professor de IA + chat (Pro)** | “Não estou sozinho” |
+| 3 | **Desempenho por matéria** | Onde estudar menos/more |
+| 4 | **Revisão inteligente de erros (Pro)** | Método, não só volume |
+| 5 | **Cronograma / trilha do dia (Pro)** | Organização na reta final |
+| 6 | **1.120+ questões + 2ª fase (peças)** | Prep completa vs app só simulado |
+| 7 | **Simulados** (completo / express / oficial) | Formato FGV — citar, não liderar |
+| 8 | **Kit PDF no e-mail (Pro)** | Bônus tangível |
+| 9 | **Grátis sem cartão** | Entrada |
 
-### O que **não** prometer
+### O que **evitar** no vídeo curto
 
-Aprovação garantida · IA ilimitada no grátis · WhatsApp · app iOS.
+- Abrir falando só de **5 horas / 80 questões** (cansativo, estreita a marca).  
+- Parecer cursinho genérico (“milhares de aulas”).  
+- Prometer aprovação.
 
-### Limites grátis (obrigatório no discurso curto)
+### Limites grátis (uma linha no roteiro)
 
-20 flashcards/dia · 1 simulado completo/mês · 1 express/mês · 5 explicações/dia.
+Flashcards 20/dia · 1 simulado completo/mês · 1 express/mês · 5 explicações IA/dia.
 
-### Veredito: isso prende e vende em vídeo curto?
+### Veredito marketing
 
-| | |
-|---|---|
-| **Tempo ideal** | 45–55 s (não 3 min) |
-| **Gancho que funciona** | Nota / quarenta acertos / “apostaria que passa?” |
-| **CTA único** | simulaordem.com.br + **fazer simulado hoje** |
-| **Nota conversão esperada** | 7,5–8/10 em landing quente; complementar landing com print do termômetro |
+Vídeo **único ~50 s** com **termômetro + IA + matérias + grátis + Pro 24,90** → alinhado ao produto e mais **shareável** que discurso só de prova longa.
 
 ---
 
-## Roteiro único — cole no HeyGen
+## Roteiro único (fala nova · plataforma completa)
 
 ```
-A OAB não premia quem leu mais - premia quem aguenta cinco horas e busca quarenta acertos. Se você nunca mediu isso, está chutando. O Simula Ordem te coloca no formato real da prova - termômetro na tela - e mostra onde reforçar. Erra? Explicação na hora. Grátis, sem cartão: flashcards, um simulado por mês, express e cinco explicações por dia. No Pro entra simulado ilimitado, chat com professor de IA, revisão, cronograma e Kit PDF no e-mail. Oferta vinte e quatro noventa por mês. simulaordem.com.br - roda um simulado ainda hoje.
+Estudar OAB sozinho cansa - você erra e ninguém explica na hora. O Simula Ordem junta termômetro passaria hoje, desempenho por matéria, flashcards, simulados no padrão FGV, professor de IA e treino de peças da segunda fase. No Pro vem chat com o professor, revisão dos erros, cronograma e trilha do dia - mais de mil questões na nuvem. Testa grátis, sem cartão, com limite honesto. Assinou Pro? Kit PDF no e-mail e simulados liberados. Lançamento vinte e quatro noventa por mês. simulaordem.com.br - mede seu nível hoje.
 ```
 
-**Caracteres:** ~570 (cabe no limite HeyGen).
-
-### Pronúncia rápida
-
-| Termo | Dica |
-|-------|------|
-| Simula Ordem | duas palavras |
-| quarenta acertos | claro |
-| simulaordem.com.br | soletrar se travar |
+~580 caracteres.
 
 ---
 
-## Depois do export
+## Export
 
-YouTube não listado → `VITE_VSL_EMBED_URL` → redeploy **web**.
+YouTube não listado → `VITE_VSL_EMBED_URL` → redeploy web.
 
-Auditoria claim × produto: `docs/MARKETING-VSL-AUDITORIA.md`.
+Claims × produto: `docs/MARKETING-VSL-AUDITORIA.md`.

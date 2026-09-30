@@ -77,19 +77,11 @@ Só use se for **Photo Avatar / upload de foto sua** no HeyGen (não inventar ro
 
 ---
 
-## Plano HeyGen: 3 vídeos × 1 minuto (use este)
+## Roteiro principal (1 vídeo curto)
 
-**Não precisa de 10 minutos para lançar.** Muita landing converte bem com **VSL de 3 minutos** (PAS enxuto). Use os **3 créditos** assim:
+Use o texto em **`VSL-HEYGEN-CENAS-CURTAS.md`** (análise + fala única ~45 s).
 
-| Vídeo HeyGen | Papel PAS | Depois |
-|--------------|-----------|--------|
-| **1/3** | Gancho + Problema | export MP4 |
-| **2/3** | Solução (SimulaOrdem) | export MP4 |
-| **3/3** | Oferta + CTA | export MP4 |
-
-**Montagem (grátis):** CapCut, DaVinci ou iMovie → juntar na ordem 1→2→3 → export **um** MP4 de ~3 min → YouTube não listado → `VITE_VSL_EMBED_URL`.
-
-**Dica:** gere **prévia** antes de gastar crédito; ouça a voz — se travar em sigla, use a tabela **Corrige pronúncia** abaixo ou troque no texto (ex.: “tutor” no lugar de “Professor IA”).
+Legado (3×1 min PAS): seções abaixo — só se quiser versão longa montada no editor.
 
 ### Roteiro para IA (HeyGen)
 
