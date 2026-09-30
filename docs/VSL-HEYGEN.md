@@ -95,7 +95,7 @@ Você estuda para a OAB, mas se a prova fosse amanhã: você **passaria hoje**? 
 
 ### Vídeo 2/3 — Solução (~55–60 s)
 
-**SimulaOrdem** é a plataforma web para treinar como na prova real. Simulado completo no tempo FGV, **Termômetro OAB** — você vê se passaria hoje — desempenho por matéria, **Professor IA** explicando cada erro, revisão e cronograma no plano Pro. Mais de mil cento e vinte questões oficiais, progresso na nuvem. Comece **grátis**, sem cartão: flashcards e simulados com limite. No **Pro**, simulados ilimitados e IA sem teto. Prova em noventa dias? **Reta Final**: três meses com melhor custo.
+Olha, o SimulaOrdem é a plataforma online pra você treinar do jeito que a prova cobra. Simulado de oitenta questões, cinco horas, no ritmo da FGV. Tem o Termômetro OAB: você vê na hora se passaria hoje. Vê por matéria onde você tá fraco, e quando erra, o Professor IA explica na hora. No Pro ainda tem revisão de erros e cronograma. São mais de mil questões oficiais, tudo salvo na nuvem. Dá pra começar de graça, sem cartão — flashcards e simulado com limite. Assinando o Pro, simulado e IA liberados. Prova perto, em uns noventa dias? O plano Reta Final, três meses, costuma sair mais em conta.
 
 ### Vídeo 3/3 — Oferta + CTA (~55–60 s)
 
