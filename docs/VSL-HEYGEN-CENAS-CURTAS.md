@@ -54,4 +54,6 @@ Estudar OAB sozinho cansa - você erra e ninguém explica na hora. O Simula Orde
 
 YouTube não listado → `VITE_VSL_EMBED_URL` → redeploy web.
 
+**Editar com tela do sistema (Rafael + app):** [`VSL-EDICAO-SCREENCAST.md`](VSL-EDICAO-SCREENCAST.md).
+
 Claims × produto: `docs/MARKETING-VSL-AUDITORIA.md`.
