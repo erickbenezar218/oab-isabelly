@@ -122,7 +122,23 @@ Deve aparecer `OK:` + contagem de simulados/respostas. A API já tem `DATABASE_U
 
 3. **F5** no site (ou logout/login). Kit PDF **não** dispara — abra `/kit-oab` logado.
 
-**Erro `can't cd to api`:** você estava no container **db**; mude para o terminal do serviço **api**.
+**Erro `node: not found` ou `can't cd to api`:** terminal do container **db** (só Postgres). Use o bloco **“Só container db”** abaixo — não precisa de Node.
+
+### Só container **db** (wget + psql)
+
+No terminal **`db`** (`/ #`), **uma linha por comando**:
+
+```sh
+wget -qO /tmp/demo.sql https://raw.githubusercontent.com/erickbenezar218/oab-isabelly/main/api/scripts/demo-seed-coolify.sql
+```
+
+```sh
+psql -U simulaordem -d simulaordem -f /tmp/demo.sql
+```
+
+Arquivo fixo para `erick.benezar@conectplusfibra.com.br`. Outro e-mail: regenere com `node scripts/seed-demo-progress.mjs --print-sql outro@email.com` (requer repo/Mac) ou peça para atualizar o SQL no repo.
+
+Deve mostrar `UPDATE 1`. Depois **F5** no site.
 
 ### Local (Docker no Mac)
 

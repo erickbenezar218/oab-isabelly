@@ -15,9 +15,12 @@ import pg from 'pg'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-const emailArg = process.argv.find((a) => a.includes('@'))
 const printSql = process.argv.includes('--print-sql')
-const email = emailArg?.trim().toLowerCase()
+const email = process.argv
+  .slice(2)
+  .find((a) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a))
+  ?.trim()
+  .toLowerCase()
 
 if (!email) {
   console.error('Informe o e-mail: node scripts/seed-demo-progress.mjs [--print-sql] usuario@email.com')
