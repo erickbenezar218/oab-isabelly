@@ -89,6 +89,52 @@ Só use se for **Photo Avatar / upload de foto sua** no HeyGen (não inventar ro
 
 **Dica:** gere **prévia** antes de gastar crédito; ouça a voz — se travar em sigla, use a tabela **Corrige pronúncia** abaixo ou troque no texto (ex.: “tutor” no lugar de “Professor IA”).
 
+### Voz robótica? (leia isto antes de gastar mais crédito)
+
+O **texto perfeito não conserta** a voz sintética do HeyGen em português — ela costuma soar **plana e de locutor**, não conversa de WhatsApp.
+
+**Melhor saída (recomendada): aba Áudio, não Roteiro**
+
+1. No HeyGen, na etapa do script, troque **Roteiro** → **Áudio**.
+2. Grave no **celular** (Gravador / Memos) lendo o **roteiro oral** abaixo — quarto quieto, fone com mic se tiver, **como se falasse pra um amigo** (não “lendo slide”).
+3. Fale **devagar**, **pausas** entre frases; respira.
+4. Envie o MP3/M4A no HeyGen → o Rafael **só sincroniza a boca** com **sua** entonação.
+5. Exporta.
+
+**Plano B (zero robô):** esquece avatar no vídeo 2. Grava **tela do site** (OBS / QuickTime) + **sua voz** explicando — cola no CapCut com o vídeo 1 do Rafael (só gancho). Fica mais natural que 100% IA.
+
+**Se insistir no TTS HeyGen:** frases **curtas** (roteiro “oral” abaixo), velocidade **~0,9**, troque de voz PT-BR (teste 2–3 vozes), evite siglas no meio da frase.
+
+### Vídeo 2/3 — roteiro ORAL (para gravar áudio · ~1 min)
+
+Leia **linha por linha**, pausa entre blocos:
+
+```
+Olha só...
+
+Se você tá na OAB e nunca sentou cinco horas, oitenta questões... você fica chutando a nota.
+
+No Simula Ordem você treina igual o dia da prova. Tempo de FGV.
+
+Aí abre o termômetro.
+
+Passaria hoje?
+
+Errou? O tutor explica. Direto.
+
+No plano Pro tem revisão do erro e cronograma.
+
+Mais de mil questões oficiais. Tudo na nuvem.
+
+Testa de graça. Sem cartão. Flashcards e simulado com limite.
+
+Gostou? Assina o Pro — simulado e explicação liberados.
+
+Prova daqui uns noventa dias? A Reta Final, três meses, costuma compensar.
+```
+
+*(Fale “Simula Ordem” em duas palavras — grava melhor que “SimulaOrdem” colado.)*
+
 ### Corrige pronúncia (HeyGen) — cole em “Soles como se pronuncia”
 
 | Palavra no roteiro | Soles assim (PT-BR) |
