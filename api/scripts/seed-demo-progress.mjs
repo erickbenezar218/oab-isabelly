@@ -26,6 +26,7 @@ if (!email) {
 
 function loadBanco() {
   const candidates = [
+    path.join(__dirname, 'banco_oab.json'),
     path.join(__dirname, '../../banco_oab.json'),
     path.join(__dirname, '../banco_oab.json'),
   ]
