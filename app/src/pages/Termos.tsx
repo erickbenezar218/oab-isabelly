@@ -3,7 +3,7 @@ import LegalLayout from '../components/LegalLayout'
 export default function Termos() {
   return (
     <LegalLayout title="Termos de Uso">
-      <p className="text-xs text-muted-light">Última atualização: 15 de setembro de 2026</p>
+      <p className="text-xs text-muted-light">Última atualização: 30 de setembro de 2026</p>
 
       <section>
         <h2>1. Quem somos</h2>
@@ -28,11 +28,14 @@ export default function Termos() {
         <h2>3. Serviço</h2>
         <p>O SimulaOrdem oferece, conforme o plano contratado:</p>
         <ul>
-          <li>Simulados no formato da prova objetiva (80 questões, cronômetro);</li>
+          <li>Simulados no formato da prova objetiva (80 questões, cronômetro) e simulado express (40 questões);</li>
           <li>Flashcards e active recall;</li>
-          <li>Treino de peças processuais da 2ª fase (identificação da peça pelo caso);</li>
-          <li>Cronograma de meta diária e estatísticas de desempenho (planos pagos);</li>
-          <li>Tutor IA para revisão de erros (plano Pro);</li>
+          <li>Treino de peças processuais da 2ª fase (após confirmação de aprovação na 1ª fase);</li>
+          <li>Termômetro OAB e estatísticas (escopo conforme o plano);</li>
+          <li>Professor IA — explicações de questões (limite diário no grátis; ilimitado no Pro);</li>
+          <li>Chat com o Tutor IA por questão (plano Pro);</li>
+          <li>Revisão de erros e desempenho por matéria (plano Pro);</li>
+          <li>Cronograma de meta diária (plano Pro);</li>
           <li>Armazenamento do progresso na nuvem vinculado à sua conta.</li>
         </ul>
         <p>
@@ -45,14 +48,17 @@ export default function Termos() {
         <h2>4. Planos e pagamento</h2>
         <ul>
           <li>
-            <strong>Grátis:</strong> flashcards ilimitados e 1 (um) simulado por mês civil, com histórico limitado ao último
-            simulado.
+            <strong>Grátis:</strong> até 20 flashcards por dia; 1 simulado completo e 1 simulado express por mês civil;
+            até 5 explicações do Professor IA por dia; termômetro OAB (visão básica); histórico limitado ao último simulado;
+            2ª fase disponível após você informar aprovação na 1ª fase oficial.
           </li>
           <li>
-            <strong>Pro:</strong> R$ 24,90/mês — simulados ilimitados, histórico completo e revisão de erros.
+            <strong>Pro:</strong> R$ 24,90/mês — simulados ilimitados, Professor IA ilimitado, chat por questão, revisão de
+            erros, desempenho completo, cronograma e histórico completo.
           </li>
           <li>
-            <strong>Reta Final:</strong> R$ 59,90 por 3 meses — mesmos benefícios do Pro no período contratado.
+            <strong>Reta Final:</strong> R$ 59,90 por 3 meses — mesmos benefícios do Pro no período contratado (90 dias de
+            acesso Pro).
           </li>
         </ul>
         <p>

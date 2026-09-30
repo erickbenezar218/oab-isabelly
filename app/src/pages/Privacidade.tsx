@@ -3,7 +3,7 @@ import LegalLayout from '../components/LegalLayout'
 export default function Privacidade() {
   return (
     <LegalLayout title="Política de Privacidade (LGPD)">
-      <p className="text-xs text-muted-light">Última atualização: 15 de setembro de 2026</p>
+      <p className="text-xs text-muted-light">Última atualização: 30 de setembro de 2026</p>
 
       <section>
         <h2>1. Controlador dos dados</h2>
@@ -29,7 +29,15 @@ export default function Privacidade() {
             <strong>Uso do app:</strong> respostas, simulados, flashcards, estatísticas, cards salvos;
           </li>
           <li>
-            <strong>Pagamento:</strong> dados processados pelo Asaas (não armazenamos número completo de cartão);
+            <strong>Pagamento:</strong> CPF (para emissão de cobrança) e dados processados pelo Asaas — não armazenamos
+            número completo de cartão;
+          </li>
+          <li>
+            <strong>Professor IA:</strong> enunciado da questão, alternativas, sua resposta e mensagens do chat (plano Pro),
+            enviados ao provedor de IA para gerar explicações;
+          </li>
+          <li>
+            <strong>Preferências:</strong> data da prova, área da 2ª fase, lembretes de estudo por e-mail (se ativados);
           </li>
           <li>
             <strong>Técnicos:</strong> IP, navegador, logs de acesso para segurança.
@@ -43,7 +51,9 @@ export default function Privacidade() {
           <li>Prestar o serviço de simulados e estudos;</li>
           <li>Autenticar e manter sua conta;</li>
           <li>Processar pagamentos e planos;</li>
-          <li>Enviar e-mails transacionais (boas-vindas, confirmação, recuperação de senha);</li>
+          <li>
+            Enviar e-mails transacionais (boas-vindas, confirmação, recuperação de senha, lembrete de estudo opt-in);
+          </li>
           <li>Melhorar a plataforma e cumprir obrigações legais.</li>
         </ul>
       </section>
@@ -52,8 +62,11 @@ export default function Privacidade() {
         <h2>4. Base legal (LGPD)</h2>
         <ul>
           <li>Execução de contrato (Art. 7º, V) — prestação do serviço;</li>
-          <li>Consentimento (Art. 7º, I) — login Google e marketing, quando houver;</li>
-          <li>Legítimo interesse (Art. 7º, IX) — segurança e melhoria do produto;</li>
+          <li>
+            Consentimento (Art. 7º, I) — login Google, lembretes de estudo por e-mail (opt-in) e comunicações de marketing,
+            quando houver;
+          </li>
+          <li>Legítimo interesse (Art. 7º, IX) — segurança, prevenção a fraudes e melhoria do produto;</li>
           <li>Obrigação legal (Art. 7º, II) — fiscal e consumerista.</li>
         </ul>
       </section>
@@ -66,10 +79,13 @@ export default function Privacidade() {
             <strong>Asaas</strong> — processamento de pagamentos;
           </li>
           <li>
-            <strong>Provedores de e-mail</strong> (ex.: Zoho, Resend) — comunicações;
+            <strong>Google</strong> — login OAuth (quando você usa “Entrar com Google”) e API Gemini (Professor IA);
           </li>
           <li>
-            <strong>Hospedagem</strong> (servidor/Coolify) — infraestrutura;
+            <strong>Provedores de e-mail</strong> (ex.: Hostinger, Zoho, Resend) — comunicações;
+          </li>
+          <li>
+            <strong>Hospedagem</strong> — infraestrutura em nuvem (servidor dedicado/VPS);
           </li>
           <li>Autoridades, quando exigido por lei.</li>
         </ul>

@@ -87,7 +87,7 @@ const faqs = [
   },
   {
     q: 'O plano grátis é suficiente para testar?',
-    a: 'Sim. Você usa flashcards ilimitados e 1 simulado por mês para sentir o ritmo real da prova.',
+    a: 'Sim. Você tem 20 flashcards por dia, 1 simulado completo e 1 express por mês, além de 5 explicações IA por dia — sem cartão.',
   },
   {
     q: 'Qual plano escolher na reta final?',
@@ -225,7 +225,9 @@ export default function Planos() {
         <section className="bg-brand-600 px-4 py-16 md:px-8 md:py-20">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-bold text-white md:text-4xl">Ainda em dúvida? Comece grátis hoje</h2>
-            <p className="mt-4 text-brand-100">Teste flashcards e 1 simulado por mês sem cartão de crédito.</p>
+            <p className="mt-4 text-brand-100">
+              Teste o grátis: 20 flashcards/dia, 1 simulado completo + 1 express/mês e 5 explicações IA/dia — sem cartão.
+            </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
                 to={ctaTo}
@@ -246,11 +248,35 @@ export default function Planos() {
       </main>
 
       <footer className="border-t border-slate-200 bg-white px-4 py-10 md:px-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <Link to={user ? '/app' : '/'} className="text-sm text-muted underline hover:text-brand-600">
             ← Voltar ao início
           </Link>
-          <p className="text-xs text-muted-light">© {new Date().getFullYear()} SimulaOrdem</p>
+          <div>
+            <p className="text-sm font-semibold text-ink">Legal e suporte</p>
+            <ul className="mt-2 space-y-1 text-sm text-muted">
+              <li>
+                <Link to="/termos" className="hover:text-brand-600">
+                  Termos de Uso
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacidade" className="hover:text-brand-600">
+                  Política de Privacidade (LGPD)
+                </Link>
+              </li>
+              <li>
+                <a href="mailto:suporte@simulaordem.com.br" className="hover:text-brand-600">
+                  suporte@simulaordem.com.br
+                </a>
+              </li>
+            </ul>
+          </div>
+          <p className="text-xs text-muted-light sm:text-right">
+            © {new Date().getFullYear()} SimulaOrdem
+            <br />
+            R E BENEZAR DE SOUZA LTDA · CNPJ 37.409.487/0001-70
+          </p>
         </div>
       </footer>
     </div>

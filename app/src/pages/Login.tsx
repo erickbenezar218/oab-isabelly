@@ -25,6 +25,7 @@ export default function Login() {
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
   const [busy, setBusy] = useState(false)
+  const [acceptLegal, setAcceptLegal] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('simulaordem-remember-email')
@@ -37,6 +38,10 @@ export default function Login() {
   if (!loading && user) return <Navigate to={redirectTo.startsWith('/') ? redirectTo : '/app'} replace />
 
   const handleGoogleSuccess = async (credential: string) => {
+    if (mode === 'register' && !acceptLegal) {
+      setError('Aceite os Termos de Uso e a Política de Privacidade para criar conta.')
+      return
+    }
     setBusy(true)
     setError('')
     try {
@@ -51,6 +56,12 @@ export default function Login() {
     e.preventDefault()
     setError('')
     setInfo('')
+
+    if (mode === 'register' && !acceptLegal) {
+      setError('Aceite os Termos de Uso e a Política de Privacidade para criar conta.')
+      return
+    }
+
     setBusy(true)
     try {
       if (remember) localStorage.setItem('simulaordem-remember-email', email)
@@ -241,12 +252,34 @@ export default function Login() {
                   </div>
                 )}
 
+                {mode === 'register' && (
+                  <label className="flex cursor-pointer gap-2.5 text-xs leading-relaxed text-muted">
+                    <input
+                      type="checkbox"
+                      checked={acceptLegal}
+                      onChange={(e) => setAcceptLegal(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-brand-600 focus:ring-brand-400"
+                    />
+                    <span>
+                      Li e aceito os{' '}
+                      <Link to="/termos" className="font-medium text-brand-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                        Termos de Uso
+                      </Link>{' '}
+                      e a{' '}
+                      <Link to="/privacidade" className="font-medium text-brand-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                        Política de Privacidade
+                      </Link>
+                      .
+                    </span>
+                  </label>
+                )}
+
                 {info && <p className="rounded-xl bg-brand-50 px-3 py-2 text-center text-xs text-brand-800">{info}</p>}
                 {error && <p className="rounded-xl bg-red-50 px-3 py-2 text-center text-xs text-red-700">{error}</p>}
 
                 <button
                   type="submit"
-                  disabled={busy}
+                  disabled={busy || (mode === 'register' && !acceptLegal)}
                   className="w-full rounded-xl bg-brand-600 py-3.5 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50"
                 >
                   {busy ? 'Aguarde...' : mode === 'login' ? 'Entrar' : 'Criar conta'}
@@ -263,7 +296,7 @@ export default function Login() {
                   </div>
 
                   <GoogleSignInButton
-                    disabled={busy}
+                    disabled={busy || (mode === 'register' && !acceptLegal)}
                     onSuccess={handleGoogleSuccess}
                     onError={setError}
                   />
@@ -275,7 +308,15 @@ export default function Login() {
                 {mode === 'login' ? (
                   <>
                     Não tem conta?{' '}
-                    <button type="button" onClick={() => { setMode('register'); setError('') }} className="font-semibold text-brand-600 hover:underline">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode('register')
+                        setError('')
+                        setAcceptLegal(false)
+                      }}
+                      className="font-semibold text-brand-600 hover:underline"
+                    >
                       Cadastre-se grátis
                     </button>
                   </>
@@ -293,9 +334,17 @@ export default function Login() {
 
             <div className="flex flex-col gap-2 border-t border-slate-100 pt-6 text-xs text-muted-light sm:flex-row sm:items-center sm:justify-between">
               <span>© {new Date().getFullYear()} SimulaOrdem</span>
-              <Link to="/privacidade" className="hover:text-brand-600">
-                Política de Privacidade
-              </Link>
+              <div className="flex flex-wrap gap-x-4 gap-y-1">
+                <Link to="/termos" className="hover:text-brand-600">
+                  Termos de Uso
+                </Link>
+                <Link to="/privacidade" className="hover:text-brand-600">
+                  Política de Privacidade
+                </Link>
+                <a href="mailto:suporte@simulaordem.com.br" className="hover:text-brand-600">
+                  suporte@simulaordem.com.br
+                </a>
+              </div>
             </div>
           </div>
         </div>
