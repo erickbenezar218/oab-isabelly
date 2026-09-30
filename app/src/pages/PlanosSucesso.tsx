@@ -41,7 +41,7 @@ export default function PlanosSucesso() {
             to="/kit-oab"
             className="mt-6 inline-block w-full rounded-xl border border-brand-200 bg-brand-50 py-3.5 text-sm font-semibold text-brand-800 hover:bg-brand-100"
           >
-            Baixar Kit Aprovador OAB + WhatsApp
+            Abrir Kit Aprovador OAB (PDF no e-mail)
           </Link>
         )}
 

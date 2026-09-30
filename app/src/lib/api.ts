@@ -300,16 +300,36 @@ export async function apiBillingConfig() {
   return (await res.json()) as BillingConfig
 }
 
-export type BonusKitConfig = {
-  kitPageUrl: string
-  whatsappGroupUrl: string | null
-  pdfs: { id: string; title: string; description: string; url: string }[]
+export type BonusKitGuide = {
+  id: string
+  title: string
+  description: string
+  viewUrl: string
 }
 
-export async function apiBonusKit() {
-  const res = await fetch(`${API_URL}/billing/bonus-kit`)
-  if (!res.ok) throw new Error('Erro ao carregar kit bônus')
-  return (await res.json()) as BonusKitConfig
+export type BonusKitConfig = {
+  kitPageUrl: string
+  guides: BonusKitGuide[]
+  /** compat */
+  pdfs?: BonusKitGuide[]
+}
+
+export async function apiBonusKit(token: string) {
+  const res = await fetch(`${API_URL}/account/bonus-kit`, { headers: authHeaders(token) })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'Erro ao carregar kit bônus')
+  return data as BonusKitConfig
+}
+
+export async function apiBonusGuideHtml(token: string, guideId: string) {
+  const res = await fetch(`${API_URL}/account/bonus-guide/${encodeURIComponent(guideId)}`, {
+    headers: authHeaders(token),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error((data as { error?: string }).error ?? 'Guia indisponível')
+  }
+  return res.text()
 }
 
 export async function apiBillingCheckout(

@@ -61,6 +61,8 @@ Caixas sugeridas no hPanel:
 | `suporte@` | Envio transacional (app) + atendimento manual |
 | `privacidade@` | Alias → `suporte@` (LGPD) |
 
+Anexos grandes (Kit PDF Pro): confirme limite de anexo do SMTP (Hostinger ~25–35 MB total; 3 PDFs ~1–3 MB cada costuma ok).
+
 Ative **DKIM personalizado** no hPanel para melhor entrega.
 
 ### Opção B — Resend
@@ -105,12 +107,11 @@ curl -s http://localhost:8080/api/health
 
 Quando o pagamento confirmar, o webhook chama `activateProPlan` — e-mail **Pro + Kit Aprovador OAB** (PDFs + link da página `/kit-oab`).
 
-```env
-# Grupo comercial (link invite.whatsapp.com)
-WHATSAPP_GROUP_URL=https://chat.whatsapp.com/SEU_LINK
+PDFs do kit são gerados em build/deploy:
 
-# Opcional: substituir URLs dos materiais (senão usa /bonus/*.html no site)
-# BONUS_PDF_ROTEIRO_1=https://...
-# BONUS_PDF_ASSUNTOS_1=https://...
-# BONUS_PDF_ARTIGOS_1=https://...
+```bash
+cd api && npm run bonus:pdf
 ```
+
+Arquivos em `api/bonus-guides/pdf/` — anexados automaticamente no e-mail Pro.
+Guides online exigem login Pro em `/kit-oab`.

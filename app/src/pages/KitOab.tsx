@@ -1,21 +1,21 @@
 import { useEffect, useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { apiBonusKit, type BonusKitConfig } from '../lib/api'
-import { PRO_BONUS_TEASER } from '../lib/pricing'
+import { PRO_BONUS_GUIDES, PRO_BONUS_TEASER } from '../lib/pricing'
 
 export default function KitOab() {
-  const { user, loading, limits } = useAuth()
+  const { token, user, loading, limits } = useAuth()
   const [kit, setKit] = useState<BonusKitConfig | null>(null)
+  const [kitError, setKitError] = useState('')
   const isPro = limits?.plan === 'pro' || user?.plan === 'pro'
 
   useEffect(() => {
-    apiBonusKit().then(setKit).catch(() => setKit(null))
-  }, [])
-
-  if (!loading && !user) {
-    return <Navigate to={`/login?redirect=${encodeURIComponent('/kit-oab')}`} replace />
-  }
+    if (!token || !isPro) return
+    apiBonusKit(token)
+      .then(setKit)
+      .catch((e) => setKitError(e instanceof Error ? e.message : 'Erro ao carregar kit.'))
+  }, [token, isPro])
 
   return (
     <div className="min-h-dvh bg-surface-900 text-ink">
@@ -37,49 +37,38 @@ export default function KitOab() {
 
         {!isPro && (
           <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-            Materiais liberados após confirmação do pagamento Pro ou Reta Final.{' '}
+            Disponível após confirmação do pagamento Pro ou Reta Final. Você também recebe os PDFs por e-mail.{' '}
             <Link to="/planos" className="font-semibold text-brand-700 underline">
               Ver oferta
             </Link>
           </div>
         )}
 
-        {kit?.whatsappGroupUrl && isPro && (
-          <a
-            href={kit.whatsappGroupUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-6 py-3.5 text-sm font-semibold text-white transition hover:opacity-95"
-          >
-            Entrar no grupo Dicas OAB (WhatsApp)
-          </a>
+        {kitError && isPro && (
+          <p className="mt-4 text-sm text-red-600">{kitError}</p>
         )}
 
-        {isPro && !kit?.whatsappGroupUrl && (
+        {isPro && (
           <p className="mt-6 text-sm text-muted">
-            Link do WhatsApp em breve. Enquanto isso:{' '}
-            <a href="mailto:suporte@simulaordem.com.br" className="text-brand-600 hover:underline">
-              suporte@simulaordem.com.br
-            </a>
+            Os 3 guias foram enviados em anexo no e-mail de boas-vindas Pro. Abra abaixo para ler online ou salvar como PDF
+            de novo.
           </p>
         )}
 
         <ul className="mt-8 space-y-4">
-          {(kit?.pdfs ?? []).map((pdf) => (
-            <li key={pdf.id} className="card rounded-2xl p-5">
-              <h2 className="font-semibold text-ink">{pdf.title}</h2>
-              <p className="mt-1 text-sm text-muted">{pdf.description}</p>
+          {(isPro ? (kit?.guides ?? kit?.pdfs ?? []) : PRO_BONUS_GUIDES).map((g) => (
+            <li key={g.id} className="card rounded-2xl p-5">
+              <h2 className="font-semibold text-ink">{g.title}</h2>
+              <p className="mt-1 text-sm text-muted">{g.description}</p>
               {isPro ? (
-                <a
-                  href={pdf.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  to={`/kit-oab/guia/${g.id}`}
                   className="mt-4 inline-block text-sm font-semibold text-brand-600 hover:underline"
                 >
                   Abrir guia · Salvar como PDF →
-                </a>
+                </Link>
               ) : (
-                <p className="mt-4 text-xs text-muted-light">Disponível no plano Pro</p>
+                <p className="mt-4 text-xs text-muted-light">Exclusivo plano Pro</p>
               )}
             </li>
           ))}

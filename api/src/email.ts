@@ -1,8 +1,30 @@
+export type EmailAttachment = {
+  filename: string
+  content: Buffer
+}
+
 type SendParams = {
   to: string
   subject: string
   html: string
   text: string
+  attachments?: EmailAttachment[]
+}
+
+function attachmentsForProvider(attachments?: EmailAttachment[]) {
+  if (!attachments?.length) return undefined
+  return attachments.map((a) => ({
+    filename: a.filename,
+    content: a.content,
+  }))
+}
+
+function attachmentsForResend(attachments?: EmailAttachment[]) {
+  if (!attachments?.length) return undefined
+  return attachments.map((a) => ({
+    filename: a.filename,
+    content: a.content.toString('base64'),
+  }))
 }
 
 function fromAddress() {
@@ -39,6 +61,7 @@ async function sendViaResend(params: SendParams): Promise<void> {
       subject: params.subject,
       html: params.html,
       text: params.text,
+      attachments: attachmentsForResend(params.attachments),
     }),
   })
   if (!res.ok) {
@@ -64,6 +87,7 @@ async function sendViaSmtp(params: SendParams): Promise<void> {
     subject: params.subject,
     html: params.html,
     text: params.text,
+    attachments: attachmentsForProvider(params.attachments),
   })
 }
 

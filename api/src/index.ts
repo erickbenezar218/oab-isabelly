@@ -24,6 +24,8 @@ import { appUrl } from './email.js'
 import { createPasswordResetToken, resetPasswordWithToken, validatePasswordResetToken } from './passwordReset.js'
 import { isAsaasConfigured, isAsaasSandbox } from './asaas.js'
 import { assertProductionConfig, AUTH_RATE_LIMIT } from './security.js'
+import { getBonusKitConfig } from './bonus.js'
+import { getGuideHtmlById } from './bonusGuides.js'
 import { registerBillingRoutes } from './billing.js'
 import { isGeminiConfigured } from './gemini.js'
 import { createLoginChallenge, maskEmail, verifyLoginChallenge } from './otp.js'
@@ -346,6 +348,26 @@ app.get('/account', async (req, reply) => {
     account: accountFromUser(user),
     profile: profileFromUser(user),
   }
+})
+
+app.get('/account/bonus-kit', async (req, reply) => {
+  const user = await getUserFromAuth(req.headers.authorization)
+  if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
+  if (!isPro(user.plan, user.plan_expires_at)) {
+    return reply.code(403).send({ error: 'Kit Aprovador disponível no plano Pro.', code: 'PRO_REQUIRED' })
+  }
+  return getBonusKitConfig()
+})
+
+app.get<{ Params: { guideId: string } }>('/account/bonus-guide/:guideId', async (req, reply) => {
+  const user = await getUserFromAuth(req.headers.authorization)
+  if (!user) return reply.code(401).send({ error: 'Não autenticado.' })
+  if (!isPro(user.plan, user.plan_expires_at)) {
+    return reply.code(403).send({ error: 'Material exclusivo para assinantes Pro.' })
+  }
+  const html = getGuideHtmlById(req.params.guideId)
+  if (!html) return reply.code(404).send({ error: 'Guia não encontrado.' })
+  return reply.type('text/html; charset=utf-8').send(html)
 })
 
 app.patch<{ Body: ProfilePatch & { name?: string } }>('/profile', async (req, reply) => {

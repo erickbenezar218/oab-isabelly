@@ -27,4 +27,23 @@ export const PROMO_PRICING: Record<
 }
 
 export const PRO_BONUS_TEASER =
-  'Bônus Pro: Kit Aprovador (3 guias para salvar em PDF) + convite ao grupo Dicas OAB no WhatsApp após confirmação do pagamento.'
+  'Bônus Pro: Kit Aprovador — 3 guias em PDF (anexo no e-mail) + acesso online com sua conta Pro.'
+
+/** Lista fixa para landing / kit (conteúdo real só após Pro). */
+export const PRO_BONUS_GUIDES = [
+  {
+    id: 'roteiro-estrategico',
+    title: 'Roteiro estratégico — 1ª Fase OAB',
+    description: 'Matemática da aprovação, blocos de matérias, ciclo semanal e simulados no SimulaOrdem.',
+  },
+  {
+    id: 'assuntos-mais-cobrados',
+    title: 'Mapa de assuntos prioritários',
+    description: 'Eixos por disciplina + como personalizar pelo Desempenho no app.',
+  },
+  {
+    id: 'artigos-mais-cobrados',
+    title: 'Artigos e dispositivos de alta recorrência',
+    description: 'Lei seca direcionada para revisão com simulados e Professor IA.',
+  },
+] as const

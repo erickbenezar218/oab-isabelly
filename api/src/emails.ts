@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+import { listBonusAttachments } from './bonusGuides.js'
 import { fireAndForgetEmail } from './email.js'
 import {
   renderLoginOtpEmail,
@@ -32,11 +34,17 @@ export function sendProAccessEmail(params: { to: string; name: string; expiresAt
     passwordHint: params.passwordHint,
   })
 
+  const attachments = listBonusAttachments().map((a) => ({
+    filename: a.filename,
+    content: fs.readFileSync(a.path),
+  }))
+
   fireAndForgetEmail({
     to: params.to,
-    subject: 'SimulaOrdem Pro ativo + Kit Aprovador OAB',
+    subject: 'SimulaOrdem Pro ativo + Kit Aprovador OAB (PDFs em anexo)',
     html,
     text,
+    attachments: attachments.length ? attachments : undefined,
   })
 }
 

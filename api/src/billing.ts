@@ -18,7 +18,6 @@ import {
   type AsaasPayment,
   type AsaasWebhookEvent,
 } from './asaas.js'
-import { getBonusKitConfig } from './bonus.js'
 import { appUrl } from './email.js'
 import { effectivePlan } from './auth.js'
 import { activateProPlan } from './subscriptions.js'
@@ -188,8 +187,6 @@ export async function registerBillingRoutes(app: FastifyInstance, deps: BillingD
       reta: { value: prices.reta, label: 'Reta Final 3 meses', cycle: 'ONETIME' as const },
     },
   }))
-
-  app.get('/billing/bonus-kit', async () => getBonusKitConfig())
 
   app.post<{ Body: { plan?: string; cpfCnpj?: string; returnTo?: string } }>('/billing/checkout', async (req, reply) => {
     if (!isAsaasConfigured()) {

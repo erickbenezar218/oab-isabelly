@@ -169,10 +169,6 @@ export function renderProAccessEmail(params: {
     )
     .join('')
 
-  const whatsappBlock = bonus.whatsappGroupUrl
-    ? `<p style="margin:16px 0 0">${btn(bonus.whatsappGroupUrl, 'Entrar no grupo Dicas OAB (WhatsApp)', 'secondary', true)}</p>`
-    : `<p style="margin:16px 0 0;font-size:13px;color:${C.caption}">Em breve: link do grupo Dicas OAB no WhatsApp. Enquanto isso, fale com suporte@simulaordem.com.br.</p>`
-
   const bodyHtml = `
     <p style="margin:0 0 16px">Olá, <strong style="color:${C.heading}">${params.name}</strong>! Sua assinatura Pro foi confirmada.</p>
     ${infoBox(`
@@ -189,9 +185,9 @@ export function renderProAccessEmail(params: {
       <li>Tutor IA por questão</li>
     </ul>
     <p style="margin:20px 0 8px;font-weight:600;color:${C.heading}">🎁 Bônus: Kit Aprovador OAB</p>
+    <p style="margin:0 0 12px;font-size:14px;color:${C.body}">Os <strong>3 guias em PDF</strong> (design SimulaOrdem) vão em anexo neste e-mail. Você também pode abrir online com sua conta Pro:</p>
     <ul style="margin:0;padding-left:20px">${pdfList}</ul>
-    ${whatsappBlock}
-    <p style="margin:16px 0 0;font-size:12px;color:${C.caption}">Todos os materiais também ficam em: <a href="${bonus.kitPageUrl}" style="color:${C.accent}">${bonus.kitPageUrl}</a></p>`
+    <p style="margin:16px 0 0;font-size:12px;color:${C.caption}">Central do kit (login Pro): <a href="${bonus.kitPageUrl}" style="color:${C.accent}">${bonus.kitPageUrl}</a></p>`
 
   const pdfText = bonus.pdfs.map((p) => `- ${p.title}: ${p.url}`).join('\n')
   const { html, textFooter } = renderEmailLayout({
@@ -204,7 +200,7 @@ export function renderProAccessEmail(params: {
 
   return {
     html,
-    text: `Olá ${params.name}, seu plano Pro está ativo!\n\nE-mail: ${params.email}\nApp: ${appUrl()}/app\n\nKit bônus:\n${pdfText}\n${bonus.whatsappGroupUrl ? `WhatsApp: ${bonus.whatsappGroupUrl}\n` : ''}Página: ${bonus.kitPageUrl}${textFooter}`,
+    text: `Olá ${params.name}, seu plano Pro está ativo!\n\nE-mail: ${params.email}\nApp: ${appUrl()}/app\n\nKit bônus (PDFs em anexo + links Pro):\n${pdfText}\n\nPágina: ${bonus.kitPageUrl}${textFooter}`,
   }
 }
 
