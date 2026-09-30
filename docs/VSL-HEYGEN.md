@@ -2,6 +2,8 @@
 
 Roteiro para avatar + voz no **HeyGen** e embed no site (`/` e `/planos`).
 
+**Recomendado (plano pago · vídeos curtos):** [`VSL-HEYGEN-CENAS-CURTAS.md`](VSL-HEYGEN-CENAS-CURTAS.md) — 6 cenas ~30–45 s, análise comercial, pausas com ` - `.
+
 ---
 
 ## Criar avatar no HeyGen — copiar e colar
