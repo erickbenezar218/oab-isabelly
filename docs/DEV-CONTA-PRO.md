@@ -57,14 +57,25 @@ docker compose exec db psql -U simulaordem -d simulaordem -c \
 
 ### Produção (Coolify)
 
-1. Painel Coolify → serviço **PostgreSQL** (ou **db**) → terminal / “Execute command”.  
-2. Ou SSH no servidor e:
+No terminal do container **db** você cai no **shell** (`/ #`), **não** no SQL. Primeiro entre no `psql`:
 
 ```bash
-docker exec -it <container_postgres> psql -U simulaordem -d simulaordem
+psql -U simulaordem -d simulaordem
 ```
 
-Cole o `UPDATE` com seu e-mail.
+O prompt muda para `simulaordem=#`. **Aí** cole o `UPDATE` (termina com `;`).
+
+**One-liner** (cola tudo numa linha no shell `/ #`):
+
+```bash
+psql -U simulaordem -d simulaordem -c "UPDATE users SET plan = 'pro', plan_expires_at = NOW() + INTERVAL '1 year', updated_at = NOW() WHERE email = 'SEU_EMAIL';"
+```
+
+Se pedir senha, use a variável `POSTGRES_PASSWORD` do Coolify:
+
+```bash
+PGPASSWORD='sua_senha' psql -U simulaordem -d simulaordem -c "UPDATE users SET plan = 'pro', plan_expires_at = NOW() + INTERVAL '1 year', updated_at = NOW() WHERE email = 'SEU_EMAIL';"
+```
 
 ---
 
