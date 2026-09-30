@@ -4,6 +4,77 @@ Roteiro para avatar + voz no **HeyGen** e embed no site (`/` e `/planos`).
 
 ---
 
+## Criar avatar no HeyGen — copiar e colar
+
+Use **uma** opção abaixo (A ou B). No HeyGen, **Descrição do avatar** costuma funcionar melhor em **inglês** — texto pronto incluído.
+
+**Configuração comum (os 3 vídeos):**
+
+| Campo | Valor |
+|--------|--------|
+| **Orientação** | **Paisagem** (16:9) para o site |
+| **Posição** | Parte superior do corpo |
+| **Estilo** | Realista |
+| **Voz** | Português (Brasil) — feminina na A, masculina na B |
+
+### Opção A — recomendada (coach, acolhedora)
+
+| Campo | Cole no HeyGen |
+|--------|----------------|
+| **Nome** | `Ana — SimulaOrdem OAB` |
+| **Idade** | `30` |
+| **Gênero** | Feminino |
+| **Etnia** | Latino / Brasileira (pele morena clara, traços latino-americanos) |
+
+**Descreva seu avatar** (inglês):
+
+```text
+Professional Brazilian education coach, woman age 30, warm confident smile, dark brown shoulder-length hair, natural makeup, smart casual teal blazer over white blouse, small subtle logo pin optional, minimal jewelry, soft modern home-office background with blurred bookshelves and plants, gentle teal accent light matching brand SimulaOrdem, looking directly at camera, trustworthy and calm, upper body, photorealistic, 4K studio lighting
+```
+
+**Descreva seu avatar** (português, se o campo aceitar PT):
+
+```text
+Coach brasileira de preparação para concursos jurídicos, 30 anos, sorriso confiante e acolhedor, cabelo castanho escuro na altura dos ombros, blazer verde-água ou azul-marinho sobre blusa branca, fundo de home office moderno desfocado com estantes e plantas, luz suave, olhando para a câmera, aparência realista e profissional, meio corpo
+```
+
+**Voz HeyGen:** mulher, PT-BR, tom **calmo / narrativo** (evite “vendedor animado”).
+
+---
+
+### Opção B — mentor masculino
+
+| Campo | Cole no HeyGen |
+|--------|----------------|
+| **Nome** | `Rafael — SimulaOrdem OAB` |
+| **Idade** | `32` |
+| **Gênero** | Masculino |
+| **Etnia** | Latino / Brasileiro (pele média, traços sul-americanos) |
+
+**Descreva seu avatar** (inglês):
+
+```text
+Professional Brazilian man age 32, short neat dark hair, light stubble optional, friendly serious expression, navy blazer and white shirt no tie, home office background with blurred law books and neutral wall, soft teal accent light, direct eye contact, upper body, photorealistic, natural daylight studio look, trustworthy mentor vibe for OAB exam prep
+```
+
+**Voz HeyGen:** homem, PT-BR, tom **professor / mentor**.
+
+---
+
+### Se quiser parecer “você” (Erick / founder)
+
+Só use se for **Photo Avatar / upload de foto sua** no HeyGen (não inventar rosto de terceiro). Aí: foto frontal, luz boa, fundo neutro, mesma roupa social em los 3 takes.
+
+---
+
+### O que **não** usar
+
+- Cenário “podcast gamer” (LED roxo, fones, laptop) — desalinha com OAB.
+- Idade &lt; 25 ou &gt; 45 — público ideal do SimulaOrdem é 24–40; avatar ~30–32 passa credibilidade.
+- Retrato **só** se for Reels; para landing prefira **paisagem**.
+
+---
+
 ## Plano HeyGen: 3 vídeos × 1 minuto (use este)
 
 **Não precisa de 10 minutos para lançar.** Muita landing converte bem com **VSL de 3 minutos** (PAS enxuto). Use os **3 créditos** assim:
