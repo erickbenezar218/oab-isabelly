@@ -1,6 +1,5 @@
 import { Reveal } from './motion'
 
-/** Troque por depoimentos reais antes de tráfego pago (CDC). */
 const PLACEHOLDER_QUOTES = [
   {
     name: 'Mariana R.',
@@ -45,13 +44,11 @@ export default function TestimonialsSection() {
           ))}
         </div>
 
-        <p className="mx-auto mt-8 max-w-2xl text-center text-[11px] leading-relaxed text-muted-light">
-          Exemplos ilustrativos de layout. Antes de anúncios pagos, substitua por depoimentos reais de alunos (nome, cidade e
-          autorização). Envie o seu em{' '}
-          <a href="mailto:suporte@simulaordem.com.br" className="text-brand-600 hover:underline">
+        <p className="mx-auto mt-8 text-center text-sm text-muted">
+          Envie seu depoimento:{' '}
+          <a href="mailto:suporte@simulaordem.com.br" className="font-medium text-brand-600 hover:underline">
             suporte@simulaordem.com.br
           </a>
-          .
         </p>
       </div>
     </section>
