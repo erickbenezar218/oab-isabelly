@@ -101,7 +101,7 @@ Vou te fazer uma pergunta direta: se a prova da OAB fosse amanhã, você saberia
 
 ### Vídeo 2/3 — Solução (prioridade de auditoria)
 
-Imagina o seguinte: você estuda pra OAB faz tempo, mas quase nunca sentou cinco horas seguidas fazendo oitenta questões, igual no dia da prova. Por isso você não tem um número na cabeça — fica no achismo. O Simula Ordem foi feito pra fechar essa lacuna. Lá dentro você faz o simulado no tempo da FGV; quando termina, abre o termômetro e vê se passaria hoje e onde precisa reforçar. Errou alguma? Tem explicação na hora. No plano Pro entram revisão de erros, cronograma e um professor de IA que te explica cada dúvida, com mais de mil questões oficiais e progresso na nuvem. Antes de pagar, você pode testar totalmente grátis, sem cartão — no grátis você acessa flashcards e simulado com limite. Se fizer sentido, assina o Pro e libera simulado e explicação. Faltam uns noventa dias pra prova? A Reta Final, três meses, costuma compensar.
+Imagina o seguinte: você estuda pra OAB faz tempo, mas quase nunca sentou cinco horas seguidas com oitenta questões, igual no dia da prova. Por isso você fica no achismo, sem nota na cabeça. O Simula Ordem foi feito pra isso. Você simula no tempo da FGV, abre o termômetro e vê se passaria hoje e onde reforçar. Errou? Tem explicação na hora. No grátis são flashcards, um simulado completo por mês, simulado express e cinco explicações por dia. No Pro você tem simulado ilimitado, professor de IA com chat, revisão de erros, cronograma e Kit PDF no e-mail. Mais de mil questões oficiais, progresso na nuvem. Testa grátis, sem cartão. Se fizer sentido, assina o Pro. Prova em uns noventa dias? Reta Final, três meses, costuma compensar.
 
 ### Vídeo 3/3 — Oferta + CTA
 
