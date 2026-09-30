@@ -56,7 +56,7 @@ services:
       args:
         VITE_API_URL: ${VITE_API_URL:-/api}
         VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
-        VITE_VSL_EMBED_URL: ${VITE_VSL_EMBED_URL:-}
+        VITE_VSL_EMBED_URL: ${VITE_VSL_EMBED_URL:-https://youtu.be/4TuWaZoP-TI}
         VITE_VSL_ASPECT: ${VITE_VSL_ASPECT:-}
     expose:
       - '80'
