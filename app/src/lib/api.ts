@@ -246,18 +246,40 @@ export async function apiTutorCommentCached(token: string, questaoId: string) {
   return (await res.json()) as { explanation: string | null; cached: boolean }
 }
 
+async function tutorPostWithRetry(
+  path: string,
+  token: string,
+  body: object,
+  fallbackError: string,
+) {
+  let lastError = fallbackError
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await fetch(`${API_URL}${path}`, {
+      method: 'POST',
+      headers: authHeaders(token),
+      body: JSON.stringify(body),
+    })
+    const data = await res.json()
+    if (res.ok) return data
+    lastError = (data.error as string) ?? fallbackError
+    const retryable = res.status === 502 || res.status === 503 || res.status === 504
+    if (!retryable || attempt === 1) break
+    await new Promise((r) => setTimeout(r, 900))
+  }
+  throw new Error(lastError)
+}
+
 export async function apiTutorComment(
   token: string,
   questao: TutorQuestaoPayload,
   respostaUsuario: string | null,
 ) {
-  const res = await fetch(`${API_URL}/tutor/comment`, {
-    method: 'POST',
-    headers: authHeaders(token),
-    body: JSON.stringify({ questao, respostaUsuario }),
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error ?? 'Erro ao explicar questão')
+  const data = await tutorPostWithRetry(
+    '/tutor/comment',
+    token,
+    { questao, respostaUsuario },
+    'Erro ao explicar questão',
+  )
   return data as { explanation: string; cached: boolean; remainingMessages: number }
 }
 
@@ -411,12 +433,11 @@ export async function apiTutorChat(
   respostaUsuario: string | null,
   message: string,
 ) {
-  const res = await fetch(`${API_URL}/tutor/chat`, {
-    method: 'POST',
-    headers: authHeaders(token),
-    body: JSON.stringify({ questao, respostaUsuario, message }),
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error ?? 'Erro no chat')
+  const data = await tutorPostWithRetry(
+    '/tutor/chat',
+    token,
+    { questao, respostaUsuario, message },
+    'Erro no chat',
+  )
   return data as { reply: string; messages: TutorMessage[]; remainingMessages: number }
 }

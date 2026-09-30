@@ -300,7 +300,19 @@ export default function TutorPanel({
         )}
 
         {error && (
-          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-center text-xs text-red-700">{error}</p>
+          <div className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-center">
+            <p className="text-xs text-red-700">{error}</p>
+            {!explanation && (
+              <button
+                type="button"
+                onClick={() => void explain()}
+                disabled={explaining}
+                className="mt-2 text-xs font-semibold text-brand-600 underline disabled:opacity-50"
+              >
+                Tentar novamente
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>
