@@ -300,6 +300,18 @@ export async function apiBillingConfig() {
   return (await res.json()) as BillingConfig
 }
 
+export type BonusKitConfig = {
+  kitPageUrl: string
+  whatsappGroupUrl: string | null
+  pdfs: { id: string; title: string; description: string; url: string }[]
+}
+
+export async function apiBonusKit() {
+  const res = await fetch(`${API_URL}/billing/bonus-kit`)
+  if (!res.ok) throw new Error('Erro ao carregar kit bônus')
+  return (await res.json()) as BonusKitConfig
+}
+
 export async function apiBillingCheckout(
   token: string,
   plan: 'pro' | 'reta',

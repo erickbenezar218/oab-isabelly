@@ -1,3 +1,4 @@
+import { getBonusKitConfig } from './bonus.js'
 import { appUrl } from './email.js'
 
 /** Tokens alinhados a app/design.json */
@@ -153,12 +154,24 @@ export function renderProAccessEmail(params: {
   expiresAt?: Date | null
   passwordHint?: string
 }) {
+  const bonus = getBonusKitConfig()
   const expiry = params.expiresAt
     ? `<p style="margin:0"><strong style="color:${C.heading}">Válido até:</strong> ${params.expiresAt.toLocaleDateString('pt-BR')}</p>`
     : ''
   const passwordLine = params.passwordHint
     ? `<p style="margin:0 0 8px"><strong style="color:${C.heading}">Senha:</strong> ${params.passwordHint}</p>`
     : `<p style="margin:0 0 8px">Entre com sua senha ou Google.</p>`
+
+  const pdfList = bonus.pdfs
+    .map(
+      (p) =>
+        `<li style="margin-bottom:8px"><a href="${p.url}" style="color:${C.accent};font-weight:600">${p.title}</a><br/><span style="font-size:12px;color:${C.caption}">${p.description}</span></li>`,
+    )
+    .join('')
+
+  const whatsappBlock = bonus.whatsappGroupUrl
+    ? `<p style="margin:16px 0 0">${btn(bonus.whatsappGroupUrl, 'Entrar no grupo Dicas OAB (WhatsApp)', 'secondary', true)}</p>`
+    : `<p style="margin:16px 0 0;font-size:13px;color:${C.caption}">Em breve: link do grupo Dicas OAB no WhatsApp. Enquanto isso, fale com suporte@simulaordem.com.br.</p>`
 
   const bodyHtml = `
     <p style="margin:0 0 16px">Olá, <strong style="color:${C.heading}">${params.name}</strong>! Sua assinatura Pro foi confirmada.</p>
@@ -174,18 +187,24 @@ export function renderProAccessEmail(params: {
       <li style="margin-bottom:6px">Cronograma e meta diária</li>
       <li style="margin-bottom:6px">Histórico completo + revisão de erros</li>
       <li>Tutor IA por questão</li>
-    </ul>`
+    </ul>
+    <p style="margin:20px 0 8px;font-weight:600;color:${C.heading}">🎁 Bônus: Kit Aprovador OAB</p>
+    <ul style="margin:0;padding-left:20px">${pdfList}</ul>
+    ${whatsappBlock}
+    <p style="margin:16px 0 0;font-size:12px;color:${C.caption}">Todos os materiais também ficam em: <a href="${bonus.kitPageUrl}" style="color:${C.accent}">${bonus.kitPageUrl}</a></p>`
 
+  const pdfText = bonus.pdfs.map((p) => `- ${p.title}: ${p.url}`).join('\n')
   const { html, textFooter } = renderEmailLayout({
-    preheader: 'Seu plano Pro SimulaOrdem está ativo',
+    preheader: 'Pro ativo + Kit Aprovador OAB',
     title: 'Plano Pro ativado!',
     bodyHtml,
     cta: { href: `${appUrl()}/app`, label: 'Abrir o app' },
+    secondaryCta: { href: bonus.kitPageUrl, label: 'Ver kit bônus' },
   })
 
   return {
     html,
-    text: `Olá ${params.name}, seu plano Pro está ativo!\n\nE-mail: ${params.email}\nAcesse: ${appUrl()}/app${textFooter}`,
+    text: `Olá ${params.name}, seu plano Pro está ativo!\n\nE-mail: ${params.email}\nApp: ${appUrl()}/app\n\nKit bônus:\n${pdfText}\n${bonus.whatsappGroupUrl ? `WhatsApp: ${bonus.whatsappGroupUrl}\n` : ''}Página: ${bonus.kitPageUrl}${textFooter}`,
   }
 }
 

@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { PromoPrice } from '../components/PromoPrice'
 import { apiBillingConfig, type BillingConfig } from '../lib/api'
+import { LAUNCH_OFFER_LABEL, PRO_BONUS_TEASER, type PaidPlanId } from '../lib/pricing'
 
 type PlanId = 'free' | 'pro' | 'reta'
 
 const plans: {
   id: PlanId
   name: string
-  price: string
-  period: string
+  price?: string
+  period?: string
   note?: string
   description: string
   badge?: string
@@ -35,8 +37,6 @@ const plans: {
   {
     id: 'pro',
     name: 'Pro',
-    price: '24,90',
-    period: '/mês',
     badge: 'Mais popular',
     featured: true,
     description: 'Tudo que você precisa para treinar como na prova real.',
@@ -53,9 +53,6 @@ const plans: {
   {
     id: 'reta',
     name: 'Reta Final',
-    price: '59,90',
-    period: '/3 meses',
-    note: '≈ R$ 19,97/mês',
     badge: 'Melhor custo',
     description: 'Perfeito para os 90 dias antes da prova.',
     features: ['Tudo do plano Pro', 'Acesso por 3 meses', 'Foco total na reta final', 'Melhor custo-benefício'],
@@ -142,6 +139,9 @@ export default function Planos() {
             <h1 className="mt-3 text-4xl font-bold tracking-tight text-ink md:text-5xl">Invista na sua aprovação</h1>
             <p className="mt-4 text-lg text-muted">
               Comece grátis com flashcards e peças da 2ª fase. Evolua para simulados ilimitados, cronograma e tutor IA.
+            </p>
+            <p className="mt-4 inline-flex rounded-full bg-brand-50 px-4 py-2 text-xs font-semibold text-brand-700">
+              {LAUNCH_OFFER_LABEL} — valores de referência riscados; você paga o preço promocional
             </p>
           </div>
 
@@ -342,16 +342,21 @@ function PlanCard({
         </div>
 
         <div className="mt-6">
-          <div className="flex items-end gap-1">
-            <span className={`text-sm font-medium ${isFeatured ? 'text-brand-100' : 'text-muted'}`}>R$</span>
-            <span className={`text-4xl font-extrabold tracking-tight ${isFeatured ? 'text-white' : 'text-ink'}`}>
-              {plan.price}
-            </span>
-            {plan.period && (
-              <span className={`mb-1 text-sm ${isFeatured ? 'text-brand-100' : 'text-muted'}`}>{plan.period}</span>
-            )}
-          </div>
-          {plan.note && <p className={`mt-1 text-xs ${isFeatured ? 'text-brand-200' : 'text-brand-500'}`}>{plan.note}</p>}
+          {plan.id === 'pro' || plan.id === 'reta' ? (
+            <PromoPrice planId={plan.id as PaidPlanId} featured={isFeatured} />
+          ) : (
+            <div className="flex items-end gap-1">
+              <span className={`text-sm font-medium ${isFeatured ? 'text-brand-100' : 'text-muted'}`}>R$</span>
+              <span className={`text-4xl font-extrabold tracking-tight ${isFeatured ? 'text-white' : 'text-ink'}`}>
+                {plan.price}
+              </span>
+            </div>
+          )}
+          {(plan.id === 'pro' || plan.id === 'reta') && (
+            <p className={`mt-3 text-xs leading-relaxed ${isFeatured ? 'text-brand-100' : 'text-muted'}`}>
+              {PRO_BONUS_TEASER}
+            </p>
+          )}
         </div>
 
         <ul className={`mt-6 flex-1 space-y-3 ${isFeatured ? 'text-brand-50' : 'text-muted'}`}>

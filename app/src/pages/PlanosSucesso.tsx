@@ -36,9 +36,18 @@ export default function PlanosSucesso() {
           </p>
         )}
 
+        {isPro && (
+          <Link
+            to="/kit-oab"
+            className="mt-6 inline-block w-full rounded-xl border border-brand-200 bg-brand-50 py-3.5 text-sm font-semibold text-brand-800 hover:bg-brand-100"
+          >
+            Baixar Kit Aprovador OAB + WhatsApp
+          </Link>
+        )}
+
         <Link
           to="/app"
-          className="mt-6 inline-block w-full rounded-xl bg-brand-600 py-3.5 text-sm font-semibold text-white hover:bg-brand-700"
+          className={`inline-block w-full rounded-xl bg-brand-600 py-3.5 text-sm font-semibold text-white hover:bg-brand-700 ${isPro ? 'mt-3' : 'mt-6'}`}
         >
           Abrir o app
         </Link>

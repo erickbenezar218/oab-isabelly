@@ -2,7 +2,9 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { apiBillingCheckout, apiBillingConfig, type BillingConfig } from '../lib/api'
+import { PromoPrice } from '../components/PromoPrice'
 import { openPaymentCheckout } from '../lib/nativeBilling'
+import type { PaidPlanId } from '../lib/pricing'
 import { isNativeApp } from '../lib/platform'
 
 function maskCpf(value: string): string {
@@ -97,12 +99,16 @@ export default function Checkout() {
             <h1 className="mt-2 text-2xl font-bold">{info.name}</h1>
             <p className="mt-1 text-sm text-muted">{info.desc}</p>
 
-            {price != null && (
-              <p className="mt-4 text-3xl font-extrabold text-ink">
-                R$ {price.toFixed(2).replace('.', ',')}
-                {plan === 'pro' && <span className="text-base font-medium text-muted">/mês</span>}
-              </p>
-            )}
+            <div className="mt-4">
+              <PromoPrice planId={plan as PaidPlanId} size="md" />
+              {price != null && (
+                <p className="mt-2 text-xs text-muted">
+                  Total cobrado hoje:{' '}
+                  <strong className="text-ink">R$ {price.toFixed(2).replace('.', ',')}</strong>
+                  {plan === 'pro' ? '/mês' : ' (3 meses de Pro)'}
+                </p>
+              )}
+            </div>
 
             <p className="mt-2 text-xs text-muted">
               Pagamento via Asaas · Cartão, PIX ou boleto · Cobrança em nome de R E BENEZAR DE SOUZA LTDA

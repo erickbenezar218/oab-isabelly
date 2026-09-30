@@ -24,6 +24,7 @@ import Privacidade from './pages/Privacidade'
 import Simulado from './pages/Simulado'
 import Termos from './pages/Termos'
 import Conta from './pages/Conta'
+import KitOab from './pages/KitOab'
 
 export default function App() {
   return (
@@ -43,6 +44,7 @@ export default function App() {
             <Route path="/planos/sucesso" element={<PlanosSucesso />} />
             <Route path="/termos" element={<Termos />} />
             <Route path="/privacidade" element={<Privacidade />} />
+            <Route path="/kit-oab" element={<KitOab />} />
             <Route path="/app" element={<ProtectedRoute />}>
               <Route element={<Layout />}>
                 <Route index element={<Dashboard />} />

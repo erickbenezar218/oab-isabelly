@@ -101,6 +101,16 @@ curl -s http://localhost:8080/api/health
 # { "email": true, "email2fa": true, ... }
 ```
 
-## Assinatura Pro (futuro Asaas)
+## Assinatura Pro (Asaas)
 
-Quando o pagamento confirmar, chame `activateProPlan(userId, expiresAt)` em `api/src/subscriptions.ts` — envia e-mail de acesso Pro automaticamente.
+Quando o pagamento confirmar, o webhook chama `activateProPlan` — e-mail **Pro + Kit Aprovador OAB** (PDFs + link da página `/kit-oab`).
+
+```env
+# Grupo comercial (link invite.whatsapp.com)
+WHATSAPP_GROUP_URL=https://chat.whatsapp.com/SEU_LINK
+
+# Opcional: substituir URLs dos materiais (senão usa /bonus/*.html no site)
+# BONUS_PDF_ROTEIRO_1=https://...
+# BONUS_PDF_ASSUNTOS_1=https://...
+# BONUS_PDF_GESTAO_TEMPO=https://...
+```

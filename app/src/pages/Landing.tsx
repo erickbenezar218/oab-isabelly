@@ -11,6 +11,8 @@ import {
   useTickingTimer,
 } from '../components/landing/motion'
 import { OabTermometroDemo } from '../components/OabTermometro'
+import TestimonialsSection from '../components/landing/TestimonialsSection'
+import { LAUNCH_OFFER_LABEL, PROMO_PRICING } from '../lib/pricing'
 
 const features = [
   {
@@ -59,6 +61,7 @@ export default function Landing() {
         <AiLearningSection />
         <DarkFeature />
         <TrustSection />
+        <TestimonialsSection />
         <CtaSection ctaTo={ctaTo} ctaLabel={ctaLabel} />
       </main>
 
@@ -555,7 +558,11 @@ function CtaSection({ ctaTo, ctaLabel }: { ctaTo: string; ctaLabel: string }) {
       <Reveal className="relative mx-auto max-w-3xl text-center">
         <h2 className="text-3xl font-bold text-white md:text-4xl">Entre na prova sabendo seu ritmo</h2>
         <ul className="mt-6 space-y-2 text-brand-100">
-          {['✓ 1 simulado grátis por mês', '✓ Flashcards e peças da 2ª fase grátis', '✓ Pro a partir de R$ 24,90/mês'].map(
+          {[
+            '✓ Grátis: 20 flashcards/dia + 1 simulado completo e 1 express/mês',
+            '✓ Termômetro OAB e Professor IA (5 explicações/dia no grátis)',
+            `✓ ${LAUNCH_OFFER_LABEL}: Pro de R$ ${PROMO_PRICING.pro.compareAt} por R$ ${PROMO_PRICING.pro.price}/mês`,
+          ].map(
             (item, i) => (
               <li key={item} className="landing-stat-ticker" style={{ animationDelay: `${0.15 + i * 0.1}s` }}>
                 {item}

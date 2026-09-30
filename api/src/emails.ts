@@ -34,7 +34,7 @@ export function sendProAccessEmail(params: { to: string; name: string; expiresAt
 
   fireAndForgetEmail({
     to: params.to,
-    subject: 'SimulaOrdem Pro — acesso liberado',
+    subject: 'SimulaOrdem Pro ativo + Kit Aprovador OAB',
     html,
     text,
   })

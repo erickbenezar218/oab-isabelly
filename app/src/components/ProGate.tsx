@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { PROMO_PRICING } from '../lib/pricing'
 import { IconStar, type IconProps } from './icons'
 import SectionCard from './ui/SectionCard'
 import type { ComponentType } from 'react'
@@ -24,7 +25,7 @@ export default function ProGate({
           to="/planos"
           className="mt-6 inline-block w-full rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-700"
         >
-          Assinar plano Pro — R$ 24,90/mês
+          Assinar Pro — R$ {PROMO_PRICING.pro.price}/mês (de R$ {PROMO_PRICING.pro.compareAt})
         </Link>
         <p className="mt-4 text-xs text-muted-light">Simulados ilimitados · Cronograma · Tutor IA · Histórico completo</p>
       </SectionCard>
