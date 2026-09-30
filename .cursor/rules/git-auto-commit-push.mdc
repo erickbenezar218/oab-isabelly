@@ -1,0 +1,14 @@
+---
+description: Auto commit and push SimulaOrdem changes to GitHub main without asking
+alwaysApply: true
+---
+
+# Git — commit e push automáticos
+
+Neste repositório (SimulaOrdem / Prova OAB):
+
+- Após alterações de código ou docs do produto, faça **commit + push** para `origin/main` **sem perguntar** ao usuário.
+- **Não incluir** por padrão: `conect-fibra-logo/`, `docs/futuro/`, `.env`, segredos.
+- Mensagem de commit: 1–2 frases no estilo do repo (foco no porquê).
+- Se o push para `main` exigir aprovação do ambiente, retry com aprovação.
+- Não usar force push em `main`.
