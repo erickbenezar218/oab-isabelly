@@ -137,7 +137,7 @@ Monte um gabarito comentado completo (5 a 7 parágrafos), nesta ordem:
 
 Finalize cada seção. Não pare no meio de uma citação legal.`
 
-  return geminiGenerate(systemPrompt(), [{ role: 'user', text: prompt }], { maxOutputTokens: 1400 })
+  return geminiGenerate(systemPrompt(), [{ role: 'user', text: prompt }], { maxOutputTokens: 4096 })
 }
 
 function proChatRequired(reply: { code: (n: number) => { send: (b: object) => unknown } }) {
@@ -228,8 +228,20 @@ export async function registerTutorRoutes(
       if (msg.toLowerCase().includes('quota') || msg.toLowerCase().includes('rate limit')) {
         return reply.code(429).send({ error: 'Limite da API Gemini atingido. Tente em alguns minutos.' })
       }
-      if (msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('permission')) {
+      if (
+        msg.toLowerCase().includes('api key') ||
+        msg.toLowerCase().includes('permission') ||
+        (msg.toLowerCase().includes('invalid') && msg.toLowerCase().includes('key'))
+      ) {
         return reply.code(503).send({ error: 'Chave da IA inválida no servidor. Contate o suporte.' })
+      }
+      if (msg.includes('SAFETY') || msg.includes('blockReason')) {
+        return reply.code(502).send({
+          error: 'A IA bloqueou a resposta desta questão. Tente outra ou fale com suporte.',
+        })
+      }
+      if (msg.includes('MAX_TOKENS') || msg.includes('Resposta vazia')) {
+        return reply.code(502).send({ error: 'Resposta da IA incompleta. Toque em Tentar novamente.' })
       }
       return reply.code(502).send({ error: 'Não foi possível gerar a explicação. Tente novamente.' })
     }

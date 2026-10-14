@@ -1,7 +1,10 @@
-const FALLBACK_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash']
+/** Modelos estáveis para tutor (2.0 evita “thinking” comer o limite de saída). */
+const FALLBACK_MODELS = ['gemini-2.0-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-flash']
 
 const FETCH_TIMEOUT_MS = 90_000
 const MAX_ATTEMPTS_PER_MODEL = 3
+
+let healthProbeCache: { at: number; ok: boolean } | null = null
 
 export interface GeminiMessage {
   role: 'user' | 'model'
@@ -44,6 +47,7 @@ function isRetryableHttp(status?: number, message = ''): boolean {
     msg.includes('overloaded') ||
     msg.includes('unavailable') ||
     msg.includes('timeout') ||
+    msg.includes('aborted') ||
     msg.includes('fetch failed') ||
     msg.includes('econnreset') ||
     msg.includes('network')
@@ -62,19 +66,59 @@ function shouldTryNextModel(status?: number, message = ''): boolean {
   )
 }
 
+function shouldDisableThinkingConfig(message: string): boolean {
+  const msg = message.toLowerCase()
+  return msg.includes('thinking') && (msg.includes('does not support') || msg.includes('invalid_argument'))
+}
+
+function buildGenerationConfig(model: string, maxOutputTokens: number, useThinkingOff: boolean) {
+  const generationConfig: Record<string, unknown> = {
+    temperature: 0.35,
+    maxOutputTokens,
+  }
+  if (useThinkingOff && /gemini-2\.5/i.test(model) && !/pro/i.test(model)) {
+    generationConfig.thinkingConfig = { thinkingBudget: 0 }
+  }
+  return generationConfig
+}
+
+function buildSafetySettings(relaxed: boolean) {
+  const threshold = relaxed ? 'BLOCK_NONE' : 'BLOCK_ONLY_HIGH'
+  return [
+    { category: 'HARM_CATEGORY_HARASSMENT', threshold },
+    { category: 'HARM_CATEGORY_HATE_SPEECH', threshold },
+    { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold },
+    { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold },
+  ]
+}
+
 async function callGeminiModel(
   apiKey: string,
   model: string,
   systemPrompt: string,
   messages: GeminiMessage[],
   maxOutputTokens: number,
+  options?: { useThinkingOff?: boolean; relaxedSafety?: boolean; embedSystemInUser?: boolean },
 ): Promise<string> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
+  const useThinkingOff = options?.useThinkingOff !== false
+  const relaxedSafety = options?.relaxedSafety === true
+  const embedSystem = options?.embedSystemInUser === true
 
-  const contents = messages.map((m) => ({
+  let contents = messages.map((m) => ({
     role: m.role,
     parts: [{ text: m.text }],
   }))
+
+  let systemInstruction: { parts: { text: string }[] } | undefined = {
+    parts: [{ text: systemPrompt }],
+  }
+
+  if (embedSystem) {
+    systemInstruction = undefined
+    const merged = `${systemPrompt}\n\n---\n\n${messages.map((m) => m.text).join('\n\n')}`
+    contents = [{ role: 'user', parts: [{ text: merged }] }]
+  }
 
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
   let fetchUrl = url
@@ -89,23 +133,16 @@ async function callGeminiModel(
     headers,
     signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     body: JSON.stringify({
-      systemInstruction: { parts: [{ text: systemPrompt }] },
+      ...(systemInstruction ? { systemInstruction } : {}),
       contents,
-      generationConfig: {
-        temperature: 0.35,
-        maxOutputTokens,
-      },
-      safetySettings: [
-        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
-        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
-        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
-        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' },
-      ],
+      generationConfig: buildGenerationConfig(model, maxOutputTokens, useThinkingOff),
+      safetySettings: buildSafetySettings(relaxedSafety),
     }),
   })
 
   const data = (await res.json()) as {
     error?: { message?: string; status?: string; code?: number }
+    promptFeedback?: { blockReason?: string }
     candidates?: {
       finishReason?: string
       content?: { parts?: { text?: string }[] }
@@ -124,11 +161,23 @@ async function callGeminiModel(
   const text = candidate?.content?.parts?.map((p) => p.text ?? '').join('').trim()
   if (text) return text
 
-  const reason = candidate?.finishReason ?? 'unknown'
-  const err = new Error(`Resposta vazia do Gemini (${reason})`) as Error & { status?: number; finishReason?: string }
+  const block = data.promptFeedback?.blockReason
+  const reason = candidate?.finishReason ?? block ?? 'unknown'
+  const err = new Error(`Resposta vazia do Gemini (${reason})`) as Error & {
+    status?: number
+    finishReason?: string
+    blockReason?: string
+  }
   err.finishReason = reason
-  if (reason === 'MAX_TOKENS') err.status = 503
+  err.blockReason = block
+  if (reason === 'MAX_TOKENS' || reason === 'SAFETY' || block) err.status = 503
   throw err
+}
+
+type CallOptions = {
+  useThinkingOff?: boolean
+  relaxedSafety?: boolean
+  embedSystemInUser?: boolean
 }
 
 export async function geminiGenerate(
@@ -145,35 +194,57 @@ export async function geminiGenerate(
   let maxOutputTokens = options?.maxOutputTokens ?? 2048
   let lastError: Error | null = null
 
+  const callModes: CallOptions[] = [
+    { useThinkingOff: true, relaxedSafety: false, embedSystemInUser: false },
+    { useThinkingOff: true, relaxedSafety: true, embedSystemInUser: false },
+    { useThinkingOff: false, relaxedSafety: true, embedSystemInUser: true },
+  ]
+
   for (const model of models) {
     for (let attempt = 0; attempt < MAX_ATTEMPTS_PER_MODEL; attempt++) {
+      const mode = callModes[Math.min(attempt, callModes.length - 1)]
       try {
-        return await callGeminiModel(apiKey, model, systemPrompt, messages, maxOutputTokens)
+        return await callGeminiModel(apiKey, model, systemPrompt, messages, maxOutputTokens, mode)
       } catch (e) {
         lastError = e instanceof Error ? e : new Error(String(e))
         const status = (lastError as Error & { status?: number }).status
         const finishReason = (lastError as Error & { finishReason?: string }).finishReason
 
-        if (finishReason === 'MAX_TOKENS' && maxOutputTokens < 4096) {
-          maxOutputTokens = Math.min(4096, Math.round(maxOutputTokens * 1.5))
-          console.warn(`[gemini] ${model} MAX_TOKENS, aumentando limite para ${maxOutputTokens}`)
+        if (shouldDisableThinkingConfig(lastError.message) && mode.useThinkingOff) {
+          try {
+            return await callGeminiModel(apiKey, model, systemPrompt, messages, maxOutputTokens, {
+              ...mode,
+              useThinkingOff: false,
+            })
+          } catch (e2) {
+            lastError = e2 instanceof Error ? e2 : new Error(String(e2))
+          }
+        }
+
+        if (finishReason === 'MAX_TOKENS' && maxOutputTokens < 8192) {
+          maxOutputTokens = Math.min(8192, Math.round(maxOutputTokens * 1.8))
+          console.warn(`[gemini] ${model} MAX_TOKENS, limite → ${maxOutputTokens}`)
+          continue
+        }
+
+        if (finishReason === 'SAFETY' && attempt < MAX_ATTEMPTS_PER_MODEL - 1) {
           continue
         }
 
         const msg = lastError.message
         if (shouldTryNextModel(status, msg)) {
-          console.warn(`[gemini] modelo ${model} indisponível, tentando próximo…`, msg)
+          console.warn(`[gemini] modelo ${model} indisponível, próximo…`, msg)
           break
         }
 
         if (isRetryableHttp(status, msg) && attempt < MAX_ATTEMPTS_PER_MODEL - 1) {
           const wait = 600 * 2 ** attempt + Math.floor(Math.random() * 400)
-          console.warn(`[gemini] ${model} tentativa ${attempt + 1} falhou, retry em ${wait}ms:`, msg)
+          console.warn(`[gemini] ${model} retry em ${wait}ms:`, msg)
           await sleep(wait)
           continue
         }
 
-        if (attempt < MAX_ATTEMPTS_PER_MODEL - 1 && !shouldTryNextModel(status, msg)) {
+        if (attempt < MAX_ATTEMPTS_PER_MODEL - 1) {
           await sleep(400)
           continue
         }
@@ -185,4 +256,25 @@ export async function geminiGenerate(
 
   console.error('[gemini] falha após retries:', lastError?.message)
   throw lastError ?? new Error('Erro ao chamar Gemini')
+}
+
+/** Teste real (cache 3 min) — health?status=1 */
+export async function geminiHealthProbe(): Promise<boolean> {
+  if (!isGeminiConfigured()) return false
+  const now = Date.now()
+  if (healthProbeCache && now - healthProbeCache.at < 180_000) return healthProbeCache.ok
+  try {
+    const text = await geminiGenerate(
+      'Responda apenas a palavra OK em maiúsculas.',
+      [{ role: 'user', text: 'Diagnóstico' }],
+      { maxOutputTokens: 32 },
+    )
+    const ok = /ok/i.test(text)
+    healthProbeCache = { at: now, ok }
+    return ok
+  } catch (e) {
+    console.error('[gemini] health probe falhou:', e instanceof Error ? e.message : e)
+    healthProbeCache = { at: now, ok: false }
+    return false
+  }
 }

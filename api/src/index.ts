@@ -27,7 +27,7 @@ import { assertProductionConfig, AUTH_RATE_LIMIT } from './security.js'
 import { getBonusKitConfig } from './bonus.js'
 import { getGuideHtmlById } from './bonusGuides.js'
 import { registerBillingRoutes } from './billing.js'
-import { isGeminiConfigured } from './gemini.js'
+import { geminiHealthProbe, isGeminiConfigured } from './gemini.js'
 import { createLoginChallenge, maskEmail, verifyLoginChallenge } from './otp.js'
 import { registerTutorRoutes } from './tutor.js'
 import {
@@ -113,7 +113,15 @@ function verifyCronSecret(header?: string): boolean {
 
 app.get<{ Querystring: { detail?: string; status?: string } }>('/health', async (req, reply) => {
   if (req.query.status === '1') {
-    return { ok: true, gemini: isGeminiConfigured(), asaas: isAsaasConfigured(), asaasSandbox: isAsaasSandbox() }
+    const geminiConfigured = isGeminiConfigured()
+    const geminiOk = geminiConfigured ? await geminiHealthProbe() : false
+    return {
+      ok: true,
+      gemini: geminiConfigured,
+      geminiOk,
+      asaas: isAsaasConfigured(),
+      asaasSandbox: isAsaasSandbox(),
+    }
   }
   const wantDetail = req.query.detail === '1'
   if (wantDetail && verifyCronSecret(req.headers.authorization)) {
