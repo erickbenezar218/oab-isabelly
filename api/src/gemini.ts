@@ -4,23 +4,50 @@ const FALLBACK_MODELS = ['gemini-2.0-flash', 'gemini-2.5-flash-lite', 'gemini-2.
 const FETCH_TIMEOUT_MS = 90_000
 const MAX_ATTEMPTS_PER_MODEL = 3
 
-let healthProbeCache: { at: number; ok: boolean } | null = null
+let healthProbeCache: { at: number; ok: boolean; hint?: string } | null = null
 
 export interface GeminiMessage {
   role: 'user' | 'model'
   text: string
 }
 
+function normalizeApiKey(raw: string): string {
+  return raw.trim().replace(/^['"]+|['"]+$/g, '')
+}
+
 export function getGeminiApiKey(): string | undefined {
+  const plain = process.env.GEMINI_API_KEY?.trim()
+  if (plain) return normalizeApiKey(plain) || undefined
+
   const b64 = process.env.GEMINI_API_KEY_B64?.trim()
   if (b64) {
     try {
-      return Buffer.from(b64, 'base64').toString('utf8').trim() || undefined
+      return normalizeApiKey(Buffer.from(b64, 'base64').toString('utf8')) || undefined
     } catch {
       return undefined
     }
   }
-  return process.env.GEMINI_API_KEY?.trim() || undefined
+  return undefined
+}
+
+export function geminiKeyHint(): string | undefined {
+  const key = getGeminiApiKey()
+  if (!key) return undefined
+  if (key.startsWith('AIza')) return `AIza…${key.slice(-4)}`
+  return `custom(${key.length} chars)`
+}
+
+export function classifyGeminiError(message: string): string {
+  const m = message.toLowerCase()
+  if (m.includes('api key') || m.includes('api_key') || m.includes('permission denied')) return 'invalid_key'
+  if (m.includes('quota') || m.includes('resource exhausted')) return 'quota'
+  if (m.includes('not found') || m.includes('not supported')) return 'model'
+  if (m.includes('billing') || m.includes('enable')) return 'api_disabled'
+  return 'call_failed'
+}
+
+export function lastGeminiHealthHint(): string | undefined {
+  return healthProbeCache?.hint
 }
 
 export function isGeminiConfigured(): boolean {
@@ -121,12 +148,7 @@ async function callGeminiModel(
   }
 
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-  let fetchUrl = url
-  if (apiKey.startsWith('AIza')) {
-    fetchUrl = `${url}?key=${encodeURIComponent(apiKey)}`
-  } else {
-    headers['x-goog-api-key'] = apiKey
-  }
+  const fetchUrl = `${url}?key=${encodeURIComponent(apiKey)}`
 
   const res = await fetch(fetchUrl, {
     method: 'POST',
@@ -259,22 +281,27 @@ export async function geminiGenerate(
 }
 
 /** Teste real (cache 3 min) — health?status=1 */
-export async function geminiHealthProbe(): Promise<boolean> {
+export async function geminiHealthProbe(force = false): Promise<boolean> {
   if (!isGeminiConfigured()) return false
   const now = Date.now()
-  if (healthProbeCache && now - healthProbeCache.at < 180_000) return healthProbeCache.ok
+  if (!force && healthProbeCache && now - healthProbeCache.at < 180_000) return healthProbeCache.ok
   try {
-    const text = await geminiGenerate(
-      'Responda apenas a palavra OK em maiúsculas.',
-      [{ role: 'user', text: 'Diagnóstico' }],
-      { maxOutputTokens: 32 },
+    const text = await callGeminiModel(
+      getGeminiApiKey()!,
+      'gemini-2.0-flash',
+      'Responda só OK.',
+      [{ role: 'user', text: 'ping' }],
+      64,
+      { useThinkingOff: false, relaxedSafety: false, embedSystemInUser: true },
     )
     const ok = /ok/i.test(text)
-    healthProbeCache = { at: now, ok }
+    healthProbeCache = { at: now, ok, hint: ok ? 'ok' : 'unexpected_response' }
     return ok
   } catch (e) {
-    console.error('[gemini] health probe falhou:', e instanceof Error ? e.message : e)
-    healthProbeCache = { at: now, ok: false }
+    const msg = e instanceof Error ? e.message : String(e)
+    const hint = classifyGeminiError(msg)
+    console.error('[gemini] health probe falhou:', hint, msg)
+    healthProbeCache = { at: now, ok: false, hint }
     return false
   }
 }
