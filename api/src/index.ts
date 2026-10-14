@@ -111,7 +111,10 @@ function verifyCronSecret(header?: string): boolean {
   return header.slice(7) === secret
 }
 
-app.get<{ Querystring: { detail?: string } }>('/health', async (req, reply) => {
+app.get<{ Querystring: { detail?: string; status?: string } }>('/health', async (req, reply) => {
+  if (req.query.status === '1') {
+    return { ok: true, gemini: isGeminiConfigured(), asaas: isAsaasConfigured(), asaasSandbox: isAsaasSandbox() }
+  }
   const wantDetail = req.query.detail === '1'
   if (wantDetail && verifyCronSecret(req.headers.authorization)) {
     return {

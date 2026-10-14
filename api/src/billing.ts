@@ -11,6 +11,7 @@ import {
   getPayment,
   isAsaasConfigured,
   isAsaasSandbox,
+  isAsaasCallbackDomainError,
   listCustomerPayments,
   listSubscriptionPayments,
   parseExternalRef,
@@ -21,7 +22,7 @@ import {
   findCustomerByCpf,
   getCustomer,
 } from './asaas.js'
-import { appUrl } from './email.js'
+import { billingCallbackOrigin } from './email.js'
 import { effectivePlan } from './auth.js'
 import { activateProPlan } from './subscriptions.js'
 import type { UserRow } from './types.js'
@@ -150,6 +151,57 @@ function paymentValueMatchesPlan(payment: AsaasPayment, planProduct: 'pro' | 're
   return Math.abs(Number(payment.value) - expected) <= 0.02
 }
 
+async function createProSubscription(opts: {
+  customer: string
+  value: number
+  userId: string
+  callback: { successUrl: string; autoRedirect: boolean }
+}) {
+  const base = {
+    customer: opts.customer,
+    billingType: 'UNDEFINED' as const,
+    value: opts.value,
+    nextDueDate: formatDueDate(),
+    cycle: 'MONTHLY' as const,
+    description: 'SimulaOrdem Pro — assinatura mensal',
+    externalReference: externalRef(opts.userId, 'pro'),
+  }
+  try {
+    return await createSubscription({ ...base, callback: opts.callback })
+  } catch (err) {
+    if (err instanceof AsaasError && isAsaasCallbackDomainError(err.body)) {
+      console.warn('[billing] callback rejeitado (domínio Asaas), assinatura sem autoRedirect')
+      return await createSubscription(base)
+    }
+    throw err
+  }
+}
+
+async function createRetaPayment(opts: {
+  customer: string
+  value: number
+  userId: string
+  callback: { successUrl: string; autoRedirect: boolean }
+}) {
+  const base = {
+    customer: opts.customer,
+    billingType: 'UNDEFINED' as const,
+    value: opts.value,
+    dueDate: formatDueDate(),
+    description: 'SimulaOrdem Reta Final — 3 meses de acesso Pro',
+    externalReference: externalRef(opts.userId, 'reta'),
+  }
+  try {
+    return await createPayment({ ...base, callback: opts.callback })
+  } catch (err) {
+    if (err instanceof AsaasError && isAsaasCallbackDomainError(err.body)) {
+      console.warn('[billing] callback rejeitado (domínio Asaas), cobrança sem autoRedirect')
+      return await createPayment(base)
+    }
+    throw err
+  }
+}
+
 async function processPaymentConfirmed(pool: pg.Pool, payment: AsaasPayment): Promise<void> {
   const okStatus = payment.status === 'CONFIRMED' || payment.status === 'RECEIVED'
   if (!okStatus) return
@@ -241,21 +293,18 @@ export async function registerBillingRoutes(app: FastifyInstance, deps: BillingD
 
     try {
       const customerId = await ensureAsaasCustomer(pool, user, cpf)
+      const origin = billingCallbackOrigin()
       const returnToApp = req.body?.returnTo === 'app'
       const successUrl = returnToApp
-        ? `${appUrl()}/payment/return?plan=${plan}`
-        : `${appUrl()}/planos/sucesso?plan=${plan}`
+        ? `${origin}/payment/return?plan=${plan}`
+        : `${origin}/planos/sucesso?plan=${plan}`
       const callback = { successUrl, autoRedirect: true }
 
       if (plan === 'pro') {
-        const subscription = await createSubscription({
+        const subscription = await createProSubscription({
           customer: customerId,
-          billingType: 'UNDEFINED',
           value: prices.pro,
-          nextDueDate: formatDueDate(),
-          cycle: 'MONTHLY',
-          description: 'SimulaOrdem Pro — assinatura mensal',
-          externalReference: externalRef(user.id, 'pro'),
+          userId: user.id,
           callback,
         })
 
@@ -276,13 +325,10 @@ export async function registerBillingRoutes(app: FastifyInstance, deps: BillingD
         }
       }
 
-      const payment = await createPayment({
+      const payment = await createRetaPayment({
         customer: customerId,
-        billingType: 'UNDEFINED',
         value: prices.reta,
-        dueDate: formatDueDate(),
-        description: 'SimulaOrdem Reta Final — 3 meses de acesso Pro',
-        externalReference: externalRef(user.id, 'reta'),
+        userId: user.id,
         callback,
       })
 

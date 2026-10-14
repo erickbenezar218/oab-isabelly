@@ -145,11 +145,13 @@ export async function createSubscription(input: {
   cycle: 'MONTHLY'
   description: string
   externalReference: string
-  callback: { successUrl: string; autoRedirect: boolean }
+  callback?: { successUrl: string; autoRedirect: boolean }
 }): Promise<AsaasSubscription> {
+  const { callback, ...rest } = input
+  const payload = callback ? { ...rest, callback } : rest
   return asaasRequest<AsaasSubscription>('/subscriptions', {
     method: 'POST',
-    body: JSON.stringify(input),
+    body: JSON.stringify(payload),
   })
 }
 
@@ -180,12 +182,26 @@ export async function createPayment(input: {
   dueDate: string
   description: string
   externalReference: string
-  callback: { successUrl: string; autoRedirect: boolean }
+  callback?: { successUrl: string; autoRedirect: boolean }
 }): Promise<AsaasPayment> {
+  const { callback, ...rest } = input
+  const payload = callback ? { ...rest, callback } : rest
   return asaasRequest<AsaasPayment>('/payments', {
     method: 'POST',
-    body: JSON.stringify(input),
+    body: JSON.stringify(payload),
   })
+}
+
+export function isAsaasCallbackDomainError(body: string): boolean {
+  const s = body.toLowerCase()
+  return (
+    s.includes('domínio') ||
+    s.includes('dominio') ||
+    s.includes('minha conta') ||
+    s.includes('informações') ||
+    s.includes('informacoes') ||
+    s.includes('url que use')
+  )
 }
 
 export function planPrices() {

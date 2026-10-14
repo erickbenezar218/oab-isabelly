@@ -31,8 +31,21 @@ function fromAddress() {
   return process.env.EMAIL_FROM ?? 'SimulaOrdem <noreply@simulaordem.com.br>'
 }
 
-function appUrl() {
+/** Links em e-mails e URLs públicas do app. */
+export function appUrl() {
   return (process.env.APP_URL ?? 'https://simulaordem.com.br').replace(/\/$/, '')
+}
+
+/**
+ * Origem do callback de pagamento Asaas (successUrl).
+ * Deve ser **exatamente** o domínio em Asaas → Minha Conta → Informações (com ou sem www).
+ */
+export function billingCallbackOrigin(): string {
+  return (
+    process.env.ASAAS_CALLBACK_ORIGIN?.trim() ||
+    process.env.APP_URL?.trim() ||
+    'https://simulaordem.com.br'
+  ).replace(/\/$/, '')
 }
 
 export function isEmailConfigured(): boolean {
@@ -44,8 +57,6 @@ export function isEmail2faEnabled(): boolean {
   if (process.env.EMAIL_2FA_ENABLED === 'false') return false
   return isEmailConfigured()
 }
-
-export { appUrl }
 
 async function sendViaResend(params: SendParams): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY!.trim()
