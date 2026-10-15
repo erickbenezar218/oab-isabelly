@@ -66,6 +66,10 @@ export function lastGroqHealthDetail(): string | undefined {
   return healthProbeCache?.detail
 }
 
+function usesGroqReasoningBudget(model: string): boolean {
+  return /gpt-oss|qwen\/qwen3/i.test(model)
+}
+
 async function callGroqModel(
   apiKey: string,
   model: string,
@@ -81,6 +85,20 @@ async function callGroqModel(
     })),
   ]
 
+  const reasoningModel = usesGroqReasoningBudget(model)
+  const body: Record<string, unknown> = {
+    model,
+    messages: chatMessages,
+    temperature: 0.35,
+  }
+  if (reasoningModel) {
+    body.max_completion_tokens = Math.max(maxTokens, 512)
+    body.reasoning_effort = 'low'
+    body.include_reasoning = false
+  } else {
+    body.max_tokens = maxTokens
+  }
+
   const res = await fetch(GROQ_CHAT_URL, {
     method: 'POST',
     headers: {
@@ -88,17 +106,15 @@ async function callGroqModel(
       'Content-Type': 'application/json',
     },
     signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-    body: JSON.stringify({
-      model,
-      messages: chatMessages,
-      max_tokens: maxTokens,
-      temperature: 0.35,
-    }),
+    body: JSON.stringify(body),
   })
 
   const data = (await res.json()) as {
     error?: { message?: string; type?: string }
-    choices?: { message?: { content?: string }; finish_reason?: string }[]
+    choices?: {
+      message?: { content?: string | null; reasoning?: string | null }
+      finish_reason?: string
+    }[]
   }
 
   if (!res.ok) {
@@ -108,10 +124,11 @@ async function callGroqModel(
     throw err
   }
 
-  const text = data.choices?.[0]?.message?.content?.trim()
+  const choice = data.choices?.[0]
+  const text = choice?.message?.content?.trim()
   if (text) return text
 
-  const reason = data.choices?.[0]?.finish_reason ?? 'empty'
+  const reason = choice?.finish_reason ?? 'empty'
   throw new Error(`Resposta vazia do Groq (${reason})`)
 }
 
@@ -165,7 +182,7 @@ export async function groqHealthProbe(force = false): Promise<boolean> {
   if (!force && healthProbeCache && now - healthProbeCache.at < 180_000) return healthProbeCache.ok
 
   try {
-    const text = await groqGenerate('Responda apenas OK.', [{ role: 'user', text: 'ping' }], { maxOutputTokens: 16 })
+    const text = await groqGenerate('Responda apenas OK.', [{ role: 'user', text: 'ping' }], { maxOutputTokens: 64 })
     const ok = /ok/i.test(text)
     healthProbeCache = { at: now, ok, hint: ok ? 'ok' : 'unexpected_response' }
     return ok
