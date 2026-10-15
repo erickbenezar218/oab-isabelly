@@ -10,30 +10,25 @@ export function PromoPrice({
   size?: 'md' | 'lg'
 }) {
   const p = PROMO_PRICING[planId]
-  const priceClass = size === 'lg' ? 'text-4xl' : 'text-3xl'
+  const priceClass = size === 'lg' ? 'text-5xl' : 'text-4xl'
 
   return (
     <div>
-      <p
-        className={`text-[10px] font-bold uppercase tracking-wide ${
-          featured ? 'text-brand-200' : 'text-brand-500'
-        }`}
-      >
-        {LAUNCH_OFFER_LABEL}
+      <p className={`text-xs font-semibold ${featured ? 'text-brand-200' : 'text-brand-500'}`}>
+        {LAUNCH_OFFER_LABEL}, de <span className="line-through">R$ {p.compareAt}</span> por
       </p>
-      <div className="mt-1 flex flex-wrap items-end gap-x-2 gap-y-1">
-        <span className={`text-sm line-through ${featured ? 'text-brand-200/90' : 'text-muted-light'}`}>
-          R$ {p.compareAt}
+      <div className="mt-2 flex items-baseline gap-1">
+        <span className={`text-sm font-medium ${featured ? 'text-white/70' : 'text-muted'}`}>R$</span>
+        <span
+          className={`${priceClass} font-display font-medium leading-none tracking-[-0.02em] tabular-nums ${
+            featured ? 'text-white' : 'text-ink'
+          }`}
+        >
+          {p.price}
         </span>
-        <div className="flex items-end gap-1">
-          <span className={`text-sm font-medium ${featured ? 'text-brand-100' : 'text-muted'}`}>R$</span>
-          <span className={`${priceClass} font-extrabold tracking-tight ${featured ? 'text-white' : 'text-ink'}`}>
-            {p.price}
-          </span>
-          <span className={`mb-1 text-sm ${featured ? 'text-brand-100' : 'text-muted'}`}>{p.period}</span>
-        </div>
+        <span className={`text-sm ${featured ? 'text-white/70' : 'text-muted'}`}>{p.period}</span>
       </div>
-      <p className={`mt-1 text-xs ${featured ? 'text-brand-200' : 'text-brand-600'}`}>{p.savingsLine}</p>
+      <p className={`mt-2 text-xs ${featured ? 'text-brand-200' : 'text-brand-600'}`}>{p.savingsLine}</p>
     </div>
   )
 }

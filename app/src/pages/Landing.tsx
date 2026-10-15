@@ -1,7 +1,8 @@
 import { useEffect, useState, type CSSProperties, type ReactNode, type RefObject } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { AnimatedBars, useInView, useScrolled } from '../components/landing/motion'
+import { AnimatedBars, useInView } from '../components/landing/motion'
+import { SiteFooter, SiteHeader } from '../components/landing/SiteChrome'
 import { OabTermometroDemo } from '../components/OabTermometro'
 import TestimonialsSection from '../components/landing/TestimonialsSection'
 import { LAUNCH_OFFER_LABEL, PROMO_PRICING } from '../lib/pricing'
@@ -46,7 +47,7 @@ export default function Landing() {
 
   return (
     <div className="landing-page min-h-dvh overflow-x-hidden bg-white text-ink">
-      <LandingHeader ctaTo={ctaTo} ctaLabel={ctaLabel} />
+      <SiteHeader ctaTo={ctaTo} ctaLabel={ctaLabel} current="landing" />
 
       <main>
         <Hero ctaTo={ctaTo} ctaLabel={ctaLabel} />
@@ -60,46 +61,8 @@ export default function Landing() {
         <CtaSection ctaTo={ctaTo} ctaLabel={ctaLabel} />
       </main>
 
-      <LandingFooter />
+      <SiteFooter />
     </div>
-  )
-}
-
-function LandingHeader({ ctaTo, ctaLabel }: { ctaTo: string; ctaLabel: string }) {
-  const scrolled = useScrolled()
-
-  return (
-    <header
-      className={`sticky top-0 z-50 border-b bg-white/95 backdrop-blur-md transition-[padding,border-color] duration-200 safe-top ${
-        scrolled ? 'border-slate-200 py-3' : 'border-transparent py-4'
-      }`}
-    >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 md:px-8">
-        <Link to="/" aria-label="SimulaOrdem, página inicial">
-          <img src="/logo.svg" alt="SimulaOrdem" className="h-9 w-auto" />
-        </Link>
-        <nav aria-label="Seções" className="hidden items-center gap-8 text-sm font-medium text-muted md:flex">
-          <a href="#recursos" className="transition-colors duration-150 hover:text-brand-600">
-            Recursos
-          </a>
-          <a href="#desempenho" className="transition-colors duration-150 hover:text-brand-600">
-            Desempenho
-          </a>
-          <a href="#ia" className="transition-colors duration-150 hover:text-brand-600">
-            Tutor IA
-          </a>
-          <Link to="/planos" className="transition-colors duration-150 hover:text-brand-600">
-            Planos
-          </Link>
-        </nav>
-        <Link
-          to={ctaTo}
-          className="inline-flex min-h-11 items-center rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700"
-        >
-          {ctaLabel}
-        </Link>
-      </div>
-    </header>
   )
 }
 
@@ -518,59 +481,6 @@ function CtaSection({ ctaTo, ctaLabel }: { ctaTo: string; ctaLabel: string }) {
         </div>
       </div>
     </section>
-  )
-}
-
-function LandingFooter() {
-  return (
-    <footer className="border-t border-slate-200 bg-white px-4 py-12 md:px-8">
-      <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-4">
-        <div className="md:col-span-2">
-          <img src="/logo.svg" alt="SimulaOrdem" className="h-10 w-auto" />
-          <p className="mt-3 max-w-sm text-sm text-muted">
-            Preparação completa para a OAB: simulados, peças processuais e estudo guiado por dados.
-          </p>
-        </div>
-        <div>
-          <p className="text-sm font-semibold text-ink">Produto</p>
-          <ul className="mt-3 space-y-2 text-sm text-muted">
-            <li>
-              <Link to="/login" className="transition-colors hover:text-brand-600">
-                Entrar
-              </Link>
-            </li>
-            <li>
-              <Link to="/planos" className="transition-colors hover:text-brand-600">
-                Planos
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <p className="text-sm font-semibold text-ink">Legal</p>
-          <ul className="mt-3 space-y-2 text-sm text-muted">
-            <li>
-              <Link to="/termos" className="transition-colors hover:text-brand-600">
-                Termos de Uso
-              </Link>
-            </li>
-            <li>
-              <Link to="/privacidade" className="transition-colors hover:text-brand-600">
-                Privacidade
-              </Link>
-            </li>
-            <li>
-              <a href="mailto:suporte@simulaordem.com.br" className="transition-colors hover:text-brand-600">
-                suporte@simulaordem.com.br
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <p className="mx-auto mt-10 max-w-6xl text-xs text-muted">
-        © {new Date().getFullYear()} SimulaOrdem. R E BENEZAR DE SOUZA LTDA
-      </p>
-    </footer>
   )
 }
 
