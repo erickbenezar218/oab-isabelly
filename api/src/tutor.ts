@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import type pg from 'pg'
-import { geminiGenerate, type GeminiMessage } from './gemini.js'
+import { tutorLlmGenerate, type TutorLlmMessage } from './tutorLlm.js'
 import { canGenerateIa, recordIaGeneration } from './iaLimits.js'
 import { canUseTutor, isPro } from './plans.js'
 import type { UserRow } from './types.js'
@@ -54,7 +54,7 @@ GABARITO: ${q.resposta_correta}
 RESPOSTA DO ALUNO: ${respostaUsuario ?? '(não respondida)'}`
 }
 
-function toGeminiHistory(messages: TutorMessage[]): GeminiMessage[] {
+function toGeminiHistory(messages: TutorMessage[]): TutorLlmMessage[] {
   return messages.map((m) => ({
     role: m.role === 'assistant' ? 'model' : 'user',
     text: m.content,
@@ -137,7 +137,7 @@ Monte um gabarito comentado completo (5 a 7 parágrafos), nesta ordem:
 
 Finalize cada seção. Não pare no meio de uma citação legal.`
 
-  return geminiGenerate(systemPrompt(), [{ role: 'user', text: prompt }], { maxOutputTokens: 4096 })
+  return tutorLlmGenerate(systemPrompt(), [{ role: 'user', text: prompt }], { maxOutputTokens: 4096 })
 }
 
 function proChatRequired(reply: { code: (n: number) => { send: (b: object) => unknown } }) {
@@ -222,11 +222,11 @@ export async function registerTutorRoutes(
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Erro no tutor'
       console.error('[tutor/comment]', msg)
-      if (msg === 'GEMINI_NOT_CONFIGURED') {
+      if (msg === 'LLM_NOT_CONFIGURED' || msg === 'GROQ_NOT_CONFIGURED' || msg === 'GEMINI_NOT_CONFIGURED') {
         return reply.code(503).send({ error: 'IA não configurada no servidor. Contate o suporte.' })
       }
       if (msg.toLowerCase().includes('quota') || msg.toLowerCase().includes('rate limit')) {
-        return reply.code(429).send({ error: 'Limite da API Gemini atingido. Tente em alguns minutos.' })
+        return reply.code(429).send({ error: 'Limite da IA atingido. Tente em alguns minutos.' })
       }
       if (
         msg.toLowerCase().includes('api key') ||
@@ -296,7 +296,9 @@ export async function registerTutorRoutes(
       return { explanation, messages, remainingMessages: canUseTutor(user.plan, user.plan_expires_at) ? MAX_TUTOR_USER_MESSAGES : 0 }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Erro'
-      if (msg === 'GEMINI_NOT_CONFIGURED') return reply.code(503).send({ error: 'IA indisponível.' })
+      if (msg === 'LLM_NOT_CONFIGURED' || msg === 'GROQ_NOT_CONFIGURED' || msg === 'GEMINI_NOT_CONFIGURED') {
+        return reply.code(503).send({ error: 'IA indisponível.' })
+      }
       return reply.code(502).send({ error: 'Erro ao gerar explicação.' })
     }
   })
@@ -329,13 +331,13 @@ export async function registerTutorRoutes(
     const messages = [...(thread.messages ?? []), userMsg]
 
     try {
-      const history: GeminiMessage[] = [
+      const history: TutorLlmMessage[] = [
         { role: 'user', text: `[Questão OAB]\n${formatQuestaoBlock(questao, respostaUsuario)}` },
         ...toGeminiHistory(thread.messages),
         { role: 'user', text: userMsg.content },
       ]
 
-      const replyText = await geminiGenerate(
+      const replyText = await tutorLlmGenerate(
         systemPrompt() + '\nResponda à dúvida do aluno sobre ESTA questão específica.',
         history,
       )
@@ -355,7 +357,7 @@ export async function registerTutorRoutes(
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Erro no tutor'
-      if (msg === 'GEMINI_NOT_CONFIGURED') {
+      if (msg === 'LLM_NOT_CONFIGURED' || msg === 'GROQ_NOT_CONFIGURED' || msg === 'GEMINI_NOT_CONFIGURED') {
         return reply.code(503).send({ error: 'Tutor IA temporariamente indisponível.' })
       }
       return reply.code(502).send({ error: 'Não foi possível enviar a mensagem. Tente novamente.' })

@@ -8,7 +8,8 @@
     "bonus:pdf": "node scripts/generate-bonus-pdfs.mjs",
     "demo:seed": "node scripts/seed-demo-progress.mjs",
     "start": "node dist/index.js",
-    "test:gemini": "node --env-file=../.env scripts/test-gemini.mjs"
+    "test:gemini": "node --env-file=../.env scripts/test-gemini.mjs",
+    "test:groq": "node --env-file=../.env scripts/test-groq.mjs"
   },
   "dependencies": {
     "@fastify/cors": "^11.0.1",

@@ -79,7 +79,9 @@ export default function Privacidade() {
             <strong>Asaas</strong> — processamento de pagamentos;
           </li>
           <li>
-            <strong>Google</strong> — login OAuth (quando você usa “Entrar com Google”) e API Gemini (Professor IA);
+            <strong>Google</strong> — login OAuth (quando você usa “Entrar com Google”);
+            {' '}
+            <strong>Groq</strong> — API do Professor IA (texto das questões enviado para gerar explicações);
           </li>
           <li>
             <strong>Provedores de e-mail</strong> (ex.: Hostinger, Zoho, Resend) — comunicações;

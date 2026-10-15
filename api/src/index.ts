@@ -27,7 +27,15 @@ import { assertProductionConfig, AUTH_RATE_LIMIT } from './security.js'
 import { getBonusKitConfig } from './bonus.js'
 import { getGuideHtmlById } from './bonusGuides.js'
 import { registerBillingRoutes } from './billing.js'
-import { geminiHealthProbe, geminiKeyHint, isGeminiConfigured, lastGeminiHealthHint } from './gemini.js'
+import { isGeminiConfigured } from './gemini.js'
+import { isGroqConfigured } from './groq.js'
+import {
+  isTutorLlmConfigured,
+  tutorLlmHealthHint,
+  tutorLlmHealthProbe,
+  tutorLlmKeyHint,
+  tutorLlmProvider,
+} from './tutorLlm.js'
 import { createLoginChallenge, maskEmail, verifyLoginChallenge } from './otp.js'
 import { registerTutorRoutes } from './tutor.js'
 import {
@@ -113,15 +121,21 @@ function verifyCronSecret(header?: string): boolean {
 
 app.get<{ Querystring: { detail?: string; status?: string; refresh?: string } }>('/health', async (req, reply) => {
   if (req.query.status === '1') {
-    const geminiConfigured = isGeminiConfigured()
+    const tutorConfigured = isTutorLlmConfigured()
     const force = req.query.refresh === '1'
-    const geminiOk = geminiConfigured ? await geminiHealthProbe(force) : false
+    const tutorOk = tutorConfigured ? await tutorLlmHealthProbe(force) : false
+    const provider = tutorLlmProvider()
     return {
       ok: true,
-      gemini: geminiConfigured,
-      geminiOk,
-      geminiHint: lastGeminiHealthHint(),
-      geminiKey: geminiConfigured ? geminiKeyHint() : null,
+      tutorProvider: provider,
+      tutor: tutorConfigured,
+      tutorOk,
+      tutorHint: tutorLlmHealthHint(),
+      tutorKey: tutorConfigured ? tutorLlmKeyHint() : null,
+      groq: isGroqConfigured(),
+      gemini: isGeminiConfigured(),
+      /** @deprecated use tutorOk — mantido para scripts antigos */
+      geminiOk: tutorOk,
       asaas: isAsaasConfigured(),
       asaasSandbox: isAsaasSandbox(),
     }
@@ -132,6 +146,9 @@ app.get<{ Querystring: { detail?: string; status?: string; refresh?: string } }>
       ok: true,
       service: 'simulaordem-api',
       google: isGoogleConfigured(),
+      tutor: isTutorLlmConfigured(),
+      tutorProvider: tutorLlmProvider(),
+      groq: isGroqConfigured(),
       gemini: isGeminiConfigured(),
       email: isEmailConfigured(),
       email2fa: isEmail2faEnabled(),

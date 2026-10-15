@@ -27,9 +27,9 @@ CORS_ORIGIN=https://simulaordem.com.br,https://www.simulaordem.com.br
 GOOGLE_CLIENT_ID=<client-id-web>.apps.googleusercontent.com
 GOOGLE_IOS_CLIENT_ID=<client-id-ios>.apps.googleusercontent.com
 
-# Tutor IA (Pro) — obrigatório se quiser IA
-GEMINI_API_KEY=<sua-chave>
-GEMINI_MODEL=gemini-2.5-flash
+# Tutor IA (Pro) — Groq (tier gratuito)
+GROQ_API_KEY=gsk_...
+GROQ_MODEL=llama-3.3-70b-versatile
 
 ```
 
@@ -60,7 +60,7 @@ Build local opcional (usa `.env` da raiz se existir):
 
 | Variável | Runtime |
 |----------|---------|
-| `GOOGLE_CLIENT_ID`, `GOOGLE_IOS_CLIENT_ID` (login Google no app iOS), `JWT_SECRET`, SMTP, Asaas, Gemini, Postgres… | ✅ |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_IOS_CLIENT_ID` (login Google no app iOS), `JWT_SECRET`, SMTP, Asaas, `GROQ_API_KEY`, Postgres… | ✅ |
 
 **Asaas:** use `ASAAS_API_KEY_B64` (evita `$` quebrando o Docker Compose):
 
@@ -135,12 +135,13 @@ echo -n 'sua-chave-asaas' | base64
    ```
 2. Errar questão no flashcard ou revisão de simulado
 3. Clicar **Explicar meu erro**
-4. Se falhar: logs da API (`GEMINI_API_KEY`, quota, modelo)
+4. Se falhar: logs da API (`GROQ_API_KEY`, rate limit, modelo)
+5. Health: `GET /api/health?status=1&refresh=1` → `tutorOk: true`, `tutorProvider: "groq"`
 
-## Rotacionar chave Gemini
+## Rotacionar chave Groq
 
 Se a chave vazar (chat, screenshot, commit):
-1. Google AI Studio / Cloud Console → revogar chave
+1. [Groq Console](https://console.groq.com/keys) → revogar chave
 2. Criar nova chave
-3. Atualizar `GEMINI_API_KEY` no Coolify
+3. Atualizar `GROQ_API_KEY` no Coolify (valor literal `gsk_…`, sem aspas extras)
 4. Redeploy só do serviço `api`
