@@ -29,7 +29,7 @@ GOOGLE_IOS_CLIENT_ID=<client-id-ios>.apps.googleusercontent.com
 
 # Tutor IA (Pro) — Groq (tier gratuito)
 GROQ_API_KEY=gsk_...
-GROQ_MODEL=llama-3.3-70b-versatile
+GROQ_MODEL=openai/gpt-oss-120b
 
 ```
 

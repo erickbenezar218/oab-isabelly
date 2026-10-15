@@ -3,7 +3,7 @@
  * (a partir da pasta api/)
  */
 const key = process.env.GROQ_API_KEY?.trim()?.replace(/^['"]+|['"]+$/g, '')
-const model = process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile'
+const model = process.env.GROQ_MODEL ?? 'openai/gpt-oss-120b'
 
 if (!key) {
   console.error('❌ GROQ_API_KEY não definida')

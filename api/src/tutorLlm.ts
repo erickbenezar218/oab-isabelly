@@ -11,6 +11,7 @@ import {
   groqHealthProbe,
   groqKeyHint,
   isGroqConfigured,
+  lastGroqHealthDetail,
   lastGroqHealthHint,
   type GroqMessage,
 } from './groq.js'
@@ -47,6 +48,11 @@ export async function tutorLlmHealthProbe(force = false): Promise<boolean> {
 export function tutorLlmHealthHint(): string | undefined {
   if (isGroqConfigured()) return lastGroqHealthHint()
   return lastGeminiHealthHint()
+}
+
+export function tutorLlmHealthDetail(): string | undefined {
+  if (isGroqConfigured()) return lastGroqHealthDetail()
+  return undefined
 }
 
 export function tutorLlmKeyHint(): string | undefined {

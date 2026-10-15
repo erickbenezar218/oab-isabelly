@@ -31,6 +31,7 @@ import { isGeminiConfigured } from './gemini.js'
 import { isGroqConfigured } from './groq.js'
 import {
   isTutorLlmConfigured,
+  tutorLlmHealthDetail,
   tutorLlmHealthHint,
   tutorLlmHealthProbe,
   tutorLlmKeyHint,
@@ -131,6 +132,7 @@ app.get<{ Querystring: { detail?: string; status?: string; refresh?: string } }>
       tutor: tutorConfigured,
       tutorOk,
       tutorHint: tutorLlmHealthHint(),
+      tutorDetail: tutorOk ? undefined : tutorLlmHealthDetail(),
       tutorKey: tutorConfigured ? tutorLlmKeyHint() : null,
       groq: isGroqConfigured(),
       gemini: isGeminiConfigured(),
