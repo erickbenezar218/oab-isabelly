@@ -6,6 +6,7 @@ import { apiBillingConfig, type BillingConfig } from '../lib/api'
 import VslSection from '../components/landing/VslSection'
 import { SiteFooter, SiteHeader } from '../components/landing/SiteChrome'
 import { LAUNCH_OFFER_LABEL, PRO_BONUS_TEASER, type PaidPlanId } from '../lib/pricing'
+import { trackLead } from '../lib/metaPixel'
 
 type PlanId = 'free' | 'pro' | 'reta'
 
@@ -134,6 +135,7 @@ export default function Planos() {
                   plan={plan}
                   active={!!user && activePlan === plan.id}
                   ctaTo={ctaTo}
+                  isLoggedIn={!!user}
                   billingEnabled={billing?.enabled ?? false}
                   billingSandbox={billing?.sandbox ?? false}
                 />
@@ -225,6 +227,7 @@ export default function Planos() {
             <div className="flex flex-wrap gap-3 lg:justify-end">
               <Link
                 to={ctaTo}
+                onClick={user ? undefined : () => trackLead('planos-cta-final')}
                 className="inline-flex min-h-14 items-center rounded-xl bg-white px-8 font-semibold text-brand-600 transition-colors duration-150 hover:bg-brand-50"
               >
                 {user ? 'Ir para o app' : 'Criar conta grátis'}
@@ -249,12 +252,14 @@ function PlanCard({
   plan,
   active,
   ctaTo,
+  isLoggedIn,
   billingEnabled,
   billingSandbox,
 }: {
   plan: (typeof plans)[number]
   active: boolean
   ctaTo: string
+  isLoggedIn: boolean
   billingEnabled: boolean
   billingSandbox: boolean
 }) {
@@ -342,7 +347,11 @@ function PlanCard({
       )}
 
       {!isPaid || billingEnabled ? (
-        <Link to={checkoutTo} className={ctaClass}>
+        <Link
+          to={checkoutTo}
+          onClick={!isPaid && !isLoggedIn ? () => trackLead('planos-card-gratis') : undefined}
+          className={ctaClass}
+        >
           {plan.cta}
           {isPaid && billingSandbox && <span className="text-[11px] font-normal opacity-80">Sandbox</span>}
         </Link>

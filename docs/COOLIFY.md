@@ -47,6 +47,7 @@ O `Dockerfile` do serviço `web` faz **build multi-stage** (npm + vite) e recebe
 | `VITE_GOOGLE_CLIENT_ID` | `VITE_GOOGLE_CLIENT_ID` (= mesmo valor de `GOOGLE_CLIENT_ID`) |
 | `VITE_VSL_EMBED_URL` | Link YouTube/Vimeo após export HeyGen (ver `docs/VSL-HEYGEN.md`) |
 | `VITE_VSL_ASPECT` | `portrait` se o vídeo for vertical; vazio = 16:9 |
+| `VITE_META_PIXEL_ID` | ID do Meta Pixel (Events Manager); vazio = sem pixel. Ver README → Meta Pixel |
 
 **Obrigatório no Coolify:** `VITE_GOOGLE_CLIENT_ID` igual ao `GOOGLE_CLIENT_ID` para o botão Google aparecer.
 

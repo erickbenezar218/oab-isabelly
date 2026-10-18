@@ -6,6 +6,7 @@ import { PromoPrice } from '../components/PromoPrice'
 import { openPaymentCheckout } from '../lib/nativeBilling'
 import type { PaidPlanId } from '../lib/pricing'
 import { isNativeApp } from '../lib/platform'
+import { trackInitiateCheckout } from '../lib/metaPixel'
 
 function maskCpf(value: string): string {
   const d = value.replace(/\D/g, '').slice(0, 11)
@@ -55,6 +56,7 @@ export default function Checkout() {
       const { checkoutUrl } = await apiBillingCheckout(token, plan!, cpf, {
         returnTo: isNativeApp() ? 'app' : 'web',
       })
+      trackInitiateCheckout(plan!, price)
       await openPaymentCheckout(checkoutUrl)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao iniciar pagamento')

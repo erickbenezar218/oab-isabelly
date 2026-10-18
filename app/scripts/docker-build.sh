@@ -15,5 +15,6 @@ fi
 
 echo "==> VITE_API_URL=${VITE_API_URL:-/api}"
 echo "==> VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID:+[set]}"
+echo "==> VITE_META_PIXEL_ID=${VITE_META_PIXEL_ID:-[vazio — sem Meta Pixel]}"
 
 npm run build

@@ -10,6 +10,7 @@ import {
   type LoginResult,
   type PlanLimits,
 } from '../lib/api'
+import { trackCompleteRegistration } from '../lib/metaPixel'
 
 const TOKEN_KEY = 'simulaordem-token'
 
@@ -100,11 +101,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (email: string, password: string, name: string) => {
     const { token: t, user: u } = await apiRegister(email, password, name)
     persist(t, u)
+    trackCompleteRegistration('email')
   }
 
   const googleLogin = async (credential: string) => {
-    const { token: t, user: u } = await apiGoogleLogin(credential)
+    const { token: t, user: u, isNewUser } = await apiGoogleLogin(credential)
     persist(t, u)
+    if (isNewUser) trackCompleteRegistration('google')
   }
 
   return (

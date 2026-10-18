@@ -1,11 +1,18 @@
 import { useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { trackPurchaseOnce } from '../lib/metaPixel'
+import { PROMO_PRICING } from '../lib/pricing'
 
 export default function PlanosSucesso() {
   const { refreshSession, user } = useAuth()
   const [params] = useSearchParams()
   const plan = params.get('plan')
+
+  useEffect(() => {
+    const paidPlan = plan === 'reta' ? 'reta' : 'pro'
+    trackPurchaseOnce(paidPlan, Number(PROMO_PRICING[paidPlan].price.replace(',', '.')))
+  }, [plan])
 
   useEffect(() => {
     refreshSession().catch(() => {})

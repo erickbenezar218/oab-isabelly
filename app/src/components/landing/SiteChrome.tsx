@@ -14,10 +14,12 @@ export function SiteHeader({
   ctaTo,
   ctaLabel,
   current,
+  onCtaClick,
 }: {
   ctaTo: string
   ctaLabel: string
   current: 'landing' | 'planos'
+  onCtaClick?: () => void
 }) {
   const scrolled = useScrolled()
 
@@ -55,6 +57,7 @@ export function SiteHeader({
         </nav>
         <Link
           to={ctaTo}
+          onClick={onCtaClick}
           className="inline-flex min-h-11 items-center rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700"
         >
           {ctaLabel}

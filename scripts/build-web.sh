@@ -24,6 +24,7 @@ load_env_var() {
 load_env_var VITE_API_URL
 load_env_var VITE_GOOGLE_CLIENT_ID
 load_env_var GOOGLE_CLIENT_ID
+load_env_var VITE_META_PIXEL_ID
 
 export VITE_API_URL="${VITE_API_URL:-/api}"
 export VITE_GOOGLE_CLIENT_ID="${VITE_GOOGLE_CLIENT_ID:-${GOOGLE_CLIENT_ID:-}}"

@@ -129,8 +129,11 @@ export default function Privacidade() {
       <section>
         <h2>9. Cookies e armazenamento local</h2>
         <p>
-          Usamos token de autenticação no navegador (localStorage) para manter sua sessão. Cookies analíticos, se utilizados
-          no futuro, serão informados nesta política.
+          Usamos token de autenticação no navegador (localStorage) para manter sua sessão. Também guardamos no navegador a
+          origem da visita (parâmetros de campanha, como utm_source) para saber quais divulgações trazem novos alunos. Cookies
+          de marketing (Meta Pixel, da Meta Platforms) só são ativados se você clicar em &quot;Aceitar&quot; no aviso de
+          cookies; eles medem visitas, cadastros e compras vindos de anúncios no Instagram e Facebook. Se recusar, nenhum
+          dado é enviado à Meta. Para mudar sua escolha, limpe os dados do site no navegador.
         </p>
       </section>
 

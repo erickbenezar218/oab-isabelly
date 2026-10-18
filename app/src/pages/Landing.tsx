@@ -6,6 +6,7 @@ import { SiteFooter, SiteHeader } from '../components/landing/SiteChrome'
 import { OabTermometroDemo } from '../components/OabTermometro'
 import TestimonialsSection from '../components/landing/TestimonialsSection'
 import { LAUNCH_OFFER_LABEL, PROMO_PRICING } from '../lib/pricing'
+import { trackLead } from '../lib/metaPixel'
 
 const features = [
   {
@@ -44,21 +45,22 @@ export default function Landing() {
   const { user } = useAuth()
   const ctaTo = user ? '/app' : '/login'
   const ctaLabel = user ? 'Abrir o app' : 'Começar grátis'
+  const onLead = (source: string) => (user ? undefined : () => trackLead(source))
 
   return (
     <div className="landing-page min-h-dvh overflow-x-hidden bg-white text-ink">
-      <SiteHeader ctaTo={ctaTo} ctaLabel={ctaLabel} current="landing" />
+      <SiteHeader ctaTo={ctaTo} ctaLabel={ctaLabel} current="landing" onCtaClick={onLead('landing-header')} />
 
       <main>
-        <Hero ctaTo={ctaTo} ctaLabel={ctaLabel} />
+        <Hero ctaTo={ctaTo} ctaLabel={ctaLabel} onCtaClick={onLead('landing-hero')} />
         <WhySection />
-        <TermometroSection ctaTo={ctaTo} />
+        <TermometroSection ctaTo={ctaTo} onCtaClick={onLead('landing-termometro')} />
         <DesempenhoSection />
         <AiLearningSection />
         <DarkFeature />
         <TrustSection />
         <TestimonialsSection />
-        <CtaSection ctaTo={ctaTo} ctaLabel={ctaLabel} />
+        <CtaSection ctaTo={ctaTo} ctaLabel={ctaLabel} onCtaClick={onLead('landing-cta-final')} />
       </main>
 
       <SiteFooter />
@@ -66,7 +68,7 @@ export default function Landing() {
   )
 }
 
-function Hero({ ctaTo, ctaLabel }: { ctaTo: string; ctaLabel: string }) {
+function Hero({ ctaTo, ctaLabel, onCtaClick }: { ctaTo: string; ctaLabel: string; onCtaClick?: () => void }) {
   return (
     <section className="relative px-4 pb-16 pt-12 md:px-8 md:pb-24 md:pt-20">
       <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
@@ -82,6 +84,7 @@ function Hero({ ctaTo, ctaLabel }: { ctaTo: string; ctaLabel: string }) {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
               to={ctaTo}
+              onClick={onCtaClick}
               className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-brand-600 px-6 font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-brand-700"
             >
               {ctaLabel}
@@ -220,7 +223,7 @@ function WhySection() {
   )
 }
 
-function TermometroSection({ ctaTo }: { ctaTo: string }) {
+function TermometroSection({ ctaTo, onCtaClick }: { ctaTo: string; onCtaClick?: () => void }) {
   return (
     <section id="termometro" className="bg-white px-4 py-16 md:px-8 md:py-24">
       <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
@@ -242,6 +245,7 @@ function TermometroSection({ ctaTo }: { ctaTo: string }) {
           />
           <Link
             to={ctaTo}
+            onClick={onCtaClick}
             className="mt-8 inline-flex min-h-12 items-center rounded-xl bg-brand-600 px-6 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700"
           >
             Ver meu termômetro
@@ -445,7 +449,7 @@ function TrustSection() {
   )
 }
 
-function CtaSection({ ctaTo, ctaLabel }: { ctaTo: string; ctaLabel: string }) {
+function CtaSection({ ctaTo, ctaLabel, onCtaClick }: { ctaTo: string; ctaLabel: string; onCtaClick?: () => void }) {
   const items = [
     'Grátis: 20 flashcards por dia, 1 simulado completo e 1 express por mês',
     'Termômetro OAB e tutor IA com 5 explicações por dia',
@@ -471,6 +475,7 @@ function CtaSection({ ctaTo, ctaLabel }: { ctaTo: string; ctaLabel: string }) {
         <div className="flex flex-col items-start gap-3 lg:items-end">
           <Link
             to={ctaTo}
+            onClick={onCtaClick}
             className="inline-flex min-h-14 items-center rounded-xl bg-white px-8 text-base font-semibold text-brand-600 transition-colors duration-150 hover:bg-brand-50"
           >
             {ctaLabel}

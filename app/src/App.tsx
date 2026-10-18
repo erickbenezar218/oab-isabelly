@@ -5,6 +5,7 @@ import NativeBootstrap from './components/NativeBootstrap'
 import CatchAllRoute from './components/CatchAllRoute'
 import RootRoute from './components/RootRoute'
 import UpdateBanner from './components/UpdateBanner'
+import MetaPixelTracker from './components/MetaPixelTracker'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AppProvider } from './context/AppContext'
 import { AuthProvider } from './context/AuthContext'
@@ -35,6 +36,7 @@ export default function App() {
           <NativeBootstrap />
           <NativeAppBridge />
           <UpdateBanner />
+          <MetaPixelTracker />
           <Routes>
             <Route path="/" element={<RootRoute />} />
             <Route path="/login" element={<Login />} />

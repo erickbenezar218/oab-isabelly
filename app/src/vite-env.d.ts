@@ -4,6 +4,8 @@ interface ImportMetaEnv {
   readonly VITE_API_URL: string
   readonly VITE_GOOGLE_CLIENT_ID: string
   readonly VITE_GOOGLE_IOS_CLIENT_ID: string
+  /** Meta Pixel (Events Manager). Vazio = sem pixel. */
+  readonly VITE_META_PIXEL_ID?: string
 }
 
 interface ImportMeta {

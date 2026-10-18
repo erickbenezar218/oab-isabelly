@@ -288,6 +288,7 @@ app.post<{ Body: { credential: string } }>('/auth/google', AUTH_RATE_LIMIT, asyn
     googleUser.email.toLowerCase(),
   ])
   let user = rows[0]
+  const isNewUser = !user
   if (!user) {
     const inserted = await pool.query<UserRow>(
       `INSERT INTO users (email, name, google_id) VALUES ($1, $2, $3) RETURNING *`,
@@ -302,7 +303,7 @@ app.post<{ Body: { credential: string } }>('/auth/google', AUTH_RATE_LIMIT, asyn
   }
   const plan = effectivePlan(user.plan, user.plan_expires_at)
   const token = signToken({ sub: user.id, email: user.email, plan })
-  return { token, user: userPublic(user) }
+  return { token, user: userPublic(user), isNewUser }
 })
 
 app.get('/auth/me', async (req, reply) => {

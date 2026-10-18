@@ -1,3 +1,5 @@
+import { getAttribution } from './metaPixel'
+
 const API_URL = import.meta.env.VITE_API_URL ?? '/api'
 
 export interface UserProfileDto {
@@ -91,7 +93,8 @@ export async function apiRegister(email: string, password: string, name: string)
   const res = await fetch(`${API_URL}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password, name }),
+    // attribution: UTM/fbclid da landing — a API atual ignora o campo (ver README).
+    body: JSON.stringify({ email, password, name, attribution: getAttribution() }),
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.error ?? 'Erro ao cadastrar')
@@ -157,9 +160,9 @@ export async function apiVerifyOtp(challengeId: string, code: string) {
 }
 
 export async function apiGoogleLogin(credential: string) {
-  return apiPost<{ token: string; user: AuthUser }>(
+  return apiPost<{ token: string; user: AuthUser; isNewUser?: boolean }>(
     '/auth/google',
-    { credential },
+    { credential, attribution: getAttribution() },
     'Erro ao entrar com Google',
   )
 }
